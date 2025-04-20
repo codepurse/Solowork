@@ -18,11 +18,11 @@ body {
   top: 0;
   left: 0;
   width: 250px;
-  height: 100%;
+  height: 100vh;
   padding: 20px;
   border-right: 1px solid #212121;
   .sidebar-container {
-    max-height: calc(100vh - 200px);
+    max-height: calc(100vh - 230px);
     overflow-y: auto;
   }
   .dropdown-projects {
@@ -111,5 +111,34 @@ body {
         text-align: right;
       }
     }
+  }
+}
+
+.banner-premium {
+  background-color: #2d292f;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid #424242;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 95%;
+  margin-left: auto;
+  margin-right: auto;
+  .banner-premium-title {
+    font-size: 14px;
+    font-weight: 300;
+    color: whitesmoke;
+    text-align: center;
+    width: 100%;
+    margin-bottom: 5px;
+  }
+  .banner-premium-description {
+    font-size: 12px;
+    font-weight: 300;
+    color: #888;
+    text-align: center;
+    margin-bottom: 0px;
   }
 }
