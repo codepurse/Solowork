@@ -1,0 +1,115 @@
+@import url("https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&family=Manrope:wght@200..800&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Quicksand:wght@300..700&display=swap");
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  background-color: #18181a;
+  font-family: "Poppins", sans-serif;
+}
+
+.sidebar {
+  background-color: #18181a;
+  color: #fff;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 250px;
+  height: 100%;
+  padding: 20px;
+  border-right: 1px solid #212121;
+  .sidebar-container {
+    max-height: calc(100vh - 200px);
+    overflow-y: auto;
+  }
+  .dropdown-projects {
+    background-color: #1e1e20;
+    cursor: pointer;
+    border: 1px solid #424242;
+    border-radius: 10px;
+    padding: 8px 12px;
+    transition: all 0.2s ease;
+    position: relative;
+    &:hover {
+      border-color: #7a3dff;
+    }
+    .logo {
+      width: 22px;
+    }
+    .project-name {
+      font-size: 15px;
+      font-weight: 500;
+      margin-bottom: 0px;
+    }
+    .projects-list {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      width: 100%;
+      margin-top: 10px;
+      background-color: #2d292f;
+      padding: 10px;
+      border-radius: 10px;
+      border: 1px solid #424242;
+    }
+    .project-description {
+      font-size: 12px;
+      color: #888;
+      margin-bottom: 0px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      width: 120px;
+    }
+  }
+  .faded-line {
+    border: none;
+    height: 1px;
+    background: linear-gradient(to right, transparent, #313131, transparent);
+    margin: 16px 0;
+  }
+  .sidebar-menu {
+    .sidebar-menu-container {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .sidebar-menu-title {
+      font-size: 13px;
+      font-weight: 300;
+      color: lightgray;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+    }
+    .sidebar-menu-item {
+      cursor: pointer;
+      padding: 7px;
+      border-radius: 10px;
+      transition: all 0.2s ease;
+      &:hover {
+        background-color: #232323;
+        color: #7a3dff;
+        .sidebar-menu-item-name {
+          color: #7a3dff;
+        }
+      }
+      .sidebar-menu-item-name {
+        font-size: 14px;
+        font-weight: 300;
+        margin-bottom: 0px;
+        cursor: pointer;
+        color: whitesmoke;
+      }
+      .beta-badge {
+        font-size: 12px;
+        font-weight: 300;
+        color: #7a3dff;
+        width: 100%;
+        text-align: right;
+      }
+    }
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "scripts": {
+    "dev": "next dev --turbopack",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "bootstrap": "^5.3.5",
+    "next": "^15.3.1",
+    "react": "^19.1.0",
+    "react-bootstrap": "^2.10.9",
+    "react-dom": "^19.1.0",
+    "sass": "^1.86.3"
+  },
+  "devDependencies": {
+    "@types/node": "22.14.1",
+    "@types/react": "19.1.2",
+    "lucide-react": "^0.487.0",
+    "typescript": "5.8.3"
+  }
+}
