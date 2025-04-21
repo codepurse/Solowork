@@ -389,6 +389,17 @@ main {
     width: 100%;
     margin-top: 10px;
     border-bottom: 1px solid #252525;
+    .add-task-button {
+      background-color: #4f39e4;
+      border: none;
+      border-radius: 5px;
+      padding: 5px 10px;
+      color: #fbfbfb;
+      font-size: 13px;
+      font-weight: 400;
+      margin-bottom: 5px;
+      cursor: pointer;
+    }
     i {
       color: #888;
       cursor: pointer;
@@ -397,6 +408,15 @@ main {
         color: #7a3dff;
       }
     }
+    .kanban-board-tab-label {
+      &:hover {
+        .kanban-column-title,
+        i {
+          color: #7a3dff;
+        }
+      }
+    }
+
     .kanban-board-title {
       font-size: 20px;
       color: #fbfbfb;

@@ -1,11 +1,6 @@
-import {
-    ChevronLeft,
-    ChevronRight,
-    FolderKanban,
-    SquareKanban,
-    Table,
-} from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Col, Container, Row } from "react-bootstrap";
+import HeaderTabs from "../components/Pages/Kanban/HeaderTabs";
 import Space from "../components/space";
 
 export default function Kanban() {
@@ -32,35 +27,7 @@ export default function Kanban() {
       </Row>
       <Row>
         <Col>
-          <div className="kanban-board">
-            <p className="kanban-board-title">Dashboard Page</p>
-            <Space gap={18}>
-              <div>
-                <Space gap={10}>
-                  <i>
-                    <FolderKanban size={16} />
-                  </i>
-                  <p className="kanban-column-title">Detailed Board</p>
-                </Space>
-              </div>
-              <div>
-                <Space gap={10}>
-                  <i>
-                    <Table size={16} />
-                  </i>
-                  <p className="kanban-column-title">Table View</p>
-                </Space>
-              </div>
-              <div>
-                <Space gap={10}>
-                  <i>
-                    <SquareKanban size={16} />
-                  </i>
-                  <p className="kanban-column-title">Overview</p>
-                </Space>
-              </div>
-            </Space>
-          </div>
+          <HeaderTabs />
         </Col>
       </Row>
     </Container>
