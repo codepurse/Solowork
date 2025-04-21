@@ -5,9 +5,11 @@ import {
   File,
   FolderSymlink,
 } from "lucide-react";
+import { useRouter } from "next/router";
 import Space from "../../space";
 
 export default function Workspace() {
+  const router = useRouter();
   const menuItems = [
     {
       id: 1,

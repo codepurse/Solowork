@@ -242,4 +242,123 @@ main {
       }
     }
   }
+  .selected-notes {
+    padding: 12px 15px;
+    max-height: calc(100vh - 100px);
+    overflow-y: auto;
+    .selected-notes-header {
+      border-bottom: 1px solid #252525;
+      padding-bottom: 12px;
+      padding-right: 5px;
+      i {
+        color: #888;
+        cursor: pointer;
+        &:hover {
+          color: #7a3dff;
+        }
+      }
+    }
+    .selected-notes-title-container {
+      padding: 20px;
+      max-width: 100%;
+      .selected-notes-title {
+        background-color: transparent;
+        border: none;
+        color: #fbfbfb;
+        font-size: 2rem;
+        font-weight: 500;
+        outline: none;
+        width: 100%;
+        caret-color: #7a3dff;
+        caret-shape: underscore;
+      }
+      .selected-notes-tags {
+        margin-top: 5px;
+        .selected-notes-tag {
+          font-size: 12px;
+          font-weight: 300;
+          color: #888;
+          padding: 2px 10px;
+          border-radius: 5px;
+          background-color: #232323;
+          color: #fbfbfb;
+        }
+      }
+    }
+  }
+}
+
+.lexical-notes {
+  margin-top: 20px;
+  .editor-container {
+    position: relative;
+    line-height: 1.5;
+    font-weight: 400;
+    text-align: left;
+    border-radius: 10px;
+    color: #fbfbfb;
+  }
+  .editor-input {
+    min-height: 150px;
+    resize: none;
+    font-size: 15px;
+    position: relative;
+    tab-size: 1;
+    outline: 0;
+    padding: 15px 10px;
+    caret-color: #7a3dff;
+  }
+  .editor-placeholder {
+    color: #888;
+    overflow: hidden;
+    position: absolute;
+    text-overflow: ellipsis;
+    top: 15px;
+    left: 10px;
+    font-size: 15px;
+    user-select: none;
+    display: inline-block;
+    pointer-events: none;
+  }
+  .editor-paragraph {
+    margin: 0 0 15px 0;
+    position: relative;
+  }
+}
+
+.floating-toolbar {
+  background-color: #232323;
+  border: 1px solid #252525;
+  border-radius: 8px;
+  padding: 5px;
+  display: flex;
+  gap: 5px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+
+  .toolbar-group {
+    display: flex;
+    gap: 5px;
+  }
+
+  .toolbar-separator {
+    width: 1px;
+    background-color: #252525;
+    margin: 0 5px;
+  }
+
+  .toolbar-button {
+    background: transparent;
+    border: none;
+    color: #fbfbfb;
+    padding: 5px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background-color: #2d2d2d;
+      color: #7a3dff;
+    }
+  }
 }

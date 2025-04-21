@@ -1,7 +1,9 @@
 import { PenLine, Search } from "lucide-react";
 import { Col, Container, Row } from "react-bootstrap";
 import NotesList from "../components/Pages/Notes/NotesList";
+import SelectedNotes from "../components/Pages/Notes/SelectedNotes";
 import Space from "../components/space";
+
 export default function Notes() {
   return (
     <Container fluid className="notes-container">
@@ -29,8 +31,8 @@ export default function Notes() {
           </div>
           <NotesList />
         </Col>
-        <Col>
-          
+        <Col className="p-0">
+          <SelectedNotes />
         </Col>
       </Row>
     </Container>
