@@ -249,7 +249,8 @@ main {
     .selected-notes-header {
       border-bottom: 1px solid #252525;
       padding-bottom: 12px;
-      padding-right: 5px;
+      padding-left: 10px;
+      padding-right: 10px;
       i {
         color: #888;
         cursor: pointer;
@@ -359,6 +360,54 @@ main {
     &:hover {
       background-color: #2d2d2d;
       color: #7a3dff;
+    }
+  }
+}
+
+.kanban-container {
+  height: 100%;
+  .kanban-header {
+    padding: 12px 8px;
+    width: 100%;
+    border-bottom: 1px solid #252525;
+    i {
+      color: #888;
+      cursor: pointer;
+      &:hover {
+        color: #7a3dff;
+      }
+    }
+    .kanban-header-title {
+      font-size: 16px;
+      font-weight: 400;
+      color: #fbfbfb;
+      margin-bottom: 0px;
+    }
+  }
+  .kanban-board {
+    padding: 12px 0px;
+    width: 100%;
+    margin-top: 10px;
+    border-bottom: 1px solid #252525;
+    i {
+      color: #888;
+      cursor: pointer;
+      margin-top: -3px;
+      &:hover {
+        color: #7a3dff;
+      }
+    }
+    .kanban-board-title {
+      font-size: 20px;
+      color: #fbfbfb;
+      font-weight: 400;
+    }
+    .kanban-column-title {
+      font-size: 15px;
+      color: #888;
+      font-weight: 300;
+      margin-bottom: 0px;
+      cursor: pointer;
     }
   }
 }

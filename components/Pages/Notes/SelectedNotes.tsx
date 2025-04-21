@@ -1,9 +1,11 @@
-import { Info } from "lucide-react";
+import { Info, Menu } from "lucide-react";
 import { Col, Container, Row } from "react-bootstrap";
+import useStoreNotes from "../../../store/store";
 import Space from "../../space";
 import LexicalEditor from "./LexicalEditor";
 
 export default function SelectedNotes() {
+  const { hideSideNotes, setHideSideNotes } = useStoreNotes();
   const tags = ["Document", "Project", "Task"];
 
   const color = [
@@ -20,12 +22,18 @@ export default function SelectedNotes() {
       color: "#B88F31",
     },
   ];
+  const onClickMenu = () => {
+    setHideSideNotes(!hideSideNotes);
+  };
   return (
     <Container className="selected-notes">
       <Row>
         <Col className="p-0">
           <div className="selected-notes-header">
-            <Space align="end">
+            <Space align="evenly">
+              <i onClick={onClickMenu}>
+                <Menu size={17} />
+              </i>
               <i>
                 <Info size={17} />
               </i>
