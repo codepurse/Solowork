@@ -4,11 +4,34 @@ html,
 body,
 #root {
   height: 100%;
+  width: 100%;
 }
 
 body {
   background-color: #18181a;
   font-family: "Poppins", sans-serif;
+  box-sizing: border-box;
+}
+
+* {
+  box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+  -moz-font-smoothing: unset;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-backface-visibility: hidden;
+  -moz-backface-visibility: hidden;
+  backface-visibility: hidden;
+  text-rendering: optimizeLegibility !important;
+}
+main {
+  height: 100vh;
+  width: 100%;
+}
+.page-layout {
+  width: calc(100vw - 250px);
+  background-color: #181818;
+  height: 100%;
+  margin-left: 250px;
 }
 
 .sidebar {
@@ -20,7 +43,7 @@ body {
   width: 250px;
   height: 100vh;
   padding: 20px;
-  border-right: 1px solid #212121;
+  border-right: 1px solid #252525;
   .sidebar-container {
     max-height: calc(100vh - 230px);
     overflow-y: auto;
@@ -28,7 +51,7 @@ body {
   .dropdown-projects {
     background-color: #1e1e20;
     cursor: pointer;
-    border: 1px solid #424242;
+    border: 1px solid #252525;
     border-radius: 10px;
     padding: 8px 12px;
     transition: all 0.2s ease;
@@ -140,5 +163,83 @@ body {
     color: #888;
     text-align: center;
     margin-bottom: 0px;
+  }
+}
+
+.notes-container {
+  height: 100%;
+  .col-side-notes {
+    border-right: 1px solid #252525;
+    max-width: 300px;
+    height: 100%;
+    padding: 0px;
+    .all-notes-container {
+      padding: 12px 15px;
+      border-bottom: 1px solid #252525;
+      max-width: 100%;
+      i {
+        color: #888;
+        cursor: pointer;
+        &:hover {
+          color: #7a3dff;
+        }
+      }
+      .all-notes {
+        font-size: 15px;
+        font-weight: 400;
+        color: #fbfbfb;
+        margin-bottom: 0px;
+      }
+    }
+  }
+  .search-notes {
+    padding: 12px 15px;
+    border-bottom: 1px solid #252525;
+    max-width: 100%;
+    background-color: #191919;
+    .search-notes-input {
+      background-color: #191919;
+      border: none;
+      color: #fbfbfb;
+      font-size: 14px;
+      font-weight: 400;
+      outline: none;
+      width: 100%;
+    }
+  }
+  .notes-list {
+    padding: 12px 15px;
+    max-height: calc(100vh - 100px);
+    overflow-y: auto;
+    .note {
+      padding: 10px;
+      border-radius: 10px;
+      background-color: #191919;
+      border: 1px solid #252525;
+      margin-bottom: 10px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      &:hover {
+        background-color: #232323;
+      }
+      .note-title {
+        font-size: 15px;
+        color: #fbfbfb;
+        font-weight: 400;
+      }
+      .note-content {
+        font-size: 13px;
+        color: lightgray;
+        font-weight: 300;
+        margin-bottom: 0px;
+        display: -webkit-box;
+        -webkit-line-clamp: 4;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        line-height: 1.6;
+        letter-spacing: 0.02em;
+      }
+    }
   }
 }
