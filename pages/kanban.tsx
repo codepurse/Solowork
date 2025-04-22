@@ -1,8 +1,8 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Col, Container, Row } from "react-bootstrap";
 import HeaderTabs from "../components/Pages/Kanban/HeaderTabs";
+import KanbanBoard from "../components/Pages/Kanban/KanbanBoard";
 import Space from "../components/space";
-
 export default function Kanban() {
   return (
     <Container fluid className="kanban-container">
@@ -30,6 +30,7 @@ export default function Kanban() {
           <HeaderTabs />
         </Col>
       </Row>
+      <KanbanBoard />
     </Container>
   );
 }

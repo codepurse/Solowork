@@ -1,9 +1,9 @@
 import {
-    ArrowDown01,
-    FolderKanban,
-    ListFilterPlus,
-    SquareKanban,
-    Table,
+  ArrowDown01,
+  FolderKanban,
+  ListFilterPlus,
+  SquareKanban,
+  Table,
 } from "lucide-react";
 import Space from "../../space";
 
@@ -22,7 +22,7 @@ export default function HeaderTabs() {
             <div className="kanban-board-tab-label">
               <Space gap={10}>
                 <i>
-                  <FolderKanban size={16} />
+                  <FolderKanban size={15} />
                 </i>
                 <p className="kanban-column-title">Detailed Board</p>
               </Space>
@@ -30,7 +30,7 @@ export default function HeaderTabs() {
             <div className="kanban-board-tab-label">
               <Space gap={10}>
                 <i>
-                  <Table size={16} />
+                  <Table size={15} />
                 </i>
                 <p className="kanban-column-title">Table View</p>
               </Space>
@@ -38,7 +38,7 @@ export default function HeaderTabs() {
             <div className="kanban-board-tab-label">
               <Space gap={10}>
                 <i>
-                  <SquareKanban size={16} />
+                  <SquareKanban size={15} />
                 </i>
                 <p className="kanban-column-title">Overview</p>
               </Space>
@@ -50,7 +50,7 @@ export default function HeaderTabs() {
             <div className="kanban-board-tab-label">
               <Space gap={8}>
                 <i>
-                  <ListFilterPlus size={16} />
+                  <ListFilterPlus size={15} />
                 </i>
                 <p className="kanban-column-title">Filter</p>
               </Space>
@@ -58,7 +58,7 @@ export default function HeaderTabs() {
             <div className="kanban-board-tab-label">
               <Space gap={8}>
                 <i>
-                  <ArrowDown01 size={16} />
+                  <ArrowDown01 size={15} />
                 </i>
                 <p className="kanban-column-title">Sort</p>
               </Space>
