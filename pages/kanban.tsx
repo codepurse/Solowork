@@ -2,6 +2,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Col, Container, Row } from "react-bootstrap";
 import HeaderTabs from "../components/Pages/Kanban/HeaderTabs";
 import KanbanBoard from "../components/Pages/Kanban/KanbanBoard";
+import TableView from "../components/Pages/Kanban/TableView";
 import Space from "../components/space";
 import { useStore } from "../store/store";
 
@@ -39,6 +40,7 @@ export default function Kanban() {
         </Col>
       </Row>
       {selectedKanban === 1 && <KanbanBoard />}
+      {selectedKanban === 2 && <TableView />}
     </Container>
   );
 }
