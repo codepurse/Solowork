@@ -58,3 +58,11 @@ export const tasks: Task[] = [
     storyPoints: 2,
   },
 ];
+
+export const DUMMY_TAGS = [
+  "Authentication",
+  "Security",
+  "Backend",
+  "UI/UX",
+  "Frontend",
+];

@@ -1,7 +1,8 @@
 import { Ellipsis } from "lucide-react";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { tasks } from "../../../../constant/dummy";
 import Space from "../../../space";
+import ModalTaskInfo from "./ModalTaskInfo";
 
 const getPriorityColor = (priority: string): string => {
   switch (priority) {
@@ -28,6 +29,8 @@ export default function KanbanToDo({
     return "#000";
   }, [label]);
 
+  const [showModal, setShowModal] = useState(false);
+
   return (
     <div className="kanban-to-do">
       <Space gap={10} align="evenly">
@@ -53,7 +56,11 @@ export default function KanbanToDo({
       />
       <div className="kanban-task-container">
         {tasks.map((task) => (
-          <div key={task.id} className="kanban-task-card">
+          <div
+            key={task.id}
+            className="kanban-task-card"
+            onClick={() => setShowModal(true)}
+          >
             <div className="kanban-task-card-header">
               <p className="kanban-task-card-id">{task.id}</p>
               <p
@@ -77,6 +84,11 @@ export default function KanbanToDo({
           </div>
         ))}
       </div>
+      <ModalTaskInfo
+        show={showModal}
+        onHide={() => setShowModal(false)}
+        centered
+      />
     </div>
   );
 }

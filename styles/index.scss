@@ -29,6 +29,14 @@ main {
   height: 100vh;
   width: 100%;
 }
+
+.modal-container {
+  .modal-content {
+    background: #191919;
+    padding: 15px;
+  }
+}
+
 .faded-line {
   border: none;
   height: 1px;
@@ -39,7 +47,6 @@ main {
   border: none;
   height: 1px;
   background: #252525;
-  margin: 0px;
 }
 .page-layout {
   width: calc(100vw - 250px);
@@ -571,5 +578,52 @@ main {
         }
       }
     }
+  }
+}
+
+.kanban-task-info-modal {
+  padding: 5px 15px;
+  .kanban-task-info-modal-title {
+    font-size: 17px;
+    font-weight: 400;
+    color: #fbfbfb;
+  }
+  .kanban-modal-left-text {
+    font-size: 13px;
+    font-weight: 400;
+    color: #888;
+    margin-bottom: 0px;
+  }
+  .kanban-modal-right-text {
+    font-size: 13px;
+    font-weight: 400;
+    color: #fbfbfb;
+    margin-bottom: 0px;
+  }
+  .kanban-modal-status-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: #7a3dff;
+  }
+  .kanban-modal-tags-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+  }
+  .kanban-modal-tags {
+    font-size: 11px;
+    padding: 2px 8px;
+    background-color: #2d2d2d;
+    border-radius: 4px;
+    color: #888;
+    margin-bottom: 0px;
+  }
+  .description-text {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 }
