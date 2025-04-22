@@ -1,21 +1,20 @@
 import { Ellipsis } from "lucide-react";
 import { useMemo } from "react";
+import { tasks } from "../../../../constant/dummy";
 import Space from "../../../space";
 
-interface Task {
-  id: string;
-  title: string;
-  description: string;
-  tags: string[];
-  status: "To Do" | "In Progress" | "Completed" | "Cancelled";
-  priority: "Low" | "Medium" | "High" | "Urgent";
-  dueDate: string;
-  assignee: string;
-  createdAt: string;
-  updatedAt: string;
-  storyPoints?: number;
-  dependencies?: string[];
-}
+const getPriorityColor = (priority: string): string => {
+  switch (priority) {
+    case "High":
+      return "#ff4d4d";
+    case "Medium":
+      return "#ffa64d";
+    case "Low":
+      return "#4dff4d";
+    default:
+      return "#ff0000";
+  }
+};
 
 export default function KanbanToDo({
   label,
@@ -28,52 +27,6 @@ export default function KanbanToDo({
     if (label === "Cancelled") return "#dc3545";
     return "#000";
   }, [label]);
-
-  const tasks: Task[] = [
-    {
-      id: "TASK-101",
-      title: "Implement user authentication",
-      description:
-        "Set up JWT-based authentication with refresh tokens and implement login/signup flows",
-      tags: ["Authentication", "Security", "Backend"],
-      status: "To Do",
-      priority: "High",
-      dueDate: "2024-03-15",
-      assignee: "Alex Johnson",
-      createdAt: "2024-02-20",
-      updatedAt: "2024-02-20",
-      storyPoints: 5,
-      dependencies: ["TASK-100"],
-    },
-    {
-      id: "TASK-102",
-      title: "Design mobile-responsive dashboard",
-      description:
-        "Create responsive layouts for dashboard components using CSS Grid and Flexbox",
-      tags: ["UI/UX", "Frontend", "Responsive Design"],
-      status: "To Do",
-      priority: "Medium",
-      dueDate: "2024-03-10",
-      assignee: "Sarah Chen",
-      createdAt: "2024-02-20",
-      updatedAt: "2024-02-20",
-      storyPoints: 3,
-    },
-    {
-      id: "TASK-103",
-      title: "Set up CI/CD pipeline",
-      description:
-        "Configure GitHub Actions for automated testing and deployment",
-      tags: ["DevOps", "CI/CD", "Testing"],
-      status: "To Do",
-      priority: "High",
-      dueDate: "2024-03-05",
-      assignee: "Michael Brown",
-      createdAt: "2024-02-20",
-      updatedAt: "2024-02-20",
-      storyPoints: 2,
-    },
-  ];
 
   return (
     <div className="kanban-to-do">
@@ -105,21 +58,13 @@ export default function KanbanToDo({
               <p className="kanban-task-card-id">{task.id}</p>
               <p
                 className="kanban-task-card-priority"
-                style={{
-                  color:
-                    task.priority === "High"
-                      ? "#ff4d4d"
-                      : task.priority === "Medium"
-                      ? "#ffa64d"
-                      : task.priority === "Low"
-                      ? "#4dff4d"
-                      : "#ff0000",
-                }}
+                style={{ color: getPriorityColor(task.priority) }}
               >
                 {task.priority}
               </p>
             </div>
             <p className="kanban-task-card-title">{task.title}</p>
+            <p className="kanban-task-card-description">{task.description}</p>
             <div className="kanban-task-card-footer">
               <div className="kanban-task-card-tags">
                 {task.tags.slice(0, 2).map((tag, index) => (

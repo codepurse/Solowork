@@ -1,17 +1,32 @@
 import { create } from "zustand";
 
-interface Store {
+interface NotesStore {
   selectedNotes: any[];
   setSelectedNotes: (notes: any[]) => void;
   hideSideNotes: boolean;
   setHideSideNotes: (hide: boolean) => void;
 }
 
-const useStoreNotes = create<Store>((set) => ({
+interface KanbanStore {
+  selectedKanban: number;
+  setSelectedKanban: (kanban: number) => void;
+}
+
+const useStoreNotes = create<NotesStore>((set) => ({
   selectedNotes: [],
   setSelectedNotes: (notes: any[]) => set({ selectedNotes: notes }),
   hideSideNotes: false,
   setHideSideNotes: (hide: boolean) => set({ hideSideNotes: hide }),
 }));
 
-export default useStoreNotes;
+const useStoreKanban = create<KanbanStore>((set) => ({
+  selectedKanban: 1,
+  setSelectedKanban: (kanban: number) => set({ selectedKanban: kanban }),
+}));
+
+export function useStore() {
+  return {
+    useStoreNotes,
+    useStoreKanban,
+  };
+}

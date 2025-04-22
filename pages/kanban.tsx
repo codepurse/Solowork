@@ -3,7 +3,11 @@ import { Col, Container, Row } from "react-bootstrap";
 import HeaderTabs from "../components/Pages/Kanban/HeaderTabs";
 import KanbanBoard from "../components/Pages/Kanban/KanbanBoard";
 import Space from "../components/space";
+import { useStore } from "../store/store";
+
 export default function Kanban() {
+  const { useStoreKanban } = useStore();
+  const { selectedKanban } = useStoreKanban();
   return (
     <Container fluid className="kanban-container">
       <Row>
@@ -28,9 +32,13 @@ export default function Kanban() {
       <Row>
         <Col>
           <HeaderTabs />
+          <hr
+            className="not-faded-line"
+            style={{ marginTop: "-13px" }}
+          />
         </Col>
       </Row>
-      <KanbanBoard />
+      {selectedKanban === 1 && <KanbanBoard />}
     </Container>
   );
 }
