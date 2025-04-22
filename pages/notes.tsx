@@ -3,10 +3,12 @@ import { Col, Container, Row } from "react-bootstrap";
 import NotesList from "../components/Pages/Notes/NotesList";
 import SelectedNotes from "../components/Pages/Notes/SelectedNotes";
 import Space from "../components/space";
-import useStoreNotes from "../store/store";
+import { useStore } from "../store/store";
 
 export default function Notes() {
+  const { useStoreNotes } = useStore();
   const { hideSideNotes } = useStoreNotes();
+  
   return (
     <Container fluid className="notes-container">
       <Row style={{ height: "100%" }}>

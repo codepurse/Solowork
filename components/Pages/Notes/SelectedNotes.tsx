@@ -1,10 +1,11 @@
 import { Info, Menu } from "lucide-react";
 import { Col, Container, Row } from "react-bootstrap";
-import useStoreNotes from "../../../store/store";
+import { useStore } from "../../../store/store";
 import Space from "../../space";
 import LexicalEditor from "./LexicalEditor";
 
 export default function SelectedNotes() {
+  const { useStoreNotes } = useStore();
   const { hideSideNotes, setHideSideNotes } = useStoreNotes();
   const tags = ["Document", "Project", "Task"];
 
