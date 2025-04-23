@@ -650,6 +650,30 @@ main {
       margin-bottom: 0px;
     }
   }
+  .table-view-in-progress {
+    border-color: rgba(33, 150, 243, 0.3);
+    background-color: rgba(33, 150, 243, 0.1);
+    color: rgb(33, 150, 243);
+    i {
+      color: rgb(33, 150, 243);
+    }
+  }
+  .table-view-completed {
+    border-color: rgba(0, 230, 118, 0.3);
+    background-color: rgba(0, 230, 118, 0.1);
+    color: rgb(0, 230, 118);
+    i {
+      color: rgb(0, 230, 118);
+    }
+  }
+  .table-view-cancelled {
+    border-color: rgba(255, 23, 68, 0.3);
+    background-color: rgba(255, 23, 68, 0.1);
+    color: rgb(255, 23, 68);
+    i {
+      color: rgb(255, 23, 68);
+    }
+  }
   .table-view-header-count {
     font-size: 14px;
     font-weight: 400;
