@@ -477,6 +477,8 @@ main {
   }
   .kanban-task-container {
     margin-top: 20px;
+    max-height: calc(100vh - 270px);
+    overflow-y: auto;
     .kanban-task-card {
       padding: 12px;
       border-radius: 8px;
@@ -631,9 +633,10 @@ main {
 .table-view-container {
   height: 100%;
   .table-view-header {
-    padding: 12px 8px;
+    padding: 5px 15px;
+    border-radius: 8px;
     width: 100%;
-    border-bottom: 1px solid #252525;
+    background-color: #202020;
   }
   .table-view-header-title {
     font-size: 14px;
@@ -683,6 +686,11 @@ main {
   .table-view-content {
     width: 100%;
     margin-top: 14px;
+    .table-view-data {
+      transition: height 0.2s ease-in-out;
+      overflow: hidden;
+      height: 0;
+    }
     table {
       width: 100%;
       border-radius: 8px;
@@ -707,6 +715,10 @@ main {
 
       tbody {
         tr {
+          cursor: pointer;
+          &:hover {
+            background-color: #202020;
+          }
           td {
             vertical-align: top;
             padding: 12px 0px;
@@ -714,6 +726,7 @@ main {
             padding-right: 10px;
             &:first-child {
               min-width: 200px;
+              padding-left: 10px;
             }
 
             &:nth-child(2) {
