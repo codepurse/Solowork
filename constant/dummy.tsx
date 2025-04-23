@@ -50,7 +50,7 @@ export const tasks: Task[] = [
       "Configure GitHub Actions for automated testing and deployment",
     tags: ["DevOps", "CI/CD", "Testing"],
     status: "To Do",
-    priority: "High",
+    priority: "Low",
     dueDate: "2024-03-05",
     assignee: "Michael Brown",
     createdAt: "2024-02-20",

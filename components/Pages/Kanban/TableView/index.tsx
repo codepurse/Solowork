@@ -1,14 +1,22 @@
-import { ChevronUp, Logs } from "lucide-react";
+import dayjs from "dayjs";
+import {
+  Calendar,
+  ChevronUp,
+  Flag,
+  Logs,
+  ScrollText,
+  StickyNote,
+  Tag,
+} from "lucide-react";
 import { tasks } from "../../../../constant/dummy";
 import Space from "../../../space";
 
 export default function TableView() {
-  const getColor = (status: string) => {
-    if (status === "High") return "#FF1744";
-    if (status === "Medium") return "#ffa500";
-    if (status === "Low") return "#008000";
-    return "#000";
+  const formatDate = (date: string) => {
+    return dayjs(date).format("MMMM D, YYYY");
   };
+
+  const tagsClass = ["violet-tag", "blue-tag", "pink-tag", "orange-tag"];
 
   return (
     <div className="table-view-container">
@@ -29,11 +37,42 @@ export default function TableView() {
       <div className="table-view-content">
         <table>
           <thead>
-            <th>Name</th>
-            <th>Description</th>
-            <th>Tags</th>
-            <th>Priority</th>
-            <th>Due Date</th>
+            <th>
+              <Space gap={7}>
+                <StickyNote size={14} color="#888" />
+                <p>Name</p>
+              </Space>
+            </th>
+            <th>
+              <Space gap={7}>
+                <ScrollText size={14} color="#888" />
+                <p>Description</p>
+              </Space>
+            </th>
+            <th>
+              <Space gap={7}>
+                <Tag size={14} color="#888" />
+                <p
+                  className={
+                    tagsClass[Math.floor(Math.random() * tagsClass.length)]
+                  }
+                >
+                  Tags
+                </p>
+              </Space>
+            </th>
+            <th>
+              <Space gap={7}>
+                <Flag size={14} color="#888" />
+                <p>Priority</p>
+              </Space>
+            </th>
+            <th>
+              <Space gap={7}>
+                <Calendar size={14} color="#888" />
+                <p>Due Date</p>
+              </Space>
+            </th>
           </thead>
           <tbody>
             {tasks.map((task, index) => (
@@ -44,16 +83,28 @@ export default function TableView() {
                 <td>
                   <p className="table-view-description">{task.description}</p>
                 </td>
-                <td>
-                  <p>{task.tags.join(", ")}</p>
+                <td style={{ display: "flex", gap: "10px" }}>
+                  {task.tags.map((tag, index) => (
+                    <p
+                      key={index}
+                      className={`table-view-tag ${
+                        tagsClass[Math.floor(Math.random() * tagsClass.length)]
+                      }`}
+                    >
+                      {tag}
+                      {index < task.tags.length - 1}
+                    </p>
+                  ))}
                 </td>
                 <td>
-                  <p style={{ color: getColor(task.priority) }}>
+                  <p className={`table-view-priority ${task.priority}`}>
                     {task.priority}
                   </p>
                 </td>
                 <td>
-                  <p>{task.dueDate}</p>
+                  <p className="table-view-due-date">
+                    {formatDate(task.dueDate)}
+                  </p>
                 </td>
               </tr>
             ))}
