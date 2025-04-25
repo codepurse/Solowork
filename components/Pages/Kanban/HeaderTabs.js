@@ -1,7 +1,8 @@
-import { memo } from "react";
+import { memo, useState } from "react";
 import { ACTIONS, TABS } from "../../../constant";
 import { useStore } from "../../../store/store";
 import Space from "../../space";
+import AddTaskModal from "./Modal/AddTask";
 
 const Tab = memo(({ id, label, Icon, isSelected, onClick }) => (
   <div
@@ -31,30 +32,60 @@ const Tab = memo(({ id, label, Icon, isSelected, onClick }) => (
   </div>
 ));
 
-const ActionButton = memo(({ label, Icon }) => (
-  <div className="kanban-board-tab-label">
+const FilterDropdown = memo(() => (
+  <div className="filter-dropdown">
+    <p className="filter-dropdown-title">Filter</p>
+  </div>
+));
+
+const SortDropdown = memo(() => (
+  <div className="filter-dropdown">
+    <p className="filter-dropdown-title">Sort</p>
+  </div>
+));
+
+const ActionButton = memo(({ label, Icon, onClick, showFilterDropdown }) => (
+  <div className="kanban-board-tab-label" onClick={onClick}>
     <Space gap={8}>
       <i>
         <Icon size={15} />
       </i>
       <p className="kanban-column-title">{label}</p>
     </Space>
+    {showFilterDropdown && label === "Filter" && <FilterDropdown />}
+    {showFilterDropdown && label === "Sort" && <SortDropdown />}
   </div>
 ));
 
 function HeaderTabs() {
   const { useStoreKanban } = useStore();
   const { selectedKanban, setSelectedKanban } = useStoreKanban();
+  const [showAddTaskModal, setShowAddTaskModal] = useState(false);
+  const [showFilterDropdown, setShowFilterDropdown] = useState(false);
+  const [showSortDropdown, setShowSortDropdown] = useState(false);
 
   const handleKanbanChange = (kanbanId) => {
     setSelectedKanban(kanbanId);
+  };
+
+  const handleActionClick = (label) => {
+    if (label === "Filter") {
+      setShowFilterDropdown(!showFilterDropdown);
+      setShowSortDropdown(false);
+    } else if (label === "Sort") {
+      setShowSortDropdown(!showSortDropdown);
+      setShowFilterDropdown(false);
+    }
   };
 
   return (
     <div className="kanban-board">
       <Space align="evenly">
         <p className="kanban-board-title">Dashboard Page</p>
-        <button className="add-task-button">
+        <button
+          className="add-task-button"
+          onClick={() => setShowAddTaskModal(true)}
+        >
           <span>Add Task</span>
         </button>
       </Space>
@@ -76,11 +107,23 @@ function HeaderTabs() {
         <div>
           <Space gap={10}>
             {ACTIONS.map(({ label, Icon }) => (
-              <ActionButton key={label} label={label} Icon={Icon} />
+              <ActionButton
+                key={label}
+                label={label}
+                Icon={Icon}
+                onClick={() => handleActionClick(label)}
+                showFilterDropdown={
+                  label === "Filter" ? showFilterDropdown : showSortDropdown
+                }
+              />
             ))}
           </Space>
         </div>
       </Space>
+      <AddTaskModal
+        show={showAddTaskModal}
+        onHide={() => setShowAddTaskModal(false)}
+      />
     </div>
   );
 }

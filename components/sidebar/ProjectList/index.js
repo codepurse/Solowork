@@ -1,4 +1,4 @@
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, GripVertical } from "lucide-react";
 import { useState } from "react";
 import Space from "../../space";
 
@@ -45,8 +45,12 @@ export default function ProjectList() {
       </Space>
       {showProjects && (
         <div className="projects-list">
+          <p className="switch-project">Switch Project</p>
           {projectList.map((project) => (
             <div key={project.id} className="project-item">
+              <i>
+                <GripVertical size={14} color="#fff" />
+              </i>
               <span>{project.name}</span>
             </div>
           ))}

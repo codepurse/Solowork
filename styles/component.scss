@@ -1,0 +1,134 @@
+$primary-color: #7c4dff;
+
+.button-component {
+  background: $primary-color;
+  color: #fff;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-size: 14px;
+  font-weight: 400;
+  cursor: pointer;
+  &:hover {
+    background: #6a3dff;
+  }
+}
+
+.modal-container {
+  .modal-content {
+    background: #191919;
+    padding: 15px 20px;
+    .modal-title {
+      font-size: 17px;
+      font-weight: 500;
+      color: #fff;
+    }
+    .modal-description {
+      font-size: 14px;
+      font-weight: 400;
+      color: #888;
+      margin-bottom: 5px;
+    }
+    .modal-close-icon {
+      cursor: pointer;
+      color: #888;
+      &:hover {
+        color: $primary-color;
+      }
+    }
+    .modal-form-title {
+      font-size: 13px;
+      font-weight: 300;
+      color: lightgray;
+      margin-bottom: 5px;
+    }
+  }
+  .add-task-modal-tags-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 5px;
+    .add-task-modal-tags {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      border-radius: 5px;
+      padding: 5px 10px;
+      padding-right: 5px;
+      font-size: 12px;
+      font-weight: 300;
+
+      cursor: pointer;
+      p {
+        margin-bottom: 0;
+      }
+      &:hover {
+        background: #888;
+      }
+    }
+  }
+}
+
+.input-type {
+  background: #252525;
+  border-radius: 5px;
+  padding: 5px 10px;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 300;
+  margin-bottom: 5px;
+  border: 1px solid transparent;
+  outline: none;
+  width: 100%;
+  &:focus {
+    border: 1px solid $primary-color;
+  }
+}
+
+.violet-tag {
+  color: #7a3dff;
+  border: 1px solid rgba(122, 61, 255, 0.3);
+  background-color: rgba(122, 61, 255, 0.1);
+}
+.blue-tag {
+  color: rgb(33, 150, 243);
+  border: 1px solid rgba(33, 150, 243, 0.3);
+  background-color: rgba(33, 150, 243, 0.1);
+}
+.pink-tag {
+  color: #f06292;
+  border: 1px solid rgba(240, 98, 146, 0.3);
+  background-color: rgba(240, 98, 146, 0.1);
+}
+.orange-tag {
+  color: rgb(255, 87, 34);
+  border: 1px solid rgba(255, 87, 34, 0.3);
+  background-color: rgba(255, 87, 34, 0.1);
+}
+.yellow-tag {
+  color: #ffea00;
+  border: 1px solid rgba(255, 234, 0, 0.3);
+  background-color: rgba(255, 234, 0, 0.1);
+}
+.lime-tag {
+  color: #cddc39;
+  border: 1px solid rgba(205, 220, 57, 0.3);
+  background-color: rgba(205, 220, 57, 0.1);
+}
+.amber-tag {
+  color: #ffc107;
+  border: 1px solid rgba(255, 193, 7, 0.3);
+  background-color: rgba(255, 193, 7, 0.1);
+}
+.cyan-tag {
+  color: #00bcd4;
+  border: 1px solid rgba(0, 188, 212, 0.3);
+  background-color: rgba(0, 188, 212, 0.1);
+}
+
+
+
+
+
+
