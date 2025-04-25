@@ -2,6 +2,8 @@ import { memo, useState } from "react";
 import { ACTIONS, TABS } from "../../../constant";
 import { useStore } from "../../../store/store";
 import Space from "../../space";
+import FilterDropdown from "./Filter/FilterDropdown";
+import SortDropdown from "./Filter/SortDropdown";
 import AddTaskModal from "./Modal/AddTask";
 
 const Tab = memo(({ id, label, Icon, isSelected, onClick }) => (
@@ -29,18 +31,6 @@ const Tab = memo(({ id, label, Icon, isSelected, onClick }) => (
         {label}
       </p>
     </Space>
-  </div>
-));
-
-const FilterDropdown = memo(() => (
-  <div className="filter-dropdown">
-    <p className="filter-dropdown-title">Filter</p>
-  </div>
-));
-
-const SortDropdown = memo(() => (
-  <div className="filter-dropdown">
-    <p className="filter-dropdown-title">Sort</p>
   </div>
 ));
 
@@ -111,7 +101,10 @@ function HeaderTabs() {
                 key={label}
                 label={label}
                 Icon={Icon}
-                onClick={() => handleActionClick(label)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleActionClick(label);
+                }}
                 showFilterDropdown={
                   label === "Filter" ? showFilterDropdown : showSortDropdown
                 }

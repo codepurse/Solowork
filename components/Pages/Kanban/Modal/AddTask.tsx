@@ -10,7 +10,7 @@ interface AddTaskProps {
 }
 
 export default function AddTask({ show, onHide }: Readonly<AddTaskProps>) {
-  const [tags, setTags] = useState<string[]>(["tag1", "tag2", "tag3"]);
+  const [tags, setTags] = useState<string[]>([]);
 
   const handleAddTag = (
     tag: string,
