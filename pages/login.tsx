@@ -1,55 +1,38 @@
 import { OAuthProvider } from "appwrite";
-import { useRouter } from "next/router";
-import { useEffect } from "react";
 import { account } from "../constant/appwrite";
 
-export default function Login() {
-  const router = useRouter();
+const DATABASE_ID = "680c34d8000b99c9ed54";
+const COLLECTION_ID = "680c34e9003adbf5c0ef";
 
+export default function Login() {
   const handleGoogleLogin = async () => {
     try {
       await account.createOAuth2Session(
         OAuthProvider.Google,
-        "http://localhost:3000/login", // Success URL
-        "http://localhost:3000/login" // Failure URL
+        "http://localhost:3000", // Redirect back here
+        "http://localhost:3000/login"
       );
     } catch (error) {
-      console.error("Error during Google login:", error);
+      console.error("❌ Error during Google login:", error);
     }
   };
 
-  useEffect(() => {
-    // Check if user is already logged in
-    const checkUser = async () => {
-      try {
-        const user = await account.get();
-        if (user) {
-          router.push("/dashboard");
-        }
-      } catch (error) {
-        // User is not logged in
-      }
-    };
-    checkUser();
-  }, [router]);
-
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="max-w-md w-full space-y-8 p-8 bg-white rounded-lg shadow-lg">
-        <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Sign in to your account
-          </h2>
-        </div>
-        <div className="mt-8 space-y-6">
-          <button
-            onClick={handleGoogleLogin}
-            className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-          >
-            Sign in with Google
-          </button>
-        </div>
-      </div>
+    <div style={{ padding: "2rem" }}>
+      <h2>Sign in to your account</h2>
+      <button
+        onClick={handleGoogleLogin}
+        style={{
+          padding: "1rem 2rem",
+          backgroundColor: "#4285F4",
+          color: "white",
+          border: "none",
+          borderRadius: "5px",
+          cursor: "pointer",
+        }}
+      >
+        Sign in with Google
+      </button>
     </div>
   );
 }
