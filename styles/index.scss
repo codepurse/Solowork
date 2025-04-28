@@ -25,6 +25,8 @@ body {
   -moz-backface-visibility: hidden;
   backface-visibility: hidden;
   text-rendering: optimizeLegibility !important;
+  scrollbar-color: #424242 #252525;
+  scrollbar-width: thin;
 }
 main {
   height: 100vh;
@@ -396,6 +398,8 @@ main {
 
 .kanban-container {
   height: 100%;
+  overflow-x: auto;
+
   .kanban-header {
     padding: 12px 8px;
     width: 100%;
@@ -824,6 +828,7 @@ main {
               padding: 5px;
               border-radius: 5px;
               white-space: nowrap;
+              width: max-content;
               overflow: hidden;
               text-overflow: ellipsis;
             }

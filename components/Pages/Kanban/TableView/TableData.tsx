@@ -9,25 +9,29 @@ import {
   Tag,
 } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { tasks } from "../../../../constant/dummy";
 import Space from "../../../space";
 
-export default function TableData({ type }: { type: string }) {
+export default function TableData({
+  type,
+  tasks,
+}: {
+  type: string;
+  tasks: any;
+}) {
   const [isOpen, setIsOpen] = useState(true);
   const contentRef = useRef<HTMLDivElement>(null);
   const [contentHeight, setContentHeight] = useState<number | null>(null);
+  const filteredTasks = tasks.filter((task) => task.status === type);
 
   useEffect(() => {
     if (contentRef.current) {
       setContentHeight(contentRef.current.scrollHeight);
     }
-  }, []);
+  }, [filteredTasks]);
 
   const formatDate = (date: string) => {
     return dayjs(date).format("MMMM D, YYYY");
   };
-
-  const filteredTasks = tasks.filter((task) => task.status === type);
 
   const tagsClass = ["violet-tag", "blue-tag", "pink-tag", "orange-tag"];
 
@@ -87,28 +91,22 @@ export default function TableData({ type }: { type: string }) {
       >
         <table>
           <thead>
-            <th>
+            <th style={{ width: "20%" }}>
               <Space gap={7}>
                 <StickyNote size={14} color="#888" />
                 <p>Name</p>
               </Space>
             </th>
-            <th>
+            <th style={{ width: "30%" }}>
               <Space gap={7}>
                 <ScrollText size={14} color="#888" />
                 <p>Description</p>
               </Space>
             </th>
-            <th>
+            <th style={{ width: "30%" }}>
               <Space gap={7}>
                 <Tag size={14} color="#888" />
-                <p
-                  className={
-                    tagsClass[Math.floor(Math.random() * tagsClass.length)]
-                  }
-                >
-                  Tags
-                </p>
+                <p>Tags</p>
               </Space>
             </th>
             <th>

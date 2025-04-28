@@ -33,10 +33,7 @@ export default function Kanban() {
       <Row>
         <Col>
           <HeaderTabs />
-          <hr
-            className="not-faded-line"
-            style={{ marginTop: "-13px" }}
-          />
+          <hr className="not-faded-line" style={{ marginTop: "-13px" }} />
         </Col>
       </Row>
       {selectedKanban === 1 && <KanbanBoard />}

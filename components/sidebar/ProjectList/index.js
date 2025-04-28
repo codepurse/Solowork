@@ -1,27 +1,24 @@
 import { ChevronDown, GripVertical } from "lucide-react";
 import { useState } from "react";
+import { useStore } from "../../../store/store";
 import Space from "../../space";
-
 export default function ProjectList() {
-  const [activeProject, setActiveProject] = useState(0);
+  const { useStoreProjects } = useStore();
+  const { projects, setSelectedProject } = useStoreProjects();
+  const [activeProject] = useState(0);
   const [showProjects, setShowProjects] = useState(false);
-  const projectList = [
-    {
-      id: 1,
-      name: "Solo work",
-      description: "Solo work descriptioasdasdn",
-    },
-    {
-      id: 2,
-      name: "Project 2",
-      description: "Project 2 description",
-    },
-  ];
+  const projectList = projects;
+
   const handleKeyDown = (event) => {
     if (event.key === "Enter" || event.key === " ") {
       setShowProjects(!showProjects);
     }
   };
+
+  const handleProjectClick = async (projectId) => {
+    setSelectedProject(projectId);
+  };
+
   return (
     <div
       className="dropdown-projects"
@@ -35,7 +32,7 @@ export default function ProjectList() {
           <img src="/image/logo.png" className="img-fluid logo" />
           <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
             <label className="project-name">
-              {projectList[activeProject].name}
+              {projectList[activeProject]?.name}
             </label>
           </div>
         </div>
@@ -46,12 +43,18 @@ export default function ProjectList() {
       {showProjects && (
         <div className="projects-list">
           <p className="switch-project">Switch Project</p>
-          {projectList.map((project) => (
-            <div key={project.id} className="project-item">
+          {projectList?.map((project) => (
+            <div
+              key={project.id}
+              className="project-item"
+              onClick={() => {
+                handleProjectClick(project.$id);
+              }}
+            >
               <i>
                 <GripVertical size={14} color="#fff" />
               </i>
-              <span>{project.name}</span>
+              <span>{project?.name}</span>
             </div>
           ))}
         </div>

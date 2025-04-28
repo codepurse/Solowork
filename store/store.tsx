@@ -12,6 +12,18 @@ interface KanbanStore {
   setSelectedKanban: (kanban: number) => void;
 }
 
+interface ProjectsStore {
+  projects: any[];
+  setProjects: (projects: any[]) => void;
+  selectedProject: any;
+  setSelectedProject: (project: any) => void;
+}
+
+interface UserStore {
+  user: any;
+  setUser: (user: any) => void;
+}
+
 const useStoreNotes = create<NotesStore>((set) => ({
   selectedNotes: [],
   setSelectedNotes: (notes: any[]) => set({ selectedNotes: notes }),
@@ -24,9 +36,23 @@ const useStoreKanban = create<KanbanStore>((set) => ({
   setSelectedKanban: (kanban: number) => set({ selectedKanban: kanban }),
 }));
 
+const useStoreProjects = create<ProjectsStore>((set) => ({
+  selectedProject: null,
+  setSelectedProject: (project: any) => set({ selectedProject: project }),
+  projects: [],
+  setProjects: (projects: any[]) => set({ projects: projects }),
+}));
+
+const useStoreUser = create<UserStore>((set) => ({
+  user: null,
+  setUser: (user: any) => set({ user: user }),
+}));
+
 export function useStore() {
   return {
     useStoreNotes,
     useStoreKanban,
+    useStoreProjects,
+    useStoreUser,
   };
 }
