@@ -14,7 +14,7 @@ export const useFetchProject = () => {
   const { useStoreProjects, useStoreUser } = useStore();
   const { setProjects } = useStoreProjects();
   const { setUser } = useStoreUser();
-  const [setLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
   const [setError] = useState(null);
 
   const fetchProjects = async (userId) => {
