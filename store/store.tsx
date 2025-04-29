@@ -24,6 +24,11 @@ interface UserStore {
   setUser: (user: any) => void;
 }
 
+interface TasksStore {
+  tasks: any[];
+  setTasks: (tasks: any[]) => void;
+}
+
 const useStoreNotes = create<NotesStore>((set) => ({
   selectedNotes: [],
   setSelectedNotes: (notes: any[]) => set({ selectedNotes: notes }),
@@ -48,11 +53,17 @@ const useStoreUser = create<UserStore>((set) => ({
   setUser: (user: any) => set({ user: user }),
 }));
 
+const useStoreTasks = create<TasksStore>((set) => ({
+  tasks: [],
+  setTasks: (tasks: any[]) => set({ tasks: tasks }),
+}));
+
 export function useStore() {
   return {
     useStoreNotes,
     useStoreKanban,
     useStoreProjects,
     useStoreUser,
+    useStoreTasks,
   };
 }

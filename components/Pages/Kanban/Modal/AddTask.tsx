@@ -1,4 +1,4 @@
-import { ID } from "appwrite";
+import { ID, Query } from "appwrite";
 import { X } from "lucide-react";
 import { useState } from "react";
 import { Col, Container, Modal, Row } from "react-bootstrap";
@@ -24,8 +24,9 @@ export default function AddTask({ show, onHide }: Readonly<AddTaskProps>) {
   const [dependency, setDependency] = useState<string>("");
   const [dueDate, setDueDate] = useState<string>("");
   const [description, setDescription] = useState<string>("");
-  const { useStoreProjects } = useStore();
+  const { useStoreProjects, useStoreTasks } = useStore();
   const { selectedProject } = useStoreProjects();
+  const { setTasks } = useStoreTasks();
   const [loading, setLoading] = useState<boolean>(false);
 
   const priorityOptions = [
@@ -64,9 +65,17 @@ export default function AddTask({ show, onHide }: Readonly<AddTaskProps>) {
     setTags(tags.filter((t) => t !== tag));
   };
 
+  const fetchTasks = async () => {
+    const tasks = await databases.listDocuments(
+      DATABASE_ID,
+      TASKS_COLLECTION_ID,
+      [Query.equal("projectId", selectedProject)]
+    );
+    setTasks(tasks.documents);
+  };
+
   const handleAddTask = async () => {
     setLoading(true);
-    console.log(taskName, status, priority, dependency, dueDate, description);
     try {
       await databases.createDocument(
         DATABASE_ID,
@@ -82,8 +91,8 @@ export default function AddTask({ show, onHide }: Readonly<AddTaskProps>) {
           tags: tags,
         }
       );
+      fetchTasks();
       onHide();
-      console.log("Task added successfully");
     } catch (error) {
       console.log(error);
     } finally {

@@ -35,7 +35,7 @@ export const tasks: Task[] = [
     description:
       "Create responsive layouts for dashboard components using CSS Grid and Flexbox",
     tags: ["UI/UX", "Frontend", "Responsive Design"],
-    status: "To Do",
+    status: "In Progress",
     priority: "Medium",
     dueDate: "2024-03-10",
     assignee: "Sarah Chen",

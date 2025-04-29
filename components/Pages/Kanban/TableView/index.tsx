@@ -1,15 +1,14 @@
 import { Query } from "appwrite";
+import { useEffect } from "react";
 import { DATABASE_ID, databases } from "../../../../constant/appwrite";
 import { useStore } from "../../../../store/store";
 import TableData from "./TableData";
 
-import { useEffect, useState } from "react";
-
 export default function TableView() {
-  const { useStoreProjects } = useStore();
+  const { useStoreProjects, useStoreTasks } = useStore();
   const { selectedProject } = useStoreProjects();
   const TASK_COLLECTION_ID = "680dd9b5000ea2b16323";
-  const [tasks, setTasks] = useState([]);
+  const { tasks, setTasks } = useStoreTasks();
 
   useEffect(() => {
     const fetchTasks = async () => {
