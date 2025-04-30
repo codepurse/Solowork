@@ -30,6 +30,7 @@ export default function Kanban() {
       setTasks(tasks.documents);
     };
     if (selectedProject) {
+      console.log("fetching tasks");
       fetchTasks();
     }
   }, [selectedProject]);
@@ -61,9 +62,7 @@ export default function Kanban() {
           <hr className="not-faded-line" style={{ marginTop: "-13px" }} />
         </Col>
       </Row>
-      {selectedKanban === 1 && (
-        <KanbanBoard tasksList={tasks} setTasks={setTasks} />
-      )}
+      {selectedKanban === 1 && <KanbanBoard tasksList={tasks} />}
       {selectedKanban === 2 && <TableView />}
     </Container>
   );

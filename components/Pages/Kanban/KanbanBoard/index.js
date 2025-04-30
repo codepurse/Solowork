@@ -8,9 +8,11 @@ import {
   useSensors,
 } from "@dnd-kit/core";
 import { arrayMove } from "@dnd-kit/sortable";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { DATABASE_ID, databases, TASKS_COLLECTION_ID } from "../../../../constant/appwrite";
 import KanbanColumn from "./KanbanColumn";
 import TaskCard, { DragContext } from "./TaskCard";
+
 
 export default function KanbanBoard({ tasksList }) {
   const [tasks, setTasks] = useState(tasksList);
@@ -37,81 +39,78 @@ export default function KanbanBoard({ tasksList }) {
     })
   );
 
+  useEffect(() => {
+    setTasks(tasksList);
+  }, [tasksList]);
+
   // Custom collision detection that prioritizes columns
   const collisionDetectionStrategy = useCallback((args) => {
     // Force pointer events to go through cards to the columns
     const columnCollisions = args.droppableContainers
-      .filter(container => container.data.current?.type === "column")
+      .filter((container) => container.data.current?.type === "column")
       .reduce((acc, container) => {
         const rect = args.droppableRects.get(container.id);
-        
+
         if (rect) {
           const { top, left, right, bottom } = rect;
           const pointerX = args.pointerCoordinates.x;
           const pointerY = args.pointerCoordinates.y;
-          
+
           // Check if pointer is inside this column
           if (
-            pointerX >= left && 
-            pointerX <= right && 
-            pointerY >= top && 
+            pointerX >= left &&
+            pointerX <= right &&
+            pointerY >= top &&
             pointerY <= bottom
           ) {
             acc.push({
               id: container.id,
               data: {
                 droppableContainer: container,
-                value: 100 
-              }
+                value: 100,
+              },
             });
           }
         }
-        
+
         return acc;
       }, []);
-    
+
     if (columnCollisions.length > 0) {
       return columnCollisions;
     }
-    
+
     return pointerWithin(args);
   }, []);
+
+  const handleUpdateTask = async (taskId, updatedFields) => {
+    try {
+      await databases.updateDocument(
+        DATABASE_ID,
+        TASKS_COLLECTION_ID,
+        taskId,
+        updatedFields
+      );
+
+    } catch (error) {
+      console.error("❌ Failed to update task", error);
+    }
+  };
 
   // Function to update task status and call API
   const updateTaskStatus = (taskId, previousStatus, newStatus) => {
     // Only log and call API if status actually changed
     if (previousStatus !== newStatus) {
-      const task = tasks.find(t => t.$id === taskId);
-      
-      console.log('Task status update:', {
+      const task = tasks.find((t) => t.$id === taskId);
+
+      console.log("Task status update:", {
         taskId,
         title: task?.title,
         previousStatus,
         newStatus,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       });
-      
-      // Here you would make your API call
-      /*
-      fetch('your-api-endpoint', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          taskId,
-          previousStatus,
-          newStatus,
-        }),
-      })
-        .then(response => response.json())
-        .then(data => {
-          console.log('API response:', data);
-        })
-        .catch(error => {
-          console.error('Error updating task status:', error);
-        });
-      */
+      handleUpdateTask(taskId, { status: newStatus });
     }
   };
 
@@ -125,9 +124,9 @@ export default function KanbanBoard({ tasksList }) {
     const taskId = event.active.id;
     setActiveId(taskId);
     setIsDragging(true);
-    
+
     // Save the initial status when drag starts
-    const task = tasks.find(t => t.$id === taskId);
+    const task = tasks.find((t) => t.$id === taskId);
     if (task) {
       setInitialStatus(task.status);
     }
@@ -171,7 +170,7 @@ export default function KanbanBoard({ tasksList }) {
         setTasks((tasks) => {
           const oldIndex = tasks.findIndex((task) => task.$id === active.id);
           const newIndex = tasks.findIndex((task) => task.$id === over.id);
-          
+
           return arrayMove(tasks, oldIndex, newIndex);
         });
       }
@@ -179,7 +178,7 @@ export default function KanbanBoard({ tasksList }) {
 
     // Check if task status changed during the drag and call API
     if (initialStatus && activeId) {
-      const task = tasks.find(t => t.$id === activeId);
+      const task = tasks.find((t) => t.$id === activeId);
       if (task && task.status !== initialStatus) {
         // This is where we log and make API call
         updateTaskStatus(activeId, initialStatus, task.status);
@@ -199,7 +198,7 @@ export default function KanbanBoard({ tasksList }) {
 
   return (
     <DragContext.Provider value={{ isDragging }}>
-      <div>
+      <div style={{ height: "calc(100vh - 180px)" }}>
         <DndContext
           sensors={sensors}
           collisionDetection={collisionDetectionStrategy}
@@ -212,6 +211,7 @@ export default function KanbanBoard({ tasksList }) {
               display: "grid",
               gridTemplateColumns: `repeat(${columns.length}, 1fr)`,
               gap: "16px",
+              height: "100%",
             }}
           >
             {columns.map((column) => (
@@ -227,10 +227,7 @@ export default function KanbanBoard({ tasksList }) {
 
           <DragOverlay>
             {activeId && activeTask ? (
-              <TaskCard 
-                task={activeTask} 
-                isDragOverlay={true} 
-              />
+              <TaskCard task={activeTask} isDragOverlay={true} />
             ) : null}
           </DragOverlay>
         </DndContext>

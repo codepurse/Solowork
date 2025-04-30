@@ -1,6 +1,10 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import React, { useContext } from "react";
+import {
+  storage,
+  TASKS_ATTACHMENTS_BUCKET_ID,
+} from "../../../../constant/appwrite";
 
 // Optional: Create a context to know when dragging is occurring
 export const DragContext = React.createContext({ isDragging: false });
@@ -91,6 +95,9 @@ export default function TaskCard({ task, isDragOverlay = false }) {
       style={cardStyle}
       {...attributes}
       {...listeners}
+      onClick={() => {
+        console.log(task);
+      }}
     >
       <div className="kanban-task-card-header">
         <p className="kanban-task-card-id">TASK-101</p>
@@ -103,6 +110,14 @@ export default function TaskCard({ task, isDragOverlay = false }) {
       </div>
       <p className="kanban-task-card-title">{task.title}</p>
       <p className="kanban-task-card-description">{task.description}</p>
+      {task?.fileId.map((id, index) => (
+        <img
+          key={index}
+          src={`${storage.getFileView(TASKS_ATTACHMENTS_BUCKET_ID, id)}`}
+          alt="task-attachment"
+          style={{ width: "100px", height: "100px" }}
+        />
+      ))}
       <div className="kanban-task-card-footer">
         <div className="kanban-task-card-tags">
           {task?.tags?.slice(0, 2).map((tag, index) => (

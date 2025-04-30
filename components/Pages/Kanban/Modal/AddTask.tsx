@@ -1,16 +1,21 @@
 import { ID, Query } from "appwrite";
+import dayjs from "dayjs";
 import { X } from "lucide-react";
 import { useState } from "react";
 import { Col, Container, Modal, Row } from "react-bootstrap";
 import {
   DATABASE_ID,
   databases,
+  storage,
+  TASKS_ATTACHMENTS_BUCKET_ID,
   TASKS_COLLECTION_ID,
 } from "../../../../constant/appwrite";
 import { useStore } from "../../../../store/store";
 import Button from "../../../Elements/Button";
+import DatePicker from "../../../Elements/DatePicker";
 import Dropdown from "../../../Elements/Dropdown";
 import Space from "../../../space";
+
 interface AddTaskProps {
   show: boolean;
   onHide: () => void;
@@ -22,12 +27,13 @@ export default function AddTask({ show, onHide }: Readonly<AddTaskProps>) {
   const [status, setStatus] = useState<any>(null);
   const [priority, setPriority] = useState<any>(null);
   const [dependency, setDependency] = useState<string>("");
-  const [dueDate, setDueDate] = useState<string>("");
+  const [dueDate, setDueDate] = useState<Date | string>(new Date());
   const [description, setDescription] = useState<string>("");
   const { useStoreProjects, useStoreTasks } = useStore();
   const { selectedProject } = useStoreProjects();
   const { setTasks } = useStoreTasks();
   const [loading, setLoading] = useState<boolean>(false);
+  const [file, setFile] = useState<File[]>([]);
 
   const priorityOptions = [
     { label: "Low", value: "low" },
@@ -47,6 +53,7 @@ export default function AddTask({ show, onHide }: Readonly<AddTaskProps>) {
   ) => {
     if (e.key === "Enter") {
       setTags([...tags, tag]);
+      e.currentTarget.value = "";
     }
   };
 
@@ -77,6 +84,19 @@ export default function AddTask({ show, onHide }: Readonly<AddTaskProps>) {
   const handleAddTask = async () => {
     setLoading(true);
     try {
+      const uploadedFileIds = [];
+
+      // Upload each file
+      for (const f of file) {
+        const uploaded = await storage.createFile(
+          TASKS_ATTACHMENTS_BUCKET_ID,
+          ID.unique(),
+          f
+        );
+        uploadedFileIds.push(uploaded.$id);
+      }
+      console.log(uploadedFileIds);
+      // Create the task with all file IDs
       await databases.createDocument(
         DATABASE_ID,
         TASKS_COLLECTION_ID,
@@ -86,11 +106,13 @@ export default function AddTask({ show, onHide }: Readonly<AddTaskProps>) {
           title: taskName,
           status: status.label,
           priority: priority.label,
-          dueDate: dueDate,
-          description: description,
-          tags: tags,
+          dueDate,
+          description,
+          tags,
+          fileId: uploadedFileIds, // array
         }
       );
+
       fetchTasks();
       onHide();
     } catch (error) {
@@ -153,11 +175,15 @@ export default function AddTask({ show, onHide }: Readonly<AddTaskProps>) {
           </Col>
           <Col lg={6}>
             <p className="modal-form-title">Due Date</p>
-            <input
-              type="text"
-              className="input-type"
+            <DatePicker
+              withTime={false}
+              timeZone="Asia/Manila"
               value={dueDate}
-              onChange={(e) => setDueDate(e.target.value)}
+              onChange={(e) => {
+                const formattedDate = dayjs(e).format("YYYY-MM-DD hh:mm A");
+                console.log(formattedDate);
+                setDueDate(formattedDate);
+              }}
             />
           </Col>
           <Col lg={12}>
@@ -188,6 +214,17 @@ export default function AddTask({ show, onHide }: Readonly<AddTaskProps>) {
                 );
               })}
             </div>
+          </Col>
+          <Col lg={12}>
+            <input
+              type="file"
+              id="file-input"
+              multiple
+              onChange={(e) => {
+                const files = Array.from(e.target.files);
+                setFile(files);
+              }}
+            />
           </Col>
           <Col lg={12} className="mt-1">
             <p className="modal-form-title">Description</p>
