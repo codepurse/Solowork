@@ -63,6 +63,7 @@ export default function TaskCard({ task, isDragOverlay = false }) {
     fontSize: "14px",
     color: "#666",
   };
+  const tagsClass = ["violet-tag", "blue-tag", "pink-tag", "orange-tag"];
 
   // When used in drag overlay, don't use ref or sortable attributes
   if (isDragOverlay) {
@@ -110,18 +111,44 @@ export default function TaskCard({ task, isDragOverlay = false }) {
       </div>
       <p className="kanban-task-card-title">{task.title}</p>
       <p className="kanban-task-card-description">{task.description}</p>
-      {task?.fileId.map((id, index) => (
-        <img
-          key={index}
-          src={`${storage.getFileView(TASKS_ATTACHMENTS_BUCKET_ID, id)}`}
-          alt="task-attachment"
-          style={{ width: "100px", height: "100px" }}
-        />
-      ))}
+      <div
+        className="kanban-task-attachments-grid"
+        style={{
+          display: "grid",
+          gridTemplateColumns: `repeat(${Math.min(
+            task?.fileId.length || 1,
+            4
+          )}, 1fr)`,
+          gap: "8px",
+          width: "100%",
+          maxWidth: "100%",
+        }}
+      >
+        {task?.fileId.map((id, index) => (
+          <div className="kanban-task-card-attachment" key={index}>
+            <img
+              src={storage.getFileView(TASKS_ATTACHMENTS_BUCKET_ID, id)}
+              alt="task-attachment"
+              style={{
+                width: "100%",
+                height: "100%",
+                objectFit: "cover",
+                borderRadius: "4px",
+              }}
+            />
+          </div>
+        ))}
+      </div>
+
       <div className="kanban-task-card-footer">
         <div className="kanban-task-card-tags">
           {task?.tags?.slice(0, 2).map((tag, index) => (
-            <span key={index} className="kanban-task-card-tag">
+            <span
+              key={index}
+              className={`kanban-task-card-tag ${
+                tagsClass[Math.floor(Math.random() * tagsClass.length)]
+              }`}
+            >
               {tag}
             </span>
           ))}

@@ -39,24 +39,36 @@ export default function AuthLayout({
       try {
         const user = await account.get();
         setUser(user);
-        if (!user) {
+        if (
+          !user &&
+          router.pathname !== "/login" &&
+          router.pathname !== "/create"
+        ) {
           router.replace("/login");
-          return; // stop here
+          return;
         } else {
+          router.replace("/");
           const project = await fetchProjects(user.$id);
           setProjects(project);
-          setSelectedProject(project[0].$id);
+          if (project.length > 0) {
+            setSelectedProject(project[0].$id);
+          }
         }
       } catch (error) {
-        router.replace("/login");
-        return; // stop here
+        if (error?.code === 401 || error?.code === 403) {
+          if (router.pathname !== "/login" && router.pathname !== "/create") {
+            router.replace("/login");
+          }
+        }
+        setIsLoading(false);
+        return;
       }
 
-      setIsLoading(false); // only set loading false if user found
+      setIsLoading(false);
     };
 
     checkUser();
-  }, [router]);
+  }, [router.pathname]);
 
   if (isLoading) {
     return <div>Loading...</div>;

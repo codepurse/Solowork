@@ -1,7 +1,7 @@
 import { ID, Query } from "appwrite";
 import dayjs from "dayjs";
 import { X } from "lucide-react";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Col, Container, Modal, Row } from "react-bootstrap";
 import {
   DATABASE_ID,
@@ -34,6 +34,7 @@ export default function AddTask({ show, onHide }: Readonly<AddTaskProps>) {
   const { setTasks } = useStoreTasks();
   const [loading, setLoading] = useState<boolean>(false);
   const [file, setFile] = useState<File[]>([]);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const priorityOptions = [
     { label: "Low", value: "low" },
@@ -122,6 +123,10 @@ export default function AddTask({ show, onHide }: Readonly<AddTaskProps>) {
     }
   };
 
+  const handleRemoveFile = (indexToRemove: number) => {
+    setFile((prev) => prev.filter((_, index) => index !== indexToRemove));
+  };
+
   return (
     <Modal show={show} onHide={onHide} centered className="modal-container">
       <Space align="evenly">
@@ -164,7 +169,7 @@ export default function AddTask({ show, onHide }: Readonly<AddTaskProps>) {
               value={priority}
             />
           </Col>
-          <Col lg={6}>
+          <Col lg={6} className="mt-1">
             <p className="modal-form-title">Dependency</p>
             <input
               type="text"
@@ -173,7 +178,7 @@ export default function AddTask({ show, onHide }: Readonly<AddTaskProps>) {
               onChange={(e) => setDependency(e.target.value)}
             />
           </Col>
-          <Col lg={6}>
+          <Col lg={6} className="mt-1">
             <p className="modal-form-title">Due Date</p>
             <DatePicker
               withTime={false}
@@ -181,7 +186,6 @@ export default function AddTask({ show, onHide }: Readonly<AddTaskProps>) {
               value={dueDate}
               onChange={(e) => {
                 const formattedDate = dayjs(e).format("YYYY-MM-DD hh:mm A");
-                console.log(formattedDate);
                 setDueDate(formattedDate);
               }}
             />
@@ -216,17 +220,53 @@ export default function AddTask({ show, onHide }: Readonly<AddTaskProps>) {
             </div>
           </Col>
           <Col lg={12}>
+            <p className="modal-form-title">Attachments</p>
+            <div className="task-attachments-container">
+              <p className="task-attachments-container-text">
+                Drag and drop files here, or{" "}
+                <u>
+                  <span
+                    style={{ cursor: "pointer", fontWeight: "500" }}
+                    onClick={() => fileInputRef.current?.click()}
+                  >
+                    browse
+                  </span>
+                </u>
+              </p>
+            </div>
+            <div className="task-attachments-container-files">
+              {file.map((f, index) => {
+                return (
+                  <div key={index} className="task-attachments-container-file">
+                    <Space gap={10} align="evenly">
+                      <div>
+                        <p className="task-attachments-title">{f.name}</p>
+                      </div>
+                      <i>
+                        <X
+                          size={15}
+                          color="#fff"
+                          onClick={() => handleRemoveFile(index)}
+                        />
+                      </i>
+                    </Space>
+                  </div>
+                );
+              })}
+            </div>
             <input
               type="file"
               id="file-input"
+              className="d-none"
               multiple
               onChange={(e) => {
                 const files = Array.from(e.target.files);
                 setFile(files);
               }}
+              ref={fileInputRef}
             />
           </Col>
-          <Col lg={12} className="mt-1">
+          <Col lg={12}>
             <p className="modal-form-title">Description</p>
             <textarea
               className="input-type"
