@@ -1,11 +1,12 @@
 import { OAuthProvider } from "appwrite";
+import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
 import { account } from "../constant/appwrite";
 export default function Login() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
+  const router = useRouter();
   const handleGoogleLogin = async () => {
     try {
       await account.createOAuth2Session(
@@ -256,8 +257,9 @@ export default function Login() {
   const handleLogin = async () => {
     try {
       await account.createEmailPasswordSession(email, password);
+      router.push("/");
     } catch (error) {
-      console.error("❌ Error during login:", error);
+      console.log("❌ Error during login:", error);
     }
   };
 

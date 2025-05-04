@@ -1,39 +1,48 @@
 import { Query } from "appwrite";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useRouter } from "next/router";
 import { useEffect } from "react";
 import { Col, Container, Row } from "react-bootstrap";
-import HeaderTabs from "../components/Pages/Kanban/HeaderTabs";
-import KanbanBoard from "../components/Pages/Kanban/KanbanBoard";
-import TableView from "../components/Pages/Kanban/TableView";
-import Space from "../components/space";
+import useSWR from "swr";
+import HeaderTabs from "../../components/Pages/Kanban/HeaderTabs";
+import KanbanBoard from "../../components/Pages/Kanban/KanbanBoard";
+import TableView from "../../components/Pages/Kanban/TableView";
+import Space from "../../components/space";
 import {
   DATABASE_ID,
-  TASKS_COLLECTION_ID,
   databases,
-} from "../constant/appwrite";
-import { useStore } from "../store/store";
+  KANBAN_COLLECTION_ID,
+} from "../../constant/appwrite";
+import { useStore } from "../../store/store";
 
-export default function Kanban() {
-  const { useStoreKanban, useStoreProjects, useStoreTasks } = useStore();
+export default function KanbanPage() {
+  const { useStoreKanban, useStoreTasks } = useStore();
   const { selectedKanban } = useStoreKanban();
-  const { selectedProject } = useStoreProjects();
   const { tasks, setTasks } = useStoreTasks();
+  const router = useRouter();
+  const { kanban } = router.query;
+
+  // Convert to string if it's an array
+  const kanbanId = Array.isArray(kanban) ? kanban[0] : kanban;
+
+  const fetchTasks = async (kanbanId: string) => {
+    const tasks = await databases.listDocuments(
+      DATABASE_ID,
+      KANBAN_COLLECTION_ID,
+      [Query.equal("kanbanId", kanbanId)]
+    );
+    return tasks;
+  };
+
+  const { data } = useSWR(kanbanId ? ["kanban_tasks", kanbanId] : null, () =>
+    fetchTasks(kanbanId!)
+  );
 
   useEffect(() => {
-    const fetchTasks = async () => {
-      const tasks = await databases.listDocuments(
-        DATABASE_ID,
-        TASKS_COLLECTION_ID,
-        [Query.equal("projectId", selectedProject)]
-      );
-      console.log(tasks.documents);
-      setTasks(tasks.documents);
-    };
-    if (selectedProject) {
-      console.log("fetching tasks");
-      fetchTasks();
+    if (data) {
+      setTasks(data.documents);
     }
-  }, [selectedProject]);
+  }, [data]);
 
   return (
     <Container fluid className="kanban-container">
@@ -63,7 +72,7 @@ export default function Kanban() {
         </Col>
       </Row>
       {selectedKanban === 1 && <KanbanBoard tasksList={tasks} />}
-      {selectedKanban === 2 && <TableView />}
+      {selectedKanban === 2 && <TableView tasksList={tasks} />}
     </Container>
   );
 }

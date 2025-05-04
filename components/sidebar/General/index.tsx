@@ -1,12 +1,6 @@
-import {
-  Calendar,
-  ChevronDown,
-  File,
-  Folder,
-  LayoutDashboard,
-} from "lucide-react";
+import { Calendar, File, Folder, LayoutDashboard } from "lucide-react";
 import { useRouter } from "next/router";
-import Space from "../../space";
+import GeneralList from "./GeneralList";
 
 export default function General() {
   const router = useRouter();
@@ -22,7 +16,7 @@ export default function General() {
       name: "Kanban",
       icon: <Folder size={17} color="gray" />,
       collapsed: true,
-      onClick: () => router.push("/kanban"),
+      onClick: () => {},
     },
     {
       id: 3,
@@ -35,28 +29,16 @@ export default function General() {
       name: "Notes",
       icon: <File size={17} color="gray" />,
       collapsed: true,
-      onClick: () => router.push("/notes"),
+      onClick: () => {},
     },
   ];
+
   return (
     <div className="sidebar-menu">
       <label className="sidebar-menu-title">General</label>
       <div className="sidebar-menu-container">
         {menuItems.map((item) => (
-          <Space
-            key={item.id}
-            gap={10}
-            className="sidebar-menu-item"
-            align="evenly"
-          >
-            <div onClick={item.onClick}>
-              <Space gap={10}>
-                <i style={{ marginTop: "-3px" }}>{item.icon}</i>
-                <label className="sidebar-menu-item-name">{item.name}</label>
-              </Space>
-            </div>
-            {item.collapsed && <ChevronDown size={17} />}
-          </Space>
+          <GeneralList key={item.id} item={item} />
         ))}
       </div>
     </div>

@@ -13,5 +13,9 @@ export const USER_PROFILES_COLLECTION_ID = "680c34e9003adbf5c0ef";
 export const PROJECTS_COLLECTION_ID = "680daaa10025953e530d";
 export const TASKS_COLLECTION_ID = "680dd9b5000ea2b16323";
 export const TASKS_ATTACHMENTS_BUCKET_ID = "6811d2830009c6fbf99d";
+export const NOTES_FOLDER_ID = "681484fa002ce0251c0b";
+export const NOTES_COLLECTION_ID = "68159eea003dbfc13119";
+export const KANBAN_FOLDER_ID = "6816d8950028fdbe51e1";
+export const KANBAN_COLLECTION_ID = "6816e54100149fe0b4c4";
 
 export default client;

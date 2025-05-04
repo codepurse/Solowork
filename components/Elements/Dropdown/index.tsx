@@ -24,12 +24,13 @@ export const customStyles = {
     boxShadow: "none",
     border: state.menuIsOpen
       ? "1px solid #6c63ff !important"
-      : "1px solid transparent !important", // change border color when open
+      : "1px solid transparent !important",
   }),
-  menuPortal: (base, state) => ({
+  menuPortal: (base) => ({
     ...base,
     zIndex: 999999,
     background: "#252525",
+    color: "#fff",
   }),
   menu: (base) => ({
     ...base,
@@ -44,10 +45,32 @@ export const customStyles = {
     ...base,
     borderRadius: "4px",
     backgroundColor: state.isFocused
-      ? "#3a3a3a !important" // hover color
-      : "#2d292f !important", // default option background
+      ? "#3a3a3a !important"
+      : "#2d292f !important",
     color: "#fff",
     cursor: "pointer",
+  }),
+  singleValue: (base) => ({
+    ...base,
+    color: "#fff",
+    fontWeight: "300",
+  }),
+  multiValue: (base) => ({
+    ...base,
+    backgroundColor: "#3a3a3a",
+    color: "#fff",
+  }),
+  multiValueLabel: (base) => ({
+    ...base,
+    color: "#fff",
+  }),
+  multiValueRemove: (base) => ({
+    ...base,
+    color: "#fff",
+    ":hover": {
+      backgroundColor: "#555",
+      color: "#fff",
+    },
   }),
 };
 

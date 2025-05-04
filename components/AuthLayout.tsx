@@ -1,6 +1,6 @@
 import { Query } from "appwrite";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   account,
   DATABASE_ID,
@@ -16,6 +16,7 @@ export default function AuthLayout({
 }) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
+  const isFirstRun = useRef(true);
   const { useStoreUser, useStoreProjects } = useStore();
   const { setUser } = useStoreUser();
   const { setProjects, setSelectedProject } = useStoreProjects();
@@ -47,7 +48,9 @@ export default function AuthLayout({
           router.replace("/login");
           return;
         } else {
-          router.replace("/");
+          if (router.pathname === "/login") {
+            router.replace("/");
+          }
           const project = await fetchProjects(user.$id);
           setProjects(project);
           if (project.length > 0) {
@@ -65,12 +68,13 @@ export default function AuthLayout({
       }
 
       setIsLoading(false);
+      isFirstRun.current = false;
     };
 
     checkUser();
   }, [router.pathname]);
 
-  if (isLoading) {
+  if (isLoading && isFirstRun.current) {
     return <div>Loading...</div>;
   }
 

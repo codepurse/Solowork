@@ -1,19 +1,23 @@
 import { ID, Query } from "appwrite";
 import dayjs from "dayjs";
 import { X } from "lucide-react";
-import { useRef, useState } from "react";
+import { useRouter } from "next/router";
+import { useEffect, useRef, useState } from "react";
 import { Col, Container, Modal, Row } from "react-bootstrap";
+import { mutate } from "swr";
 import {
   DATABASE_ID,
   databases,
+  KANBAN_COLLECTION_ID,
   storage,
-  TASKS_ATTACHMENTS_BUCKET_ID,
-  TASKS_COLLECTION_ID,
+  TASKS_ATTACHMENTS_BUCKET_ID
 } from "../../../../constant/appwrite";
 import { useStore } from "../../../../store/store";
 import Button from "../../../Elements/Button";
 import DatePicker from "../../../Elements/DatePicker";
 import Dropdown from "../../../Elements/Dropdown";
+import Text from "../../../Elements/Text";
+import TextArea from "../../../Elements/TextArea";
 import Space from "../../../space";
 
 interface AddTaskProps {
@@ -35,6 +39,12 @@ export default function AddTask({ show, onHide }: Readonly<AddTaskProps>) {
   const [loading, setLoading] = useState<boolean>(false);
   const [file, setFile] = useState<File[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const router = useRouter();
+  const { kanban } = router.query;
+
+  useEffect(() => {
+    console.log(kanban, "kanban");
+  }, [kanban]);
 
   const priorityOptions = [
     { label: "Low", value: "low" },
@@ -76,8 +86,8 @@ export default function AddTask({ show, onHide }: Readonly<AddTaskProps>) {
   const fetchTasks = async () => {
     const tasks = await databases.listDocuments(
       DATABASE_ID,
-      TASKS_COLLECTION_ID,
-      [Query.equal("projectId", selectedProject)]
+      KANBAN_COLLECTION_ID,
+      [Query.equal("kanbanId", kanban)]
     );
     setTasks(tasks.documents);
   };
@@ -87,23 +97,23 @@ export default function AddTask({ show, onHide }: Readonly<AddTaskProps>) {
     try {
       const uploadedFileIds = [];
 
-      // Upload each file
-      for (const f of file) {
-        const uploaded = await storage.createFile(
-          TASKS_ATTACHMENTS_BUCKET_ID,
-          ID.unique(),
-          f
-        );
-        uploadedFileIds.push(uploaded.$id);
+      if (Array.isArray(file) && file.length > 0) {
+        for (const f of file) {
+          const uploaded = await storage.createFile(
+            TASKS_ATTACHMENTS_BUCKET_ID,
+            ID.unique(),
+            f
+          );
+          uploadedFileIds.push(uploaded.$id);
+        }
       }
-      console.log(uploadedFileIds);
-      // Create the task with all file IDs
+
       await databases.createDocument(
         DATABASE_ID,
-        TASKS_COLLECTION_ID,
+        KANBAN_COLLECTION_ID,
         ID.unique(),
         {
-          projectId: selectedProject,
+          kanbanId: kanban,
           title: taskName,
           status: status.label,
           priority: priority.label,
@@ -119,6 +129,7 @@ export default function AddTask({ show, onHide }: Readonly<AddTaskProps>) {
     } catch (error) {
       console.log(error);
     } finally {
+      mutate("kanban_tasks");
       setLoading(false);
     }
   };
@@ -146,9 +157,9 @@ export default function AddTask({ show, onHide }: Readonly<AddTaskProps>) {
         <Row style={{ rowGap: "5px" }}>
           <Col lg={12}>
             <p className="modal-form-title">Task Name</p>
-            <input
+            <Text
+              variant="md"
               type="text"
-              className="input-type"
               value={taskName}
               onChange={(e) => setTaskName(e.target.value)}
             />
@@ -171,9 +182,9 @@ export default function AddTask({ show, onHide }: Readonly<AddTaskProps>) {
           </Col>
           <Col lg={6} className="mt-1">
             <p className="modal-form-title">Dependency</p>
-            <input
+            <Text
+              variant="md"
               type="text"
-              className="input-type"
               value={dependency}
               onChange={(e) => setDependency(e.target.value)}
             />
@@ -192,9 +203,9 @@ export default function AddTask({ show, onHide }: Readonly<AddTaskProps>) {
           </Col>
           <Col lg={12}>
             <p className="modal-form-title">Tags</p>
-            <input
+            <Text
+              variant="md"
               type="text"
-              className="input-type"
               placeholder="Add tags here.."
               onKeyDown={(e) => handleAddTag(e.currentTarget.value, e)}
             />
@@ -268,8 +279,7 @@ export default function AddTask({ show, onHide }: Readonly<AddTaskProps>) {
           </Col>
           <Col lg={12}>
             <p className="modal-form-title">Description</p>
-            <textarea
-              className="input-type"
+            <TextArea
               rows={5}
               value={description}
               onChange={(e) => setDescription(e.target.value)}

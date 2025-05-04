@@ -2,12 +2,15 @@ import { ChevronDown, LogOut, Settings, UserRound } from "lucide-react";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { account } from "../../constant/appwrite";
+import { useStore } from "../../store/store";
 import Text from "../Elements/Text";
 import Space from "../space";
 
 export default function Navbar() {
   const [show, setShow] = useState(false);
   const router = useRouter();
+  const { useStoreUser } = useStore();
+  const { user } = useStoreUser();
 
   const handleShow = () => setShow((prev) => !prev);
 
@@ -23,10 +26,15 @@ export default function Navbar() {
   };
 
   return (
-    <div className="navbar">
+    <div className="navbar-container">
       <Space align="evenly" fill>
         <div>
-          <Text placeholder="Search" className="input-type" as="search" />
+          <Text
+            placeholder="Search"
+            className="input-type"
+            as="search"
+            variant="md"
+          />
         </div>
         <div
           style={{ cursor: "pointer", position: "relative" }}
@@ -36,8 +44,8 @@ export default function Navbar() {
             <img src="/image/pngegg.png" alt="avatar" className="avatar-user" />
             <div>
               <Space direction="column" alignItems="start">
-                <p className="span-user">John Doe</p>
-                <p className="label-email">john.doe@example.com</p>
+                <p className="span-user">{user?.name}</p>
+                <p className="label-email">{user?.email}</p>
               </Space>
             </div>
             <i>

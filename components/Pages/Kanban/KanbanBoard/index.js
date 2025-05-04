@@ -9,10 +9,13 @@ import {
 } from "@dnd-kit/core";
 import { arrayMove } from "@dnd-kit/sortable";
 import { useCallback, useEffect, useState } from "react";
-import { DATABASE_ID, databases, TASKS_COLLECTION_ID } from "../../../../constant/appwrite";
+import {
+  DATABASE_ID,
+  databases,
+  KANBAN_COLLECTION_ID,
+} from "../../../../constant/appwrite";
 import KanbanColumn from "./KanbanColumn";
 import TaskCard, { DragContext } from "./TaskCard";
-
 
 export default function KanbanBoard({ tasksList }) {
   const [tasks, setTasks] = useState(tasksList);
@@ -87,11 +90,10 @@ export default function KanbanBoard({ tasksList }) {
     try {
       await databases.updateDocument(
         DATABASE_ID,
-        TASKS_COLLECTION_ID,
+        KANBAN_COLLECTION_ID,
         taskId,
         updatedFields
       );
-
     } catch (error) {
       console.error("❌ Failed to update task", error);
     }

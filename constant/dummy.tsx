@@ -173,8 +173,7 @@ export const tasks: Task[] = [
   {
     id: "TASK-112",
     title: "Implement caching layer",
-    description:
-      "Set up Redis caching for frequently accessed data",
+    description: "Set up Redis caching for frequently accessed data",
     tags: ["Performance", "Caching", "Backend"],
     status: "Completed",
     priority: "Medium",
@@ -225,7 +224,7 @@ export const tasks: Task[] = [
     createdAt: "2024-02-20",
     updatedAt: "2024-02-20",
     storyPoints: 2,
-  }
+  },
 ];
 
 export const DUMMY_TAGS = [

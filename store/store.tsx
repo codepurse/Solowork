@@ -1,15 +1,19 @@
 import { create } from "zustand";
 
 interface NotesStore {
-  selectedNotes: any[];
-  setSelectedNotes: (notes: any[]) => void;
+  selectedNotes: string;
+  setSelectedNotes: (notes: string) => void;
   hideSideNotes: boolean;
   setHideSideNotes: (hide: boolean) => void;
+  editMode: boolean;
+  setEditMode: (edit: boolean) => void;
 }
 
 interface KanbanStore {
   selectedKanban: number;
+  selectedKanbanId: string;
   setSelectedKanban: (kanban: number) => void;
+  setSelectedKanbanId: (kanbanId: string) => void;
 }
 
 interface ProjectsStore {
@@ -30,15 +34,19 @@ interface TasksStore {
 }
 
 const useStoreNotes = create<NotesStore>((set) => ({
-  selectedNotes: [],
-  setSelectedNotes: (notes: any[]) => set({ selectedNotes: notes }),
+  selectedNotes: null,
+  setSelectedNotes: (notes: string) => set({ selectedNotes: notes }),
   hideSideNotes: false,
   setHideSideNotes: (hide: boolean) => set({ hideSideNotes: hide }),
+  editMode: false,
+  setEditMode: (edit: boolean) => set({ editMode: edit }),
 }));
 
 const useStoreKanban = create<KanbanStore>((set) => ({
   selectedKanban: 1,
+  selectedKanbanId: "",
   setSelectedKanban: (kanban: number) => set({ selectedKanban: kanban }),
+  setSelectedKanbanId: (kanbanId: string) => set({ selectedKanbanId: kanbanId }),
 }));
 
 const useStoreProjects = create<ProjectsStore>((set) => ({
