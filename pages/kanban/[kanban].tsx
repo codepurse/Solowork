@@ -6,6 +6,7 @@ import { Col, Container, Row } from "react-bootstrap";
 import useSWR from "swr";
 import HeaderTabs from "../../components/Pages/Kanban/HeaderTabs";
 import KanbanBoard from "../../components/Pages/Kanban/KanbanBoard";
+import Overview from "../../components/Pages/Kanban/Overview";
 import TableView from "../../components/Pages/Kanban/TableView";
 import Space from "../../components/space";
 import {
@@ -14,7 +15,6 @@ import {
   KANBAN_COLLECTION_ID,
 } from "../../constant/appwrite";
 import { useStore } from "../../store/store";
-
 export default function KanbanPage() {
   const { useStoreKanban, useStoreTasks } = useStore();
   const { selectedKanban } = useStoreKanban();
@@ -73,6 +73,7 @@ export default function KanbanPage() {
       </Row>
       {selectedKanban === 1 && <KanbanBoard tasksList={tasks} />}
       {selectedKanban === 2 && <TableView tasksList={tasks} />}
+      {selectedKanban === 3 && <Overview />}
     </Container>
   );
 }

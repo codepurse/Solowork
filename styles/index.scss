@@ -1165,3 +1165,67 @@ main {
     }
   }
 }
+
+.table-due-soon {
+  width: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+  border-collapse: separate;
+  border-spacing: 0;
+
+  border: 1px solid #313131;
+  .table-due-soon-header {
+    padding: 10px 12px;
+    padding-bottom: 12px;
+    background-color: #151515;
+    .table-due-soon-header-title {
+      font-size: 17px;
+      font-weight: 400;
+      margin-bottom: 5px;
+      color: lightgray;
+    }
+    .table-due-soon-header-date {
+      font-size: 12px;
+      font-weight: 400;
+      margin-bottom: 0px;
+      color: #888;
+    }
+  }
+  .table-due-soon-body {
+    padding: 10px 12px;
+    padding-bottom: 12px;
+    background-color: #151515;
+    table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      thead {
+        th {
+          text-align: left;
+          font-size: 14px;
+          color: whitesmoke;
+          font-weight: 400;
+          padding: 10px 12px;
+        }
+      }
+      tbody {
+        tr {
+          cursor: pointer;
+          &:hover {
+            background-color: #202020;
+          }
+          td {
+            padding: 10px 12px;
+            padding-bottom: 12px;
+            color: #888;
+            font-size: 14px;
+            font-weight: 400;
+            margin-bottom: 0px;
+            line-height: 1.4;
+            word-wrap: break-word;
+          }
+        }
+      }
+    }
+  }
+}
