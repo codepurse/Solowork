@@ -1,55 +1,52 @@
-import { Query } from "appwrite";
 import dayjs from "dayjs";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { Col, Container, Row } from "react-bootstrap";
-import useSWR from "swr";
-import {
-    DATABASE_ID,
-    databases,
-    KANBAN_COLLECTION_ID,
-} from "../../../../constant/appwrite";
+import Badge from "../../../Elements/Badge";
 
-export default function Overview() {
+export default function Overview({
+  tasksList,
+}: Readonly<{ tasksList: any[] }>) {
   const router = useRouter();
   const { kanban } = router.query;
   const [dueSoonTasks, setDueSoonTasks] = useState<Array<any>>([]);
   const kanbanId = Array.isArray(kanban) ? kanban[0] : kanban;
 
-  const fetchTasks = async (kanbanId: string) => {
-    const now = new Date();
-    const oneMonthFromNow = new Date();
-    oneMonthFromNow.setMonth(now.getMonth() + 1);
-
-    const tasks = await databases.listDocuments(
-      DATABASE_ID,
-      KANBAN_COLLECTION_ID,
-      [
-        Query.equal("kanbanId", kanbanId),
-        Query.greaterThanEqual("dueDate", now.toISOString()),
-        Query.lessThanEqual("dueDate", oneMonthFromNow.toISOString()),
-      ]
-    );
-    return tasks;
-  };
-
-  const { data } = useSWR(kanbanId ? ["kanban_tasks", kanbanId] : null, () =>
-    fetchTasks(kanbanId!)
-  );
-
   useEffect(() => {
-    if (data) {
-      console.log(data, "Data");
-      setDueSoonTasks(Array.isArray(data.documents) ? data.documents : []);
+    if (tasksList && tasksList.length > 0 && kanbanId) {
+      // Filter tasks for current kanban board
+      const kanbanTasks = tasksList.filter(
+        (task) => task.kanbanId === kanbanId
+      );
+
+      // Get date range (now to one month from now)
+      const now = new Date();
+      const oneMonthFromNow = new Date();
+      oneMonthFromNow.setMonth(now.getMonth() + 1);
+
+      // Filter tasks with due dates in the next month
+      const upcomingTasks = kanbanTasks.filter((task) => {
+        const dueDate = new Date(task.dueDate);
+        return dueDate >= now && dueDate <= oneMonthFromNow;
+      });
+
+      setDueSoonTasks(upcomingTasks);
     }
-  }, [data]);
+  }, [tasksList, kanbanId]);
 
   const getColor = (status: string) => {
-    if (status === "To Do") return "table-view-to-do";
-    if (status === "In Progress") return "table-view-in-progress";
-    if (status === "Completed") return "table-view-completed";
-    if (status === "Cancelled") return "table-view-cancelled";
-    return "#000";
+    if (status === "To Do") return "badge-gray";
+    if (status === "In Progress") return "badge-blue";
+    if (status === "Completed") return "badge-green";
+    if (status === "Cancelled") return "badge-red";
+    return "badge-gray";
+  };
+
+  const getColorPriority = (priority: string) => {
+    if (priority === "High") return "badge-red";
+    if (priority === "Medium") return "badge-yellow";
+    if (priority === "Low") return "badge-green";
+    return "badge-gray";
   };
 
   return (
@@ -82,8 +79,16 @@ export default function Overview() {
                       <tr key={task.$id}>
                         <td>{task.title}</td>
                         <td>{dayjs(task.dueDate).format("MMMM D, YYYY")}</td>
-                        <td>{getColor(task.status)}</td>
-                        <td>{task.priority}</td>
+                        <td>
+                          <Badge className={getColor(task.status)}>
+                            {task.status}
+                          </Badge>
+                        </td>
+                        <td>
+                          <Badge className={getColorPriority(task.priority)}>
+                            {task.priority}
+                          </Badge>
+                        </td>
                       </tr>
                     ))}
                 </tbody>

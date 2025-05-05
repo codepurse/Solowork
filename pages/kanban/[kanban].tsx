@@ -73,7 +73,7 @@ export default function KanbanPage() {
       </Row>
       {selectedKanban === 1 && <KanbanBoard tasksList={tasks} />}
       {selectedKanban === 2 && <TableView tasksList={tasks} />}
-      {selectedKanban === 3 && <Overview />}
+      {selectedKanban === 3 && <Overview tasksList={tasks} />}
     </Container>
   );
 }

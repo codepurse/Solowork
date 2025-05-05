@@ -809,3 +809,55 @@ $primary-color: #7c4dff;
 .calendar-control i:not([style*="cursor: not-allowed"]):hover {
   background-color: rgba(0, 0, 0, 0.05);
 }
+
+.badge-blue {
+  max-width: max-content;
+  border-color: rgba(33, 150, 243, 0.3);
+  background-color: rgba(33, 150, 243, 0.1);
+  color: rgb(33, 150, 243);
+  border-radius: 5px;
+  font-weight: 300;
+}
+
+.badge-green {
+  max-width: max-content;
+  border-color: rgba(0, 230, 118, 0.3);
+  background-color: rgba(0, 230, 118, 0.1);
+  color: rgb(0, 230, 118) !important;
+  border-radius: 5px;
+  font-weight: 300;
+  height: max-content;
+  padding: 7px !important;
+}
+
+.badge-gray {
+  max-width: max-content;
+  border-color: rgba(158, 158, 158, 0.3);
+  background-color: rgba(158, 158, 158, 0.1);
+  color: rgb(158, 158, 158) !important;
+  border-radius: 5px;
+  font-weight: 300;
+  height: max-content;
+  padding: 7px !important;
+}
+
+.badge-red {
+  max-width: max-content;
+  border-color: rgba(244, 63, 94, 0.3);
+  background-color: rgba(244, 63, 94, 0.1);
+  color: rgb(244, 63, 94) !important;
+  border-radius: 5px;
+  font-weight: 300;
+  height: max-content;
+  padding: 7px !important;
+}
+
+.badge-yellow {
+  max-width: max-content;
+  border-color: rgba(255, 234, 0, 0.3);
+  background-color: rgba(255, 234, 0, 0.1);
+  color: rgb(255, 234, 0) !important;
+  border-radius: 5px;
+  font-weight: 300;
+  height: max-content;
+}
