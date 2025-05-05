@@ -55,7 +55,7 @@ export default function AddTask({ show, onHide }: Readonly<AddTaskProps>) {
   const statusOptions = [
     { label: "To Do", value: "to-do" },
     { label: "In Progress", value: "in-progress" },
-    { label: "Done", value: "done" },
+    { label: "Completed", value: "completed" },
   ];
 
   const handleAddTag = (

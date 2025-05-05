@@ -23,8 +23,8 @@ export default function KanbanList() {
 
   const { data } = useSWR("kanban", fetchKanban);
 
-  const handleKanbanClick = (kanbanId: string) => {
-    router.push(`/kanban/${kanbanId}`);
+  const handleKanbanClick = (kanbanId: string, kanbanName: string) => {
+    router.push(`/kanban/${kanbanId}?name=${kanbanName}`);
   };
 
   return (
@@ -54,7 +54,7 @@ export default function KanbanList() {
             </i>
             <label
               className="sidebar-dropdown-item"
-              onClick={() => handleKanbanClick(kanban.$id)}
+              onClick={() => handleKanbanClick(kanban.$id, kanban.name)}
             >
               {kanban.name}
             </label>

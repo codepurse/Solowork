@@ -1,3 +1,4 @@
+import { useRouter } from "next/router";
 import { memo, useState } from "react";
 import { ACTIONS, TABS } from "../../../constant";
 import { useStore } from "../../../store/store";
@@ -53,7 +54,8 @@ function HeaderTabs() {
   const [showAddTaskModal, setShowAddTaskModal] = useState(false);
   const [showFilterDropdown, setShowFilterDropdown] = useState(false);
   const [showSortDropdown, setShowSortDropdown] = useState(false);
-
+  const router = useRouter();
+  const { name } = router.query;
   const handleKanbanChange = (kanbanId) => {
     setSelectedKanban(kanbanId);
   };
@@ -71,7 +73,7 @@ function HeaderTabs() {
   return (
     <div className="kanban-board">
       <Space align="evenly">
-        <p className="kanban-board-title">Dashboard Page</p>
+        <p className="kanban-board-title">{name}</p>
         <button
           className="add-task-button"
           onClick={() => setShowAddTaskModal(true)}
