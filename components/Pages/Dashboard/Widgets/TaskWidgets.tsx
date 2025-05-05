@@ -3,14 +3,18 @@ import Space from "../../../space";
 
 interface TaskWidgetsProps {
   label: string;
+  subLabel?: string;
 }
 
-export default function TaskWidgets({ label }: Readonly<TaskWidgetsProps>) {
+export default function TaskWidgets({
+  label,
+  subLabel,
+}: Readonly<TaskWidgetsProps>) {
   const removeSpace = (label: string) => {
     return label.replace(/\s+/g, "");
   };
 
-    return (
+  return (
     <div className="progress-widget">
       <Space gap={10} align="evenly" fill className="progress-widget-header">
         <div>
@@ -33,9 +37,7 @@ export default function TaskWidgets({ label }: Readonly<TaskWidgetsProps>) {
             <span>20%</span>
           </div>
         </Space>
-        <p className="progress-widget-content-subtitle">
-          Total Tasks Completed
-        </p>
+        <p className="progress-widget-content-subtitle">{subLabel}</p>
       </div>
     </div>
   );

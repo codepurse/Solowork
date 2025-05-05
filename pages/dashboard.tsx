@@ -5,16 +5,19 @@ export default function Dashboard() {
     <Container className="dashboard-container">
       <Row>
         <Col>
-          <TaskWidgets label="Task Completed" />
+          <TaskWidgets label="To Do" subLabel="Waiting for approval" />
         </Col>
         <Col>
-          <TaskWidgets label="In Progress" />
+          <TaskWidgets
+            label="In Progress"
+            subLabel="Curently being worked on"
+          />
         </Col>
         <Col>
-          <TaskWidgets label="Completed" />
+          <TaskWidgets label="Completed" subLabel="Task finished last month" />
         </Col>
         <Col>
-          <TaskWidgets label="Cancelled" />
+          <TaskWidgets label="Cancelled" subLabel="Task cancelled last week" />
         </Col>
       </Row>
     </Container>

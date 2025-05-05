@@ -1094,6 +1094,7 @@ main {
     color: white;
     border-radius: 10px;
     border: 1px solid #313131;
+    overflow: auto;
     .progress-widget-header {
       width: 100%;
       border-bottom: 1px solid #313131;
@@ -1107,13 +1108,18 @@ main {
       border-radius: 50%;
       background-color: #7a3dff;
       margin-top: 2px;
-      &.TaskCompleted {
-        background-color: #00e676;
+      &.ToDo {
+        background-color: gray;
       }
-      &.in-progress {
-        background-color: #ffea00;
+      &.Completed {
+        background-color: rgb(0, 230, 118);
       }
-      
+      &.InProgress {
+        background-color: rgb(33, 150, 243);
+      }
+      &.Cancelled {
+        background-color: rgb(255, 23, 68);
+      }
     }
     .progress-widget-title {
       font-size: 14px;
