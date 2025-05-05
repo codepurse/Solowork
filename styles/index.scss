@@ -1086,3 +1086,76 @@ main {
     }
   }
 }
+
+.dashboard-container {
+  height: 100%;
+  padding-top: 80px;
+  .progress-widget {
+    color: white;
+    border-radius: 10px;
+    border: 1px solid #313131;
+    .progress-widget-header {
+      width: 100%;
+      border-bottom: 1px solid #313131;
+      padding: 10px 12px;
+      padding-bottom: 12px;
+      background-color: #151515;
+    }
+    .progress-icon {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background-color: #7a3dff;
+      margin-top: 2px;
+      &.TaskCompleted {
+        background-color: #00e676;
+      }
+      &.in-progress {
+        background-color: #ffea00;
+      }
+      
+    }
+    .progress-widget-title {
+      font-size: 14px;
+      font-weight: 400;
+      margin-bottom: 0px;
+      color: lightgray;
+    }
+    .progress-widget-content {
+      padding: 10px 15px;
+      .progress-widget-content-title {
+        font-size: 24px;
+        font-weight: 400;
+        margin-bottom: 0px;
+        color: white;
+      }
+      .progress-widget-content-subtitle {
+        font-size: 12px;
+        font-weight: 400;
+        margin-bottom: 0px;
+        color: #888;
+        margin-top: 5px;
+      }
+      .progress-widget-line {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        background-color: rgba(105, 240, 174, 0.1);
+        border-radius: 5px;
+        padding: 0px 5px;
+        span {
+          font-size: 11px;
+          font-weight: 400;
+          color: rgb(105, 240, 174);
+        }
+      }
+    }
+    i {
+      color: lightgray;
+      cursor: pointer;
+      &:hover {
+        color: #7a3dff;
+      }
+    }
+  }
+}
