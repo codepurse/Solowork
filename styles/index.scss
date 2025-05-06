@@ -601,6 +601,12 @@ main {
     padding: 12px 0px;
     width: 100%;
     margin-top: 10px;
+    .kanban-board-header {
+      background-color: #151515;
+      padding: 12px 15px;
+      border-radius: 10px;
+      border: 1px solid #252525;
+    }
     .add-task-button {
       background-color: $primary-color;
       border: none;
@@ -1087,9 +1093,37 @@ main {
   }
 }
 
+@keyframes wave {
+  0% {
+    transform: rotate(0);
+  }
+  50% {
+    transform: rotate(-30deg);
+  }
+  100% {
+    transform: rotate(0);
+  }
+}
+
 .dashboard-container {
   height: 100%;
   padding-top: 80px;
+  .dashboard-title {
+    font-size: 24px;
+    font-weight: 400;
+    margin-bottom: 0px;
+    color: white;
+  }
+  .wave-emoji {
+    animation: wave 2s infinite;
+    display: inline-block;
+    font-size: 22px;
+  }
+  .dashboard-date {
+    font-size: 14px;
+    font-weight: 400;
+    color: #888;
+  }
   .progress-widget {
     color: white;
     border-radius: 10px;

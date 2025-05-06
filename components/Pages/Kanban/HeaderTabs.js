@@ -72,15 +72,17 @@ function HeaderTabs() {
 
   return (
     <div className="kanban-board">
-      <Space align="evenly">
-        <p className="kanban-board-title">{name}</p>
-        <button
-          className="add-task-button"
-          onClick={() => setShowAddTaskModal(true)}
-        >
-          <span>Add Task</span>
-        </button>
-      </Space>
+      <div className="kanban-board-header">
+        <Space align="evenly">
+          <p className="kanban-board-title">{name}</p>
+          <button
+            className="add-task-button"
+            onClick={() => setShowAddTaskModal(true)}
+          >
+            <span>Add Task</span>
+          </button>
+        </Space>
+      </div>
       <Space align="evenly">
         <div>
           <Space gap={18}>
