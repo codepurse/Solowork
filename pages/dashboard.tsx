@@ -3,8 +3,8 @@ import { Responsive, WidthProvider } from "react-grid-layout";
 import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";
 import LineChart from "../components/Pages/Dashboard/LineChart";
+import RecentActivity from "../components/Pages/Dashboard/Widgets/RecentActivity";
 import TaskWidgets from "../components/Pages/Dashboard/Widgets/TaskWidgets";
-
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
 export default function Dashboard() {
@@ -22,6 +22,7 @@ export default function Dashboard() {
       { i: "completed", x: 6, y: 0, w: 3, h: 6 },
       { i: "cancelled", x: 9, y: 0, w: 3, h: 6 },
       { i: "chart", x: 0, y: 6, w: 12, h: 20 },
+      { i: "recent-activity", x: 0, y: 26, w: 12, h: 20 },
     ],
     md: [
       { i: "todo", x: 0, y: 0, w: 3, h: 6 },
@@ -29,6 +30,7 @@ export default function Dashboard() {
       { i: "completed", x: 6, y: 0, w: 3, h: 6 },
       { i: "cancelled", x: 9, y: 0, w: 3, h: 6 },
       { i: "chart", x: 0, y: 6, w: 9, h: 20 },
+      { i: "recent-activity", x: 9, y: 6, w: 3, h: 20 },
     ],
     sm: [
       { i: "todo", x: 0, y: 0, w: 3, h: 6 },
@@ -36,6 +38,7 @@ export default function Dashboard() {
       { i: "completed", x: 0, y: 6, w: 3, h: 6 },
       { i: "cancelled", x: 3, y: 6, w: 3, h: 6 },
       { i: "chart", x: 0, y: 12, w: 6, h: 20 },
+      { i: "recent-activity", x: 6, y: 12, w: 6, h: 20 },
     ],
   };
 
@@ -85,6 +88,10 @@ export default function Dashboard() {
         <div key="chart">
           <LineChart />
         </div>
+        <div key="recent-activity">
+          <RecentActivity />
+        </div>
+
       </ResponsiveGridLayout>
     </div>
   );

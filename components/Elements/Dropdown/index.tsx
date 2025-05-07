@@ -9,7 +9,7 @@ interface DropdownProps {
 export const customStyles = {
   control: (base, state) => ({
     ...base,
-    background: "#252525",
+    background: "#171031",
     minHeight: 35,
     zIndex: 99,
     color: "#fff",

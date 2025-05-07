@@ -19,8 +19,10 @@ $primary-color: #7c4dff;
 
 .modal-container {
   .modal-content {
-    background: #191919;
+    background: #040019;
     padding: 15px 20px;
+    border-radius: 10px;
+    border: 1px solid #212121;
     .modal-title {
       font-size: 15px;
       font-weight: 500;
@@ -87,7 +89,7 @@ $primary-color: #7c4dff;
     color: #fff;
   }
   .input-type {
-    background: #110D24;
+    background: #110d24;
     border-radius: 5px;
     padding: 7px 10px;
     color: #fff;
@@ -293,8 +295,8 @@ $primary-color: #7c4dff;
   border-radius: 5px;
   width: 100%;
   min-height: 37px !important;
-  background: #252525;
-  border: 1px solid rgba(0, 0, 0, 0.4);
+  background: #171031;
+  border: 1px solid #212121;
   .calendar-icon {
     position: absolute;
     top: 46%;

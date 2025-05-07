@@ -15,7 +15,7 @@ export default function TextArea({
   ...props
 }: Readonly<TextProps>) {
   const style = {
-    backgroundColor: transparent ? "transparent" : "#252525",
+    backgroundColor: transparent ? "transparent" : "#171031",
   };
   
   return (
