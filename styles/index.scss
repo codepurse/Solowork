@@ -11,7 +11,7 @@ body,
 $primary-color: #7c4dff;
 
 body {
-  background-color: #101213;
+  background-color: #040019;
   font-family: "Poppins", sans-serif;
   box-sizing: border-box;
 }
@@ -53,14 +53,14 @@ main {
 }
 .page-layout {
   width: calc(100vw - 250px);
-  background-color: #181818;
+  background-color: #040019;
   height: 100%;
 }
 
 .navbar-container {
   width: calc(100vw - 250px);
   height: 55px;
-  background-color: #181818;
+  background-color: #040019;
   border-bottom: 1px solid #252525;
   position: fixed;
   top: 0;
@@ -200,7 +200,7 @@ main {
 }
 
 .sidebar {
-  background-color: #18181a;
+  background-color: #040019;
   color: #fff;
   position: fixed;
   top: 0;
@@ -215,10 +215,10 @@ main {
     overflow-y: auto;
   }
   .dropdown-projects {
-    background-color: #1e1e20;
+    background-color: #110D28; 
     cursor: pointer;
     border: 1px solid #252525;
-    border-radius: 10px;
+    border-radius: 8px;
     padding: 8px 12px;
     transition: all 0.2s ease;
     position: relative;
@@ -239,7 +239,7 @@ main {
       left: 0;
       width: 100%;
       margin-top: 10px;
-      background-color: #2d292f;
+      background-color: #110D28;
       padding: 10px;
       border-radius: 10px;
       border: 1px solid #424242;
@@ -294,7 +294,7 @@ main {
       border-radius: 10px;
       transition: all 0.2s ease;
       &:hover {
-        background-color: #232323;
+        background-color: #171433;
         color: #7a3dff;
         .sidebar-menu-item-name {
           color: #7a3dff;
@@ -1130,14 +1130,14 @@ main {
   .progress-widget {
     color: white;
     border-radius: 10px;
-    border: 1px solid #313131;
+    border: 1px solid #212121;
     overflow: auto;
     .progress-widget-header {
       width: 100%;
       border-bottom: 1px solid #313131;
       padding: 10px 12px;
       padding-bottom: 12px;
-      background-color: #151515;
+      background-color: #110d28;
     }
     .progress-icon {
       width: 10px;
@@ -1214,7 +1214,7 @@ main {
   .table-due-soon-header {
     padding: 15px 22px;
     padding-bottom: 12px;
-    background-color: #151515;
+    background-color: #110d28;
     .table-due-soon-header-title {
       font-size: 17px;
       font-weight: 400;
@@ -1270,13 +1270,13 @@ main {
 .line-chart-container {
   height: 380px;
   border-radius: 12px;
-  border: 1px solid #313131;
+  border: 1px solid #212121;
   padding: 0px 0px;
   overflow: hidden;
   .line-chart-header {
     padding: 15px;
-    background-color: #151515;
-    border-bottom: 1px solid #313131;
+    background-color: #110D28;
+    border-bottom: 1px solid #212121;
     .line-chart-title {
       font-size: 15px;
       font-weight: 500;

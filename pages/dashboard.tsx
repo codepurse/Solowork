@@ -28,7 +28,7 @@ export default function Dashboard() {
       { i: "inprogress", x: 3, y: 0, w: 3, h: 6 },
       { i: "completed", x: 6, y: 0, w: 3, h: 6 },
       { i: "cancelled", x: 9, y: 0, w: 3, h: 6 },
-      { i: "chart", x: 0, y: 6, w: 12, h: 20 },
+      { i: "chart", x: 0, y: 6, w: 9, h: 20 },
     ],
     sm: [
       { i: "todo", x: 0, y: 0, w: 3, h: 6 },

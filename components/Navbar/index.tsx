@@ -30,7 +30,6 @@ export default function Navbar() {
       <Space align="evenly" fill>
         <div>
           <Text
-            placeholder="Search"
             className="input-type"
             as="search"
             variant="md"

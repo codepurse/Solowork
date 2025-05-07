@@ -17,7 +17,6 @@ export default function Text({
   ...props
 }: Readonly<TextProps>) {
   const style = {
-    paddingLeft: as === "search" ? "30px" : "7px",
     fontSize: variant === "sm" ? "12px" : variant === "md" ? "14px" : "16px",
     padding:
       variant === "sm"
@@ -25,7 +24,8 @@ export default function Text({
         : variant === "md"
         ? "7px 12px"
         : "10px 15px",
-    backgroundColor: transparent ? "transparent" : "#252525",
+    paddingLeft: as === "search" || as === "folder" ? "30px" : "7px",
+    backgroundColor: transparent ? "transparent" : "#171031",
   };
   return (
     <div className="input-container">

@@ -87,19 +87,20 @@ $primary-color: #7c4dff;
     color: #fff;
   }
   .input-type {
-    background: #252525;
+    background: #110D24;
     border-radius: 5px;
     padding: 7px 10px;
     color: #fff;
     font-size: 13px;
     font-weight: 300;
     margin-bottom: 5px;
-    border: 1px solid transparent;
+    border: 1px solid #252525;
     outline: none;
     width: 100%;
     caret-color: $primary-color;
     &:focus {
       border: 1px solid $primary-color;
+      background: #171031;
     }
     &::placeholder {
       color: gray;
