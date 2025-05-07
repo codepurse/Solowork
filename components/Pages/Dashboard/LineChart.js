@@ -35,11 +35,6 @@ const LineChart = () => {
     "May",
     "Jun",
     "Jul",
-    "Aug",
-    "Sep",
-    "Oct",
-    "Nov",
-    "Dec",
   ];
 
   const data = {
@@ -47,7 +42,7 @@ const LineChart = () => {
     datasets: [
       {
         label: "Tasks Completed",
-        data: [400, 650, 500, 700, 750, 600, 700, 850, 900, 1022, 950, 800],
+        data: Array.from({length: 7}, () => Math.floor(Math.random() * 401) + 100),
         borderColor: (context) => {
           const ctx = context.chart.ctx;
           const gradient = ctx.createLinearGradient(
@@ -171,14 +166,16 @@ const LineChart = () => {
   };
 
   return (
-    <div
-      style={{
-        height: "300px",
-        borderRadius: "12px",
-        border: "1px solid #313131",
-      }}
-    >
-      <Line ref={chartRef} data={data} options={options} />
+    <div className="line-chart-container">
+      <div className="line-chart-header">
+        <p className="line-chart-title">Goal Progress Over Time</p>
+        <p className="line-chart-subtitle">
+          Chart of your goal progress over time.
+        </p>
+      </div>
+      <div className="line-chart-wrapper">
+        <Line ref={chartRef} data={data} options={options} />
+      </div>
     </div>
   );
 };

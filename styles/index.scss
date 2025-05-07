@@ -1107,22 +1107,25 @@ main {
 
 .dashboard-container {
   height: 100%;
-  padding-top: 80px;
-  .dashboard-title {
-    font-size: 24px;
-    font-weight: 400;
-    margin-bottom: 0px;
-    color: white;
-  }
-  .wave-emoji {
-    animation: wave 2s infinite;
-    display: inline-block;
-    font-size: 22px;
-  }
-  .dashboard-date {
-    font-size: 14px;
-    font-weight: 400;
-    color: #888;
+  padding-top: 80px !important;
+  .dashboard-header {
+    padding-left: 20px;
+    .dashboard-title {
+      font-size: 24px;
+      font-weight: 400;
+      margin-bottom: 0px;
+      color: white;
+    }
+    .wave-emoji {
+      animation: wave 2s infinite;
+      display: inline-block;
+      font-size: 22px;
+    }
+    .dashboard-date {
+      font-size: 14px;
+      font-weight: 400;
+      color: #888;
+    }
   }
   .progress-widget {
     color: white;
@@ -1261,5 +1264,35 @@ main {
         }
       }
     }
+  }
+}
+
+.line-chart-container {
+  height: 380px;
+  border-radius: 12px;
+  border: 1px solid #313131;
+  padding: 0px 0px;
+  overflow: hidden;
+  .line-chart-header {
+    padding: 15px;
+    background-color: #151515;
+    border-bottom: 1px solid #313131;
+    .line-chart-title {
+      font-size: 15px;
+      font-weight: 500;
+      color: lightgray;
+      margin-bottom: 0px;
+    }
+    .line-chart-subtitle {
+      font-size: 12px;
+      font-weight: 400;
+      color: #888;
+      margin-bottom: 0px;
+    }
+  }
+  .line-chart-wrapper {
+    height: 100%;
+    padding: 10px 5px;
+    max-height: 310px;
   }
 }

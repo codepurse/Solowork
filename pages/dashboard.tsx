@@ -1,51 +1,91 @@
 import dayjs from "dayjs";
-import { Col, Container, Row } from "react-bootstrap";
+import { Responsive, WidthProvider } from "react-grid-layout";
+import "react-grid-layout/css/styles.css";
+import "react-resizable/css/styles.css";
 import LineChart from "../components/Pages/Dashboard/LineChart";
 import TaskWidgets from "../components/Pages/Dashboard/Widgets/TaskWidgets";
+
+const ResponsiveGridLayout = WidthProvider(Responsive);
 
 export default function Dashboard() {
   const checkTime = () => {
     const hours = dayjs().hour();
-    if (hours < 12) {
-      return "Good morning";
-    } else if (hours < 18) {
-      return "Good afternoon";
-    } else {
-      return "Good evening";
-    }
+    if (hours < 12) return "Good morning";
+    if (hours < 18) return "Good afternoon";
+    return "Good evening";
   };
+
+  const layouts = {
+    lg: [
+      { i: "todo", x: 0, y: 0, w: 3, h: 6 },
+      { i: "inprogress", x: 3, y: 0, w: 3, h: 6 },
+      { i: "completed", x: 6, y: 0, w: 3, h: 6 },
+      { i: "cancelled", x: 9, y: 0, w: 3, h: 6 },
+      { i: "chart", x: 0, y: 6, w: 12, h: 20 },
+    ],
+    md: [
+      { i: "todo", x: 0, y: 0, w: 3, h: 6 },
+      { i: "inprogress", x: 3, y: 0, w: 3, h: 6 },
+      { i: "completed", x: 6, y: 0, w: 3, h: 6 },
+      { i: "cancelled", x: 9, y: 0, w: 3, h: 6 },
+      { i: "chart", x: 0, y: 6, w: 12, h: 20 },
+    ],
+    sm: [
+      { i: "todo", x: 0, y: 0, w: 3, h: 6 },
+      { i: "inprogress", x: 3, y: 0, w: 3, h: 6 },
+      { i: "completed", x: 0, y: 6, w: 3, h: 6 },
+      { i: "cancelled", x: 3, y: 6, w: 3, h: 6 },
+      { i: "chart", x: 0, y: 12, w: 6, h: 20 },
+    ],
+  };
+
   return (
-    <Container className="dashboard-container">
-      <Row>
-        <Col lg={12}>
-          <p className="dashboard-title">
-            {checkTime()}, Alfon <span className="wave-emoji">👋</span>
-          </p>
-          <p className="dashboard-date">
-            {dayjs().format("dddd, DD MMMM YYYY")}
-          </p>
-        </Col>
-        <Col>
+    <div className="dashboard-container">
+      <div className="dashboard-header">
+        <p className="dashboard-title">
+          {checkTime()}, Alfon <span className="wave-emoji">👋</span>
+        </p>
+        <p className="dashboard-date">
+          {dayjs().format("dddd, DD MMMM YYYY")}
+        </p>
+      </div>
+
+      <ResponsiveGridLayout
+        className="layout"
+        layouts={layouts}
+        breakpoints={{ lg: 1200, md: 900, sm: 768, xs: 480 }}
+        cols={{ lg: 12, md: 12, sm: 6, xs: 4 }} // ✅ md changed from 10 → 12
+        rowHeight={10}
+        isResizable={true}
+        isDraggable={true}
+        margin={[15, 15]}
+        style={{ padding: "0px" }}
+      >
+        <div key="todo">
           <TaskWidgets label="To Do" subLabel="Waiting for approval" />
-        </Col>
-        <Col>
+        </div>
+        <div key="inprogress">
           <TaskWidgets
             label="In Progress"
-            subLabel="Curently being worked on"
+            subLabel="Currently being worked on"
           />
-        </Col>
-        <Col>
-          <TaskWidgets label="Completed" subLabel="Task finished last month" />
-        </Col>
-        <Col>
-          <TaskWidgets label="Cancelled" subLabel="Task cancelled last week" />
-        </Col>
-      </Row>
-      <Row className="mt-4">
-        <Col lg={9}>
+        </div>
+        <div key="completed">
+          <TaskWidgets
+            label="Completed"
+            subLabel="Task finished last month"
+          />
+        </div>
+        <div key="cancelled">
+          <TaskWidgets
+            label="Cancelled"
+            subLabel="Task cancelled last week"
+          />
+        </div>
+        <div key="chart">
           <LineChart />
-        </Col>
-      </Row>
-    </Container>
+        </div>
+      </ResponsiveGridLayout>
+    </div>
   );
 }
