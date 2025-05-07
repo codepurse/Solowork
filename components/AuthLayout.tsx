@@ -19,7 +19,7 @@ export default function AuthLayout({
   const isFirstRun = useRef(true);
   const { useStoreUser, useStoreProjects } = useStore();
   const { setUser } = useStoreUser();
-  const { setProjects, setSelectedProject } = useStoreProjects();
+  const { setProjects, setSelectedProject,selectedProject } = useStoreProjects();
 
   const fetchProjects = async (userId) => {
     try {
@@ -73,6 +73,10 @@ export default function AuthLayout({
 
     checkUser();
   }, [router.pathname]);
+
+  useEffect(() => {
+    console.log("selectedProject", selectedProject);
+  }, [selectedProject]);
 
   if (isLoading && isFirstRun.current) {
     return <div>Loading...</div>;

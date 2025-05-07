@@ -602,10 +602,8 @@ main {
     width: 100%;
     margin-top: 10px;
     .kanban-board-header {
-      background-color: #151515;
-      padding: 12px 15px;
+
       border-radius: 10px;
-      border: 1px solid #252525;
     }
     .add-task-button {
       background-color: $primary-color;
@@ -1302,6 +1300,7 @@ main {
   border-radius: 10px;
   .recent-activity-item-container-wrapper {
     max-height: 315px;
+    min-height: 315px;
     overflow: auto;
   }
   .recent-activity-header {

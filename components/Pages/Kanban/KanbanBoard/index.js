@@ -8,12 +8,15 @@ import {
   useSensors,
 } from "@dnd-kit/core";
 import { arrayMove } from "@dnd-kit/sortable";
+import { ID } from "appwrite";
 import { useCallback, useEffect, useState } from "react";
 import {
   DATABASE_ID,
   databases,
   KANBAN_COLLECTION_ID,
+  RECENT_ACTIVITY_COLLECTION_ID,
 } from "../../../../constant/appwrite";
+import { useStore } from "../../../../store/store";
 import KanbanColumn from "./KanbanColumn";
 import TaskCard, { DragContext } from "./TaskCard";
 
@@ -21,6 +24,9 @@ export default function KanbanBoard({ tasksList }) {
   const [tasks, setTasks] = useState(tasksList);
   const [activeId, setActiveId] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
+  const { useStoreProjects, useStoreUser } = useStore();
+  const { selectedProject } = useStoreProjects();
+  const { user } = useStoreUser();
   // Track initial status of the active task
   const [initialStatus, setInitialStatus] = useState(null);
 
@@ -97,6 +103,26 @@ export default function KanbanBoard({ tasksList }) {
     } catch (error) {
       console.error("❌ Failed to update task", error);
     }
+
+    try {
+      await databases.createDocument(
+        DATABASE_ID,
+        RECENT_ACTIVITY_COLLECTION_ID,
+        ID.unique(),
+        {
+          type: "moved-task",
+          title: "Moved task",
+          description: `${updatedFields.title} moved from ${initialStatus} to ${updatedFields.status}.`,
+          from: initialStatus,
+          to: updatedFields.status,
+          board: selectedProject,
+          createdAt: new Date().toISOString(),
+          userId: user.$id,
+        }
+      );
+    } catch (error) {
+      console.log("❌ Failed to create recent activity", error);
+    }
   };
 
   // Function to update task status and call API
@@ -112,7 +138,10 @@ export default function KanbanBoard({ tasksList }) {
         newStatus,
         timestamp: new Date().toISOString(),
       });
-      handleUpdateTask(taskId, { status: newStatus });
+      handleUpdateTask(taskId, {
+        status: newStatus,
+        title: task?.title, // Include the title in the updatedFields
+      });
     }
   };
 
