@@ -602,7 +602,6 @@ main {
     width: 100%;
     margin-top: 10px;
     .kanban-board-header {
-
       border-radius: 10px;
     }
     .add-task-button {
@@ -1339,5 +1338,63 @@ main {
       overflow: hidden;
       text-overflow: ellipsis;
     }
+  }
+}
+
+.daily-checklist {
+  border: 1px solid #212121;
+  border-radius: 10px;
+  .daily-checklist-header {
+    padding: 10px 15px;
+    background-color: #110d28;
+    border-bottom: 1px solid #212121;
+    .daily-checklist-title {
+      font-size: 15px;
+      font-weight: 500;
+      color: lightgray;
+      margin-bottom: 0px;
+    }
+    .daily-checklist-subtitle {
+      font-size: 12px;
+      font-weight: 400;
+      color: #888;
+      margin-bottom: 0px;
+      display: -webkit-box;
+      -webkit-line-clamp: 1;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+  .daily-checklist-input-container {
+    padding: 10px 15px;
+    padding-bottom: 5px;
+    .daily-checklist-input {
+      background-color: transparent;
+      border: none;
+      border-bottom: 1px solid #212121;
+      padding: 5px 0px;
+      color: white;
+      font-size: 13px;
+      font-weight: 300;
+      width: 100%;
+      outline: none;
+      &:focus {
+        border-bottom: 1px solid $primary-color;
+      }
+    }
+    .add-task-icon {
+      color: white;
+      cursor: pointer;
+      background-color: $primary-color;
+      border-radius: 50%;
+      padding: 2px 7px;
+      &:hover {
+        color: #7a3dff;
+      }
+    }
+  }
+  .daily-checklist-tasks {
+    padding: 5px 15px;
   }
 }

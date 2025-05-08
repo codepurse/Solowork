@@ -18,5 +18,6 @@ export const NOTES_COLLECTION_ID = "68159eea003dbfc13119";
 export const KANBAN_FOLDER_ID = "6816d8950028fdbe51e1";
 export const KANBAN_COLLECTION_ID = "6816e54100149fe0b4c4";
 export const RECENT_ACTIVITY_COLLECTION_ID = "681b58ce0018131bd62e";
+export const DAILY_CHECKLIST_COLLECTION_ID = "681c26d8002b13f57581";
 
 export default client;

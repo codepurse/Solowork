@@ -2,15 +2,16 @@ import { ID, Query } from "appwrite";
 import dayjs from "dayjs";
 import { X } from "lucide-react";
 import { useRouter } from "next/router";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { Col, Container, Modal, Row } from "react-bootstrap";
 import { mutate } from "swr";
 import {
   DATABASE_ID,
   databases,
   KANBAN_COLLECTION_ID,
+  RECENT_ACTIVITY_COLLECTION_ID,
   storage,
-  TASKS_ATTACHMENTS_BUCKET_ID
+  TASKS_ATTACHMENTS_BUCKET_ID,
 } from "../../../../constant/appwrite";
 import { useStore } from "../../../../store/store";
 import Button from "../../../Elements/Button";
@@ -33,18 +34,15 @@ export default function AddTask({ show, onHide }: Readonly<AddTaskProps>) {
   const [dependency, setDependency] = useState<string>("");
   const [dueDate, setDueDate] = useState<Date | string>(new Date());
   const [description, setDescription] = useState<string>("");
-  const { useStoreProjects, useStoreTasks } = useStore();
+  const { useStoreProjects, useStoreTasks, useStoreUser } = useStore();
   const { selectedProject } = useStoreProjects();
+  const { user } = useStoreUser();
   const { setTasks } = useStoreTasks();
   const [loading, setLoading] = useState<boolean>(false);
   const [file, setFile] = useState<File[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
   const { kanban } = router.query;
-
-  useEffect(() => {
-    console.log(kanban, "kanban");
-  }, [kanban]);
 
   const priorityOptions = [
     { label: "Low", value: "low" },
@@ -121,6 +119,20 @@ export default function AddTask({ show, onHide }: Readonly<AddTaskProps>) {
           description,
           tags,
           fileId: uploadedFileIds, // array
+        }
+      );
+
+      await databases.createDocument(
+        DATABASE_ID,
+        RECENT_ACTIVITY_COLLECTION_ID,
+        ID.unique(),
+        {
+          type: "added-task",
+          title: "Added task",
+          description: `${taskName} is being added to the board.`,
+          board: selectedProject,
+          createdAt: new Date().toISOString(),
+          userId: user.$id,
         }
       );
 
