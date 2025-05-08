@@ -205,12 +205,13 @@ export default function DailyCheckList() {
                     </label>
                   </div>
                   <div>
-                    <Trash
-                      size={15}
-                      style={{ marginRight: "5px" }}
-                      className="trash-icon"
-                      onClick={() => handleDeleteTask(task.$id)}
-                    />
+                    <i className="trash-icon">
+                      <Trash
+                        size={15}
+                        style={{ marginRight: "5px" }}
+                        onClick={() => handleDeleteTask(task.$id)}
+                      />
+                    </i>
                   </div>
                 </Space>
               ))}
