@@ -1369,6 +1369,7 @@ main {
   .daily-checklist-input-container {
     padding: 10px 15px;
     padding-bottom: 5px;
+    position: relative;
     .daily-checklist-input {
       background-color: transparent;
       border: none;
@@ -1386,9 +1387,9 @@ main {
     .add-task-icon {
       color: white;
       cursor: pointer;
-      background-color: $primary-color;
-      border-radius: 50%;
-      padding: 2px 7px;
+      position: absolute;
+      right: 5;
+      top: 0;
       &:hover {
         color: #7a3dff;
       }
@@ -1396,5 +1397,38 @@ main {
   }
   .daily-checklist-tasks {
     padding: 5px 15px;
+    .trash-icon {
+      cursor: pointer;
+      color: #888;
+      &:hover {
+        color: #EF5350;
+      }
+    }
+  }
+
+  .daily-checklist-footer {
+    padding: 10px 15px;
+    margin-bottom: 5px;
+    .checklist-progress-bar {
+      height: 10px;
+      background: #eee;
+      border-radius: 5px;
+      overflow: hidden;
+      margin-top: 4px;
+    }
+    .checklist-progress-bar-fill {
+      height: 100%;
+      background: $primary-color;
+      transition: width 0.3s ease;
+    }
+    .daily-checklist-footer-text {
+      font-size: 13px;
+      font-weight: 400;
+      color: #888;
+      margin-bottom: 0px;
+      span {
+        color: lightgray;
+      }
+    }
   }
 }

@@ -1,11 +1,11 @@
 import { ID, Query } from "appwrite";
-import { Plus } from "lucide-react";
+import { Send, Trash } from "lucide-react";
 import { useEffect, useState } from "react";
 import useSWR, { mutate } from "swr";
 import {
-    DAILY_CHECKLIST_COLLECTION_ID,
-    DATABASE_ID,
-    databases,
+  DAILY_CHECKLIST_COLLECTION_ID,
+  DATABASE_ID,
+  databases,
 } from "../../../../constant/appwrite";
 import { useStore } from "../../../../store/store";
 import Space from "../../../space";
@@ -23,17 +23,61 @@ export default function DailyCheckList() {
       DAILY_CHECKLIST_COLLECTION_ID,
       [Query.equal("userId", user.$id)]
     );
-    return dailyCheckList;
+    return dailyCheckList.documents;
   };
 
   const { data } = useSWR(user.$id ? "daily_checklist" : null, () =>
     fetchDailyCheckList()
   );
 
+  const completedTasks = dailyCheckList.flatMap((task) =>
+    JSON.parse(task.items).filter((item) => item.completed)
+  );
+
+  const totalItems = dailyCheckList.reduce(
+    (sum, task) => sum + JSON.parse(task.items).length,
+    0
+  );
+
+  const progress =
+    totalItems > 0 ? Math.round((completedTasks.length / totalItems) * 100) : 0;
+
   useEffect(() => {
     if (data) {
-      console.log(data);
-      setDailyCheckList(data.documents);
+      const today = new Date().toDateString();
+
+      const updatedList = data.map((task) => {
+        const taskDate = new Date(task.date).toDateString();
+
+        if (taskDate !== today) {
+          // Reset completed fields
+          const items = JSON.parse(task.items).map((item) => ({
+            ...item,
+            completed: false,
+          }));
+
+          // Immediately update backend
+          databases.updateDocument(
+            DATABASE_ID,
+            DAILY_CHECKLIST_COLLECTION_ID,
+            task.$id,
+            {
+              items: JSON.stringify(items),
+              date: new Date().toISOString(), // update reset date
+            }
+          );
+
+          return {
+            ...task,
+            items: JSON.stringify(items),
+            date: new Date().toISOString(),
+          };
+        }
+
+        return task;
+      });
+
+      setDailyCheckList(updatedList);
     }
   }, [data]);
 
@@ -63,23 +107,48 @@ export default function DailyCheckList() {
     }
   };
 
-  const handleCheckboxChange = (taskId, itemIndex, isCompleted) => {
+  const updateTask = async (
+    taskId: string,
+    itemIndex: number,
+    completed: boolean
+  ) => {
     const updatedList = [...dailyCheckList];
     const taskIndex = updatedList.findIndex((task) => task.$id === taskId);
 
     if (taskIndex !== -1) {
       const items = JSON.parse(updatedList[taskIndex].items);
-      items[itemIndex].completed = isCompleted;
+      items[itemIndex].completed = completed;
 
+      // Update local state
       updatedList[taskIndex].items = JSON.stringify(items);
       setDailyCheckList(updatedList);
 
-      databases.updateDocument(
+      // Update in Appwrite
+      try {
+        await databases.updateDocument(
+          DATABASE_ID,
+          DAILY_CHECKLIST_COLLECTION_ID,
+          taskId,
+          {
+            items: JSON.stringify(items),
+          }
+        );
+      } catch (error) {
+        console.error("Failed to update task completion status", error);
+      }
+    }
+  };
+
+  const handleDeleteTask = async (taskId: string) => {
+    try {
+      await databases.deleteDocument(
         DATABASE_ID,
         DAILY_CHECKLIST_COLLECTION_ID,
-        taskId,
-        { items: JSON.stringify(items) }
+        taskId
       );
+      mutate("daily_checklist"); // refresh the list
+    } catch (error) {
+      console.error("Failed to delete task", error);
     }
   };
 
@@ -107,7 +176,7 @@ export default function DailyCheckList() {
             }}
           />
           <i className="add-task-icon" onClick={handleAddTask}>
-            <Plus size={14} />
+            <Send size={14} />
           </i>
         </Space>
       </div>
@@ -117,14 +186,14 @@ export default function DailyCheckList() {
           return (
             <div key={task.$id}>
               {items.map((item, index) => (
-                <Space key={index} className="task-item">
-                  <div className="modern-checkbox">
+                <Space key={index} align="evenly">
+                  <div className="modern-checkbox mb-1" key={index}>
                     <input
                       type="checkbox"
                       id={`${task.$id}-${index}`}
                       checked={item.completed || false}
                       onChange={(e) =>
-                        handleCheckboxChange(task.$id, index, e.target.checked)
+                        updateTask(task.$id, index, e.target.checked)
                       }
                     />
                     <label
@@ -135,11 +204,30 @@ export default function DailyCheckList() {
                       <span className="checkbox-text">{item.name}</span>
                     </label>
                   </div>
+                  <div>
+                    <Trash
+                      size={15}
+                      style={{ marginRight: "5px" }}
+                      className="trash-icon"
+                      onClick={() => handleDeleteTask(task.$id)}
+                    />
+                  </div>
                 </Space>
               ))}
             </div>
           );
         })}
+      </div>
+      <div className="daily-checklist-footer">
+        <p className="daily-checklist-footer-text">
+          <span> Progress</span>: {progress}%
+        </p>
+        <div className="checklist-progress-bar">
+          <div
+            className="checklist-progress-bar-fill"
+            style={{ width: `${progress}%` }}
+          ></div>
+        </div>
       </div>
     </div>
   );
