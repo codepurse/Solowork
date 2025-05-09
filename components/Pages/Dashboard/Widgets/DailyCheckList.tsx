@@ -8,6 +8,7 @@ import {
   databases,
 } from "../../../../constant/appwrite";
 import { useStore } from "../../../../store/store";
+import CircleLoader from "../../../Elements/CircleLoader";
 import Space from "../../../space";
 
 export default function DailyCheckList() {
@@ -82,28 +83,31 @@ export default function DailyCheckList() {
   }, [data]);
 
   const handleAddTask = async () => {
-    console.log(name);
-    try {
-      await databases.createDocument(
-        DATABASE_ID,
-        DAILY_CHECKLIST_COLLECTION_ID,
-        ID.unique(),
-        {
-          items: JSON.stringify([
-            {
-              name: name,
-              completed: false,
-            },
-          ]),
-          date: new Date().toISOString(),
-          completedTime: null,
-          userId: user.$id,
-        }
-      );
-    } catch (error) {
-      console.log(error);
-    } finally {
-      mutate("daily_checklist");
+    if (name && !loading) {
+      try {
+        setLoading(true);
+        await databases.createDocument(
+          DATABASE_ID,
+          DAILY_CHECKLIST_COLLECTION_ID,
+          ID.unique(),
+          {
+            items: JSON.stringify([
+              {
+                name: name,
+                completed: false,
+              },
+            ]),
+            date: new Date().toISOString(),
+            completedTime: null,
+            userId: user.$id,
+          }
+        );
+      } catch (error) {
+        console.log(error);
+      } finally {
+        mutate("daily_checklist");
+        setLoading(false);
+      }
     }
   };
 
@@ -175,9 +179,15 @@ export default function DailyCheckList() {
               }
             }}
           />
-          <i className="add-task-icon" onClick={handleAddTask}>
-            <Send size={14} />
-          </i>
+          {loading ? (
+            <div className="add-task-icon" style={{ top: "5px" }}>
+              <CircleLoader />
+            </div>
+          ) : (
+            <i className="add-task-icon" onClick={handleAddTask}>
+              <Send size={14} />
+            </i>
+          )}
         </Space>
       </div>
       <div className="daily-checklist-tasks">

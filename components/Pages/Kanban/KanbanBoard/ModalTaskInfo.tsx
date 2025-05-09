@@ -1,6 +1,7 @@
 import { Calendar } from "lucide-react";
 import { Modal } from "react-bootstrap";
 import { DUMMY_TAGS } from "../../../../constant/dummy";
+import Badge from "../../../Elements/Badge";
 import Space from "../../../space";
 
 export default function ModalTaskInfo({
@@ -23,7 +24,7 @@ export default function ModalTaskInfo({
               </div>
               <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                 <div className="kanban-modal-status-dot" />
-                <p className="kanban-modal-right-text">In Progress</p>
+                <Badge className="badge-blue">In Progress</Badge>
               </div>
             </Space>
           </div>

@@ -1401,7 +1401,7 @@ main {
       cursor: pointer;
       color: #888;
       &:hover {
-        color: #EF5350;
+        color: #ef5350;
       }
     }
   }
@@ -1411,7 +1411,7 @@ main {
     margin-bottom: 5px;
     .checklist-progress-bar {
       height: 10px;
-      background: #eee;
+      background: #b39ddb;
       border-radius: 5px;
       overflow: hidden;
       margin-top: 4px;
@@ -1429,6 +1429,87 @@ main {
       span {
         color: lightgray;
       }
+    }
+  }
+}
+
+.drawer-info {
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: 999999;
+  background-color: #040019;
+  border: 1px solid #212121;
+  min-width: 450px;
+  max-width: 450px;
+  min-height: 100vh;
+  max-height: 100vh;
+  padding: 10px 20px;
+  animation-duration: 0.3s;
+  .drawer-controls {
+    i {
+      color: #888;
+      cursor: pointer;
+      &:hover {
+        color: #7a3dff;
+      }
+    }
+    padding-bottom: 10px;
+  }
+  .drawer-info-content {
+    padding: 10px 0px;
+    .task-details-row {
+      margin-bottom: 10px;
+    }
+    .task-title {
+      font-size: 1rem;
+      font-weight: 400;
+      color: lightgray;
+      margin-bottom: 0px;
+    }
+    .task-details {
+      margin-top: 15px;
+      .task-details-label {
+        font-size: 12px;
+        font-weight: 400;
+        color: #888;
+        margin-bottom: 0px;
+      }
+      .task-details-value {
+        font-size: 12px;
+        font-weight: 400;
+        color: lightgray;
+        margin-bottom: 0px;
+      }
+    }
+  }
+  .task-details-tabs {
+    margin-top: 15px;
+    #active {
+      color: $primary-color;
+      border-bottom: 1px solid $primary-color;
+    }
+    .task-details-tab {
+      font-size: 13px;
+      font-weight: 400;
+      color: #888;
+      cursor: pointer;
+      padding-bottom: 8px;
+      padding-right: 5px;
+      padding-left: 5px;
+      &:hover {
+        color: #7a3dff;
+      }
+    }
+  }
+  .task-details-tab-content {
+    margin-top: 5px;
+    .task-details-tab-content-text {
+      font-size: 13px;
+      font-weight: 400;
+      color: lightgray;
     }
   }
 }

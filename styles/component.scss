@@ -966,3 +966,34 @@ $primary-color: #7c4dff;
     transform: scaleX(1);
   }
 }
+
+@keyframes rotator {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes loadpath {
+  to {
+    stroke-dashoffset: -138;
+  }
+}
+
+div.svg-wrap {
+  margin: auto;
+  width: 1.2rem;
+  height: 1.2rem;
+  animation: rotator 1.6s linear infinite forwards;
+  svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+  circle {
+    stroke: $primary-color;
+    stroke-dasharray: 138;
+    stroke-dashoffset: 138;
+    animation: loadpath 1.6s linear infinite forwards;
+  }
+}
+

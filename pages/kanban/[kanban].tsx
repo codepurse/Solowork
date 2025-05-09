@@ -4,6 +4,7 @@ import { useRouter } from "next/router";
 import { useEffect } from "react";
 import { Col, Container, Row } from "react-bootstrap";
 import useSWR from "swr";
+import DrawerInfo from "../../components/Pages/Kanban/DrawerInfo";
 import HeaderTabs from "../../components/Pages/Kanban/HeaderTabs";
 import KanbanBoard from "../../components/Pages/Kanban/KanbanBoard";
 import Overview from "../../components/Pages/Kanban/Overview";
@@ -15,9 +16,10 @@ import {
   KANBAN_COLLECTION_ID,
 } from "../../constant/appwrite";
 import { useStore } from "../../store/store";
+
 export default function KanbanPage() {
   const { useStoreKanban, useStoreTasks } = useStore();
-  const { selectedKanban } = useStoreKanban();
+  const { selectedKanban, showDrawerInfo } = useStoreKanban();
   const { tasks, setTasks } = useStoreTasks();
   const router = useRouter();
   const { kanban } = router.query;
@@ -74,6 +76,7 @@ export default function KanbanPage() {
       {selectedKanban === 1 && <KanbanBoard tasksList={tasks} />}
       {selectedKanban === 2 && <TableView tasksList={tasks} />}
       {selectedKanban === 3 && <Overview tasksList={tasks} />}
+      {showDrawerInfo && <DrawerInfo />}
     </Container>
   );
 }

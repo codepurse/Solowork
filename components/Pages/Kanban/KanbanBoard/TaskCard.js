@@ -5,13 +5,15 @@ import {
   storage,
   TASKS_ATTACHMENTS_BUCKET_ID,
 } from "../../../../constant/appwrite";
-
+import { useStore } from "../../../../store/store";
 // Optional: Create a context to know when dragging is occurring
 export const DragContext = React.createContext({ isDragging: false });
 
 export default function TaskCard({ task, isDragOverlay = false }) {
   // Optional: Get dragging state from context
   const { isDragging: isAnyDragging } = useContext(DragContext);
+  const { useStoreKanban } = useStore();
+  const { setShowDrawerInfo, setDrawerInfo } = useStoreKanban();
 
   const {
     attributes,
@@ -97,7 +99,8 @@ export default function TaskCard({ task, isDragOverlay = false }) {
       {...attributes}
       {...listeners}
       onClick={() => {
-        console.log(task);
+        setShowDrawerInfo(true);
+        setDrawerInfo(task);
       }}
     >
       <div className="kanban-task-card-header">

@@ -1,3 +1,4 @@
+import "animate.css";
 import type { AppProps } from "next/app";
 import AuthLayout from "../components/AuthLayout";
 import Layout from "../components/layout";

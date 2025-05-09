@@ -12,8 +12,12 @@ interface NotesStore {
 interface KanbanStore {
   selectedKanban: number;
   selectedKanbanId: string;
+  showDrawerInfo: boolean;
+  setShowDrawerInfo: (show: boolean) => void;
   setSelectedKanban: (kanban: number) => void;
   setSelectedKanbanId: (kanbanId: string) => void;
+  drawerInfo: any;
+  setDrawerInfo: (info: any) => void;
 }
 
 interface ProjectsStore {
@@ -46,7 +50,12 @@ const useStoreKanban = create<KanbanStore>((set) => ({
   selectedKanban: 1,
   selectedKanbanId: "",
   setSelectedKanban: (kanban: number) => set({ selectedKanban: kanban }),
-  setSelectedKanbanId: (kanbanId: string) => set({ selectedKanbanId: kanbanId }),
+  setSelectedKanbanId: (kanbanId: string) =>
+    set({ selectedKanbanId: kanbanId }),
+  showDrawerInfo: false,
+  setShowDrawerInfo: (show: boolean) => set({ showDrawerInfo: show }),
+  drawerInfo: null,
+  setDrawerInfo: (info: any) => set({ drawerInfo: info }),
 }));
 
 const useStoreProjects = create<ProjectsStore>((set) => ({
