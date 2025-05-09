@@ -1,21 +1,11 @@
 import { useRouter } from "next/router";
-import { account } from "../constant/appwrite";
-import { useStore } from "../store/store";
+import { useEffect } from "react";
 
 export default function Home() {
   const router = useRouter();
-  const { useStoreUser } = useStore();
-  const { user } = useStoreUser();
+  useEffect(() => {
+    router.push("/dashboard");
+  }, []);
 
-  const handleLogout = async () => {
-    await account.deleteSession("current");
-    router.push("/login");
-  };
-
-  return (
-    <div style={{ padding: "2rem" }}>
-      <h1 style={{ color: "white" }}>Welcome {user?.name || "Guest"}!</h1>
-      <button onClick={handleLogout}>Logout</button>
-    </div>
-  );
+  return <div style={{ padding: "2rem" }}></div>;
 }

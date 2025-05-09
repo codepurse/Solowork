@@ -1513,3 +1513,18 @@ main {
     }
   }
 }
+
+.settings {
+  height: 100%;
+  overflow-x: auto;
+  padding-top: 80px;
+  .settings-header {
+    padding: 10px 15px;
+    p {
+      font-size: 20px;
+      font-weight: 500;
+      color: lightgray;
+      margin-bottom: 0px;
+    }
+  }
+}

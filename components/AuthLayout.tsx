@@ -19,7 +19,8 @@ export default function AuthLayout({
   const isFirstRun = useRef(true);
   const { useStoreUser, useStoreProjects } = useStore();
   const { setUser } = useStoreUser();
-  const { setProjects, setSelectedProject,selectedProject } = useStoreProjects();
+  const { setProjects, setSelectedProject, selectedProject } =
+    useStoreProjects();
 
   const fetchProjects = async (userId) => {
     try {
@@ -49,7 +50,7 @@ export default function AuthLayout({
           return;
         } else {
           if (router.pathname === "/login") {
-            router.replace("/");
+            router.replace("/dashboard");
           }
           const project = await fetchProjects(user.$id);
           setProjects(project);
