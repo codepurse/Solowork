@@ -1388,8 +1388,8 @@ main {
       color: white;
       cursor: pointer;
       position: absolute;
-      right: 5;
-      top: 0;
+      right: 5px;
+      top: 0px;
       &:hover {
         color: #7a3dff;
       }
@@ -1517,12 +1517,43 @@ main {
 .settings {
   height: 100%;
   overflow-x: auto;
-  padding-top: 80px;
+  padding-top: 59px;
   .settings-header {
     padding: 10px 15px;
-    p {
+    .settings-header-title {
       font-size: 20px;
       font-weight: 500;
+      color: lightgray;
+      margin-bottom: 0px;
+    }
+    .settings-header-subtitle {
+      font-size: 12px;
+      font-weight: 400;
+      color: #888;
+      margin-bottom: 0px;
+    }
+  }
+  .settings-content {
+    padding: 10px 15px;
+    .settings-content-title {
+      font-size: 15px;
+      font-weight: 300;
+      color: lightgray;
+      margin-bottom: 0px;
+      cursor: pointer;
+      padding: 3px 10px;
+      border-radius: 5px;
+      &:hover {
+        background-color: #110d28;
+        color: $primary-color;
+      }
+    }
+  }
+  .settings-content-right {
+    padding: 10px 15px;
+    .settings-content-title-right {
+      font-size: 16px;
+      font-weight: 400;
       color: lightgray;
       margin-bottom: 0px;
     }
