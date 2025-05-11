@@ -1,5 +1,9 @@
-import { Pencil, Timer, X } from "lucide-react";
+import { Image, Pencil, Timer, X } from "lucide-react";
 import { useEffect, useState } from "react";
+import {
+  storage,
+  TASKS_ATTACHMENTS_BUCKET_ID,
+} from "../../../../constant/appwrite";
 import { useStore } from "../../../../store/store";
 import {
   getColor,
@@ -13,6 +17,7 @@ export default function DrawerInfo() {
   const { useStoreKanban } = useStore();
   const { drawerInfo, setShowDrawerInfo } = useStoreKanban();
   const [activeTab, setActiveTab] = useState<number>(1);
+  const [fileMetaList, setFileMetaList] = useState([]);
 
   useEffect(() => {
     console.log(drawerInfo);
@@ -27,6 +32,29 @@ export default function DrawerInfo() {
     e.preventDefault();
     setShowDrawerInfo(false);
   };
+
+  useEffect(() => {
+    if (!drawerInfo?.fileId || drawerInfo.fileId.length === 0) {
+      setFileMetaList([]);
+      return;
+    }
+
+    const fetchFiles = async () => {
+      try {
+        const files = await Promise.all(
+          drawerInfo.fileId.map((id) =>
+            storage.getFile(TASKS_ATTACHMENTS_BUCKET_ID, id)
+          )
+        );
+        setFileMetaList(files);
+      } catch (err) {
+        console.error("Error fetching file metadata", err);
+        setFileMetaList([]); // fallback
+      }
+    };
+
+    fetchFiles();
+  }, [drawerInfo?.fileId]);
 
   return (
     <div className="drawer-info animate__animated animate__slideInRight">
@@ -96,47 +124,59 @@ export default function DrawerInfo() {
               )}
             </div>
           </Space>
+          <div>
+            <p className="task-details-label">Description</p>
+            <p className="task-details-label-content">
+              {drawerInfo?.description}
+            </p>
+          </div>
+          <div className="mt-2">
+            <p className="task-details-label">
+              Attachments ( {fileMetaList.length} )
+            </p>
+            {fileMetaList.length === 0 ? (
+              <p className="task-details-value">-</p>
+            ) : (
+              fileMetaList.map((file) => (
+                <div className="task-details-attachment" key={file.$id}>
+                  <Space gap={10}>
+                    <i className="task-details-attachment-icon">
+                      <Image size={20} />
+                    </i>
+                    <div>
+                      <p
+                        className="task-details-attachment-name"
+                        key={file.$id}
+                      >
+                        {file.name}
+                      </p>
+                      <p className="task-details-attachment-size">
+                        {(file.sizeOriginal / 1024).toFixed(1)} KB
+                      </p>
+                    </div>
+                  </Space>
+                </div>
+              ))
+            )}
+          </div>
           <div className="task-details-tabs">
             <Space gap={15}>
               <p
-                className="task-details-tab"
+                className="task-details-tab mb-0"
                 id={activeTab === 1 ? "active" : ""}
                 onClick={() => handleTabClick(1)}
               >
-                Description
+                Task
               </p>
               <p
-                className="task-details-tab"
+                className="task-details-tab mb-0"
                 id={activeTab === 2 ? "active" : ""}
                 onClick={() => handleTabClick(2)}
               >
                 Comments
               </p>
-              <p
-                className="task-details-tab"
-                id={activeTab === 3 ? "active" : ""}
-                onClick={() => handleTabClick(3)}
-              >
-                Attachments
-              </p>
             </Space>
-          </div>
-          <div className="task-details-tab-content">
-            {activeTab === 1 && (
-              <p className="task-details-tab-content-text">
-                {drawerInfo?.description}
-              </p>
-            )}
-            {activeTab === 2 && (
-              <p className="task-details-tab-content-text">
-                {drawerInfo?.comments}
-              </p>
-            )}
-            {activeTab === 3 && (
-              <p className="task-details-tab-content-text">
-                {drawerInfo?.attachments}
-              </p>
-            )}
+            <hr className="not-faded-line m-0" />
           </div>
         </div>
       </div>

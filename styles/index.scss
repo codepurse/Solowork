@@ -1466,7 +1466,7 @@ main {
       margin-bottom: 10px;
     }
     .task-title {
-      font-size: 1rem;
+      font-size: 1.1rem;
       font-weight: 400;
       color: lightgray;
       margin-bottom: 0px;
@@ -1479,11 +1479,48 @@ main {
         color: #888;
         margin-bottom: 0px;
       }
+      .task-details-label-content {
+        font-size: 12px;
+        font-weight: 400;
+        color: lightgray;
+        margin-bottom: 0px;
+        border-radius: 5px;
+        padding: 7px 12px;
+        background-color: #110d28;
+        margin-top: 10px;
+        border: 1px solid #212121;
+        line-height: 1.7;
+      }
       .task-details-value {
         font-size: 12px;
         font-weight: 400;
         color: lightgray;
         margin-bottom: 0px;
+      }
+      .task-details-attachment {
+        border-radius: 5px;
+        padding: 9px 12px;
+        background-color: #110d28;
+        margin-top: 10px;
+        border: 1px solid #212121;
+        .task-details-attachment-name {
+          font-size: 12px;
+          font-weight: 400;
+          color: lightgray;
+          margin-bottom: 0px;
+        }
+        .task-details-attachment-size {
+          font-size: 12px;
+          font-weight: 400;
+          color: #888;
+          margin-bottom: 0px;
+        }
+        .task-details-attachment-icon {
+          color: white;
+          background-color: $primary-color;
+          border-radius: 5px;
+          padding: 6px 10px;
+        }
       }
     }
   }
