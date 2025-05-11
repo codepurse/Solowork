@@ -28,6 +28,7 @@ body {
   scrollbar-color: #424242 #252525;
   scrollbar-width: thin;
 }
+
 main {
   height: 100vh;
   width: 100%;
@@ -86,6 +87,7 @@ main {
     font-weight: 300;
     color: #888;
     margin-bottom: 0px;
+    margin-top: -4px;
   }
   .dropdown-profile {
     position: absolute;
@@ -1533,10 +1535,30 @@ main {
       margin-bottom: 0px;
     }
   }
+  .profile-image {
+    width: 85px;
+    height: 85px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid #212121;
+    cursor: pointer;
+  }
+  .profile-image-title {
+    font-size: 13px;
+    font-weight: 300;
+    color: lightgray;
+    margin-bottom: 0px;
+  }
+  .profile-image-subtitle {
+    font-size: 12px;
+    font-weight: 300;
+    color: #888;
+    margin-bottom: 0px;
+  }
   .settings-content {
     padding: 10px 15px;
     .settings-content-title {
-      font-size: 15px;
+      font-size: 13px;
       font-weight: 300;
       color: lightgray;
       margin-bottom: 0px;
@@ -1552,10 +1574,43 @@ main {
   .settings-content-right {
     padding: 10px 15px;
     .settings-content-title-right {
-      font-size: 16px;
-      font-weight: 400;
+      font-size: 17px;
+      font-weight: 500;
       color: lightgray;
       margin-bottom: 0px;
     }
+    .settings-content-subtitle-right {
+      font-size: 13px;
+      font-weight: 300;
+      color: #888;
+      margin-bottom: 0px;
+    }
+    .settings-title-inside-right-subtitle {
+      font-size: 12px;
+      font-weight: 300;
+      color: #888;
+      margin-bottom: 0px;
+    }
+  }
+  .settings-title-inside-right {
+    font-size: 13px;
+    font-weight: 300;
+    color: lightgray;
+    margin-bottom: 0px;
+  }
+  .settings-title-inside-right-delete {
+    font-size: 15px;
+    font-weight: 300;
+    color: #ef5350;
+    margin-bottom: 5px;
+  }
+}
+
+.delete-user {
+  .modal-description-delete {
+    font-size: 13px;
+    font-weight: 300;
+    color: whitesmoke;
+    margin-bottom: 0px;
   }
 }

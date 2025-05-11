@@ -18,10 +18,10 @@ export default function AuthLayout({
   const [isLoading, setIsLoading] = useState(true);
   const isFirstRun = useRef(true);
   const { useStoreUser, useStoreProjects } = useStore();
-  const { setUser } = useStoreUser();
+  const { user, setUser } = useStoreUser();
   const { setProjects, setSelectedProject, selectedProject } =
     useStoreProjects();
-
+  const [error, setError] = useState<string | null>(null);
   const fetchProjects = async (userId) => {
     try {
       const response = await databases.listDocuments(
@@ -41,6 +41,8 @@ export default function AuthLayout({
       try {
         const user = await account.get();
         setUser(user);
+
+        // If no user and not on public routes, redirect to login
         if (
           !user &&
           router.pathname !== "/login" &&
@@ -48,10 +50,14 @@ export default function AuthLayout({
         ) {
           router.replace("/login");
           return;
-        } else {
+        } else if (user) {
+          // If user exists and on login page, redirect to dashboard
           if (router.pathname === "/login") {
             router.replace("/dashboard");
+            return;
           }
+
+          // Fetch projects for logged in user
           const project = await fetchProjects(user.$id);
           setProjects(project);
           if (project.length > 0) {
@@ -60,28 +66,43 @@ export default function AuthLayout({
         }
       } catch (error) {
         if (error?.code === 401 || error?.code === 403) {
+          setUser(null);
+          console.log("error", error?.message);
+          setError(error.message);
           if (router.pathname !== "/login" && router.pathname !== "/create") {
             router.replace("/login");
+            return;
           }
         }
+      } finally {
         setIsLoading(false);
-        return;
+        isFirstRun.current = false;
       }
-
-      setIsLoading(false);
-      isFirstRun.current = false;
     };
 
     checkUser();
   }, [router.pathname]);
 
-  useEffect(() => {
-    console.log("selectedProject", selectedProject);
-  }, [selectedProject]);
-
-  if (isLoading && isFirstRun.current) {
+  // Show loading state while checking authentication
+  if (isLoading) {
     return <div>Loading...</div>;
   }
 
+  // Define public routes that don't require authentication
+  const publicRoutes = ["/login", "/create"];
+  const isPublicRoute = publicRoutes.includes(router.pathname);
+
+  // If no user and not on a public route, don't render children
+  // The redirect in the useEffect should handle navigation to the login page
+  if (!user && !isPublicRoute) {
+    // This is just a fallback - ideally the redirect above would have happened
+    // If we're seeing this, it means the redirect didn't work properly
+    if (typeof window !== "undefined") {
+      router.replace("/login");
+    }
+    return <div>Redirecting to login...</div>;
+  }
+
+  // User is authenticated or on a public route, render children
   return <div>{children}</div>;
 }

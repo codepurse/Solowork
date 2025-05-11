@@ -43,7 +43,7 @@ export default function Navbar() {
             <img src="/image/pngegg.png" alt="avatar" className="avatar-user" />
             <div>
               <Space direction="column" alignItems="start">
-                <p className="span-user">{user?.name}</p>
+                <p className="span-user">{user?.prefs?.fullname}</p>
                 <p className="label-email">{user?.email}</p>
               </Space>
             </div>

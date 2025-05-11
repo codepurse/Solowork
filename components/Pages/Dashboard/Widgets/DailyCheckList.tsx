@@ -19,15 +19,22 @@ export default function DailyCheckList() {
   const [name, setName] = useState<string>("");
 
   const fetchDailyCheckList = async () => {
-    const dailyCheckList = await databases.listDocuments(
-      DATABASE_ID,
-      DAILY_CHECKLIST_COLLECTION_ID,
-      [Query.equal("userId", user.$id)]
-    );
-    return dailyCheckList.documents;
+    try {
+      if (!user || !user.$id) return [];
+      
+      const dailyCheckList = await databases.listDocuments(
+        DATABASE_ID,
+        DAILY_CHECKLIST_COLLECTION_ID,
+        [Query.equal("userId", user.$id)]
+      );
+      return dailyCheckList.documents;
+    } catch (error) {
+      console.log("Failed to fetch daily checklist", error);
+      return [];
+    }
   };
 
-  const { data } = useSWR(user.$id ? "daily_checklist" : null, () =>
+  const { data } = useSWR(user && user.$id ? "daily_checklist" : null, () =>
     fetchDailyCheckList()
   );
 
@@ -83,7 +90,7 @@ export default function DailyCheckList() {
   }, [data]);
 
   const handleAddTask = async () => {
-    if (name && !loading) {
+    if (name && !loading && user && user.$id) {
       try {
         setLoading(true);
         await databases.createDocument(
@@ -107,6 +114,7 @@ export default function DailyCheckList() {
       } finally {
         mutate("daily_checklist");
         setLoading(false);
+        setName("");
       }
     }
   };

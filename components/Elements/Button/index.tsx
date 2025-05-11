@@ -3,6 +3,7 @@ interface ButtonProps {
   className?: string;
   onClick?: () => void;
   loading?: boolean;
+  style?: React.CSSProperties;
 }
 
 const Loader = () => {
@@ -26,6 +27,7 @@ export default function Button({
   className,
   onClick,
   loading,
+  style,
 }: Readonly<ButtonProps>) {
   return (
     <button
@@ -33,6 +35,7 @@ export default function Button({
         loading ? "btn-loading" : ""
       }`}
       onClick={onClick}
+      style={style}
     >
       {loading ? <Loader /> : children}
     </button>

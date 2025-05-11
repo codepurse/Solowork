@@ -17,6 +17,26 @@ $primary-color: #7c4dff;
   }
 }
 
+.btn-delete {
+  background: #ef5350;
+  color: #fff;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-size: 14px;
+  font-weight: 400;
+  width: max-content;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  i {
+    color: #fff;
+  }
+  span {
+    color: #fff;
+  }
+}
 .modal-container {
   .modal-content {
     background: #040019;
@@ -996,4 +1016,3 @@ div.svg-wrap {
     animation: loadpath 1.6s linear infinite forwards;
   }
 }
-
