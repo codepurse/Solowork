@@ -716,6 +716,36 @@ main {
     margin-bottom: 12px;
     transition: all 0.2s ease;
     cursor: pointer;
+    .kanban-task-card-checklist-title {
+      font-size: 12px;
+      font-weight: 400;
+      color: whitesmoke;
+      margin-bottom: 0px;
+    }
+    .kanban-task-card-checklist-count {
+      font-size: 12px;
+      font-weight: 400;
+      color: whitesmoke;
+      margin-bottom: 0px;
+    }
+    .kanban-progress-container {
+      width: 100%;
+      height: 5px;
+      background: #b39ddb;
+      border-radius: 5px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .kanban-progress-bar-fill {
+      height: 100%;
+      min-width: 1px;
+      background: $primary-color;
+      transition: width 0.3s ease;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
 
     &:hover {
       transform: translateY(-2px);
@@ -1441,7 +1471,7 @@ main {
   position: fixed;
   top: 0;
   right: 0;
-  z-index: 999999;
+  z-index: 999;
   background-color: #040019;
   border: 1px solid #212121;
   min-width: 450px;
@@ -1649,5 +1679,36 @@ main {
     font-weight: 300;
     color: whitesmoke;
     margin-bottom: 0px;
+  }
+}
+
+.add-task-modal-checklist-container {
+  padding: 10px 15px;
+  border-radius: 10px;
+  border: 1px solid #212121;
+  .add-task-modal-checklist-title {
+    font-size: 13px;
+    font-weight: 300;
+    color: lightgray;
+    margin-bottom: 0px;
+  }
+  .checklist-progress-bar-fill {
+    height: 100%;
+    background: $primary-color;
+    transition: width 0.3s ease;
+  }
+  .checklist-progress-count {
+    font-size: 12px;
+    font-weight: 300;
+    color: #888;
+    margin-bottom: 0px;
+  }
+  .add-task-modal-checklist-item {
+  }
+  .checklist-progress-container {
+    height: 5px;
+    background: #b39ddb;
+    border-radius: 5px;
+    overflow: hidden;
   }
 }

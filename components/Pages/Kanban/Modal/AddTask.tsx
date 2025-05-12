@@ -1,8 +1,8 @@
 import { ID, Query } from "appwrite";
 import dayjs from "dayjs";
-import { X } from "lucide-react";
+import { ClipboardList, Trash, X } from "lucide-react";
 import { useRouter } from "next/router";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Col, Container, Modal, Row } from "react-bootstrap";
 import { mutate } from "swr";
 import {
@@ -41,6 +41,9 @@ export default function AddTask({ show, onHide }: Readonly<AddTaskProps>) {
   const [loading, setLoading] = useState<boolean>(false);
   const [file, setFile] = useState<File[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [checklist, setChecklist] = useState<
+    { name: string; completed: boolean }[]
+  >([]);
   const router = useRouter();
   const { kanban } = router.query;
 
@@ -62,6 +65,15 @@ export default function AddTask({ show, onHide }: Readonly<AddTaskProps>) {
   ) => {
     if (e.key === "Enter") {
       setTags([...tags, tag]);
+      e.currentTarget.value = "";
+    }
+  };
+  const handleAddChecklist = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      const name = e.currentTarget.value.trim();
+
+      setChecklist((prev) => [...prev, { name, completed: false }]);
+
       e.currentTarget.value = "";
     }
   };
@@ -118,6 +130,7 @@ export default function AddTask({ show, onHide }: Readonly<AddTaskProps>) {
           dueDate,
           description,
           tags,
+          checklist: JSON.stringify(checklist),
           fileId: uploadedFileIds, // array
         }
       );
@@ -149,6 +162,22 @@ export default function AddTask({ show, onHide }: Readonly<AddTaskProps>) {
   const handleRemoveFile = (indexToRemove: number) => {
     setFile((prev) => prev.filter((_, index) => index !== indexToRemove));
   };
+
+  const updateTask = async (index: number, completed: boolean) => {
+    const updatedChecklist = [...checklist];
+    updatedChecklist[index].completed = completed;
+    setChecklist(updatedChecklist);
+  };
+
+  const handleRemoveChecklist = (index: number) => {
+    const updatedChecklist = [...checklist];
+    updatedChecklist.splice(index, 1);
+    setChecklist(updatedChecklist);
+  };
+
+  useEffect(() => {
+    console.log(checklist);
+  }, [checklist]);
 
   return (
     <Modal show={show} onHide={onHide} centered className="modal-container">
@@ -241,6 +270,80 @@ export default function AddTask({ show, onHide }: Readonly<AddTaskProps>) {
                 );
               })}
             </div>
+          </Col>
+          <Col lg={12}>
+            <p className="modal-form-title">Checklist</p>
+            <Text
+              variant="md"
+              type="text"
+              placeholder="Add checklist here.."
+              onKeyDown={(e) => handleAddChecklist(e)}
+            />
+            {checklist.length !== 0 && (
+              <div className="add-task-modal-checklist-container mt-2">
+                <Space gap={10} align="evenly">
+                  <Space align="center" gap={10}>
+                    <ClipboardList size={15} color="#fff" />
+                    <p className="add-task-modal-checklist-title">Sub Tasks</p>
+                  </Space>
+                  <span className="checklist-progress-count">
+                    {
+                      checklist.filter((checklist) => checklist.completed)
+                        .length
+                    }
+                    /{checklist.length}
+                  </span>
+                </Space>
+                <div className="checklist-progress-container mt-2">
+                  <div
+                    className="checklist-progress-bar-fill"
+                    style={{
+                      width: `${
+                        checklist.length > 0
+                          ? (checklist.filter((item) => item.completed).length /
+                              checklist.length) *
+                            100
+                          : 0
+                      }%`,
+                    }}
+                  ></div>
+                </div>
+                <hr
+                  className="not-faded-line"
+                  style={{ margin: "10px 0px", background: "#252525" }}
+                />
+                {checklist.map((checklist, index) => {
+                  return (
+                    <Space key={index} align="evenly" gap={10}>
+                      <div className="modern-checkbox mb-2" key={index}>
+                        <input
+                          type="checkbox"
+                          id={`${checklist}-${index}`}
+                          checked={checklist.completed}
+                          onChange={(e) => updateTask(index, e.target.checked)}
+                        />
+                        <label htmlFor={`${checklist}-${index}`}>
+                          <span className="checkbox-icon"></span>
+                          <span className="checkbox-text">
+                            {checklist.name}
+                          </span>
+                        </label>
+                      </div>
+                      <div>
+                        <i className="trash-icon">
+                          <Trash
+                            size={15}
+                            style={{ marginRight: "5px" }}
+                            color="#fff"
+                            onClick={() => handleRemoveChecklist(index)}
+                          />
+                        </i>
+                      </div>
+                    </Space>
+                  );
+                })}
+              </div>
+            )}
           </Col>
           <Col lg={12}>
             <p className="modal-form-title">Attachments</p>

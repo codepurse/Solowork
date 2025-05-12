@@ -1,11 +1,13 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import React, { useContext } from "react";
+import { ClipboardList } from "lucide-react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   storage,
   TASKS_ATTACHMENTS_BUCKET_ID,
 } from "../../../../constant/appwrite";
 import { useStore } from "../../../../store/store";
+import Space from "../../../space";
 // Optional: Create a context to know when dragging is occurring
 export const DragContext = React.createContext({ isDragging: false });
 
@@ -14,6 +16,13 @@ export default function TaskCard({ task, isDragOverlay = false }) {
   const { isDragging: isAnyDragging } = useContext(DragContext);
   const { useStoreKanban } = useStore();
   const { setShowDrawerInfo, setDrawerInfo } = useStoreKanban();
+  const [checklist, setChecklist] = useState([]);
+
+  useEffect(() => {
+    if (task?.checklist) {
+      setChecklist(JSON.parse(task?.checklist));
+    }
+  }, [task?.checklist]);
 
   const {
     attributes,
@@ -30,6 +39,10 @@ export default function TaskCard({ task, isDragOverlay = false }) {
     },
     disabled: isDragOverlay,
   });
+
+  useEffect(() => {
+    console.log(checklist);
+  }, [checklist]);
 
   // Card styles
   const cardStyle = {
@@ -142,7 +155,37 @@ export default function TaskCard({ task, isDragOverlay = false }) {
           </div>
         ))}
       </div>
-
+      {checklist?.length > 0 && (
+        <div className="kanban-task-card-checklist mb-2">
+          <Space gap={10} align="evenly">
+            <Space gap={5}>
+              <ClipboardList size={15} color="#fff" />
+              <p className="kanban-task-card-checklist-title">Checklist</p>
+            </Space>
+            <p className="kanban-task-card-checklist-count">
+              {`${checklist.filter((item) => item.completed).length}/${
+                checklist?.length
+              }`}
+            </p>
+          </Space>
+          <div className="kanban-progress-container mt-2">
+            {checklist?.length > 0 && (
+              <div className="kanban-progress-bar-container">
+                <div
+                  className="kanban-progress-bar-fill"
+                  style={{
+                    width: `${
+                      (checklist.filter((item) => item.completed).length /
+                        checklist.length) *
+                      100
+                    }%`,
+                  }}
+                ></div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
       <div className="kanban-task-card-footer">
         <div className="kanban-task-card-tags">
           {task?.tags?.slice(0, 2).map((tag, index) => (

@@ -1,6 +1,11 @@
-import { Image, Pencil, Timer, X } from "lucide-react";
+import { ClipboardList, Image, Pencil, Timer, Trash, X } from "lucide-react";
 import { useEffect, useState } from "react";
+import { Modal } from "react-bootstrap";
+import { mutate } from "swr";
 import {
+  DATABASE_ID,
+  databases,
+  KANBAN_COLLECTION_ID,
   storage,
   TASKS_ATTACHMENTS_BUCKET_ID,
 } from "../../../../constant/appwrite";
@@ -18,9 +23,15 @@ export default function DrawerInfo() {
   const { drawerInfo, setShowDrawerInfo } = useStoreKanban();
   const [activeTab, setActiveTab] = useState<number>(1);
   const [fileMetaList, setFileMetaList] = useState([]);
+  const [showModal, setShowModal] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [checklist, setChecklist] = useState([]);
 
   useEffect(() => {
     console.log(drawerInfo);
+    if (drawerInfo?.checklist) {
+      setChecklist(JSON.parse(drawerInfo?.checklist));
+    }
   }, [drawerInfo]);
 
   const handleTabClick = (tab: number) => {
@@ -56,10 +67,49 @@ export default function DrawerInfo() {
     fetchFiles();
   }, [drawerInfo?.fileId]);
 
+  const Loader = () => {
+    return (
+      <svg className="circular-loader" viewBox="25 25 50 50">
+        <circle
+          className="loader-path"
+          cx="50"
+          cy="50"
+          r="20"
+          fill="none"
+          stroke="#fff"
+          strokeWidth="3"
+        />
+      </svg>
+    );
+  };
+
+  const handleDeleteTask = async () => {
+    setLoading(true);
+    if (!loading) {
+      try {
+        await databases.deleteDocument(
+          DATABASE_ID,
+          KANBAN_COLLECTION_ID,
+          drawerInfo?.$id
+        );
+        mutate(["kanban_tasks", drawerInfo?.kanbanId]);
+        setShowDrawerInfo(false);
+        setShowModal(false);
+      } catch (err) {
+        console.error("Error deleting task", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+  };
+
   return (
     <div className="drawer-info animate__animated animate__slideInRight">
       <div className="drawer-controls">
         <Space gap={10} align="end">
+          <i onClick={() => setShowModal(true)}>
+            <Trash size={15} />
+          </i>
           <i>
             <Timer size={15} />
           </i>
@@ -178,8 +228,98 @@ export default function DrawerInfo() {
             </Space>
             <hr className="not-faded-line m-0" />
           </div>
+          {activeTab === 1 && (
+            <div className="add-task-modal-checklist-container mt-2">
+              <Space gap={10}>
+                <ClipboardList size={15} color="#fff" />
+                <p className="add-task-modal-checklist-title">Sub Tasks</p>
+              </Space>
+              <div className="checklist-progress-container mt-2">
+                <div
+                  className="checklist-progress-bar-fill"
+                  style={{
+                    width: `${
+                      checklist.length > 0
+                        ? (checklist.filter((item) => item.completed).length /
+                            checklist.length) *
+                          100
+                        : 0
+                    }%`,
+                  }}
+                ></div>
+              </div>
+              <hr
+                className="not-faded-line"
+                style={{ margin: "10px 0px", background: "#252525" }}
+              />
+              {checklist.map((checklist, index) => {
+                return (
+                  <Space key={index} align="evenly" gap={10}>
+                    <div className="modern-checkbox mb-2" key={index}>
+                      <input
+                        type="checkbox"
+                        id={`${checklist}-${index}`}
+                        checked={checklist.completed}
+                      />
+                      <label htmlFor={`${checklist}-${index}`}>
+                        <span className="checkbox-icon"></span>
+                        <span className="checkbox-text">{checklist.name}</span>
+                      </label>
+                    </div>
+                  </Space>
+                );
+              })}
+            </div>
+          )}
         </div>
       </div>
+      <Modal
+        className="modal-container"
+        show={showModal}
+        centered
+        size="sm"
+        onHide={() => setShowModal(false)}
+      >
+        <Space align="evenly">
+          <p className="modal-title">Delete task</p>
+          <i className="modal-close-icon" onClick={() => setShowModal(false)}>
+            <X size={17} />
+          </i>
+        </Space>
+        <hr
+          className="not-faded-line"
+          style={{ margin: "5px 0px", background: "#252525" }}
+        />
+        <p className="modal-description">
+          Are you sure you want to delete this task? This action is irreversible
+          and cannot be undone.
+        </p>
+        <button
+          className="btn-delete mt-3"
+          onClick={handleDeleteTask}
+          style={{
+            width: "100%",
+            textAlign: "center",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            gap: "10px",
+            marginTop: "10px",
+            background: "#ff5252",
+          }}
+        >
+          {loading ? (
+            <Loader />
+          ) : (
+            <Space gap={5}>
+              <i style={{ marginTop: "-3px" }}>
+                <Trash size={16} />
+              </i>
+              <span>Delete task</span>
+            </Space>
+          )}
+        </button>
+      </Modal>
     </div>
   );
 }
