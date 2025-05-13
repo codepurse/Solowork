@@ -1711,9 +1711,13 @@ main {
   }
 }
 
-:root {
-  --ease-in: cubic-bezier(0.58, 0.42, 1, 1);
-  --ease-out: cubic-bezier(0, 0, 0.42, 0.58);
+@keyframes rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .pomodoro-widget {
@@ -1740,123 +1744,159 @@ main {
       -webkit-box-orient: vertical;
     }
   }
-  .pomodoro-widget-body {
-    .circle-container {
-      position: relative;
-      width: 300px;
-      height: 300px;
-      margin: 2em;
+  .pomodoro-widget-icon-play {
+    color: whitesmoke !important;
+    &:hover {
+      color: $primary-color !important;
     }
-
-    @media (max-width: 768px) {
-      .circle-container {
-        width: 300px;
-        height: 300px;
-      }
+  }
+  .pomodoro-widget-icon {
+    cursor: pointer;
+    color: #888;
+    border-radius: 5px;
+    width: 35px;
+    height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    &:hover {
+      color: #7a3dff;
     }
+  }
+}
 
-    .circle-container > * {
+.pomodoro-widget-body {
+  padding: 10px 35px;
+  margin-top: 15px;
+  position: relative;
+}
+
+.pomodoro-widget-timer-hours-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  .pomodoro-widget-timer-hours,
+  .pomodoro-widget-timer-minutes,
+  .pomodoro-widget-timer-seconds {
+    font-size: 20px;
+    font-weight: 500;
+    color: lightgray;
+    margin-bottom: -3px;
+  }
+}
+
+.pomodoro-widget-timer-colon {
+  font-size: 20px;
+  font-weight: 500;
+  color: lightgray;
+  margin-bottom: 0px;
+}
+
+.pomodoro-widget-timer-date {
+  font-size: 11px;
+  font-weight: 300;
+  color: $primary-color;
+}
+
+.pomodoro-widget-timer-hours-label,
+.pomodoro-widget-timer-minutes-label,
+.pomodoro-widget-timer-seconds-label {
+  font-size: 12px;
+  font-weight: 300;
+  color: #888;
+  margin-bottom: 0px;
+}
+
+.outer-circle {
+  width: 100%;
+  max-width: 250px;
+  aspect-ratio: 1 / 1; // Maintain a perfect circle
+  border-radius: 50%;
+  box-shadow: 0 0 5px 15px rgba(#2f2b8c, 0.1);
+  background-image: radial-gradient(#2f2b8c00, #2f2b8c00 50%, #2f2b8c33 90%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  position: relative;
+  .pomodoro-widget-timer-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 100;
+    height: max-content;
+    .pomodoro-widget-timer {
+      font-size: 25px;
+      font-weight: 500;
+      color: lightgray;
+      margin-bottom: 0px;
+      z-index: 100;
+    }
+  }
+}
+
+.wrapper {
+  width: 100%;
+  height: 100%;
+  position: relative;
+
+  .breath {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    position: relative;
+    background-color: #040019;
+    animation: rotate 16s linear infinite;
+
+    &::before {
+      content: "";
       position: absolute;
-      top: -10px;
-      left: -10px;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      z-index: -1;
+      margin: -3px;
+      border-radius: inherit;
+      background: linear-gradient(
+        135deg,
+        #d904b5aa,
+        #2f2b8caa
+      ); // more transparent
+      box-shadow: 0 0 8px 10px rgba(#2f2b8c, 0.15); // smaller and dimmer
+    }
+
+    &::after {
+      content: "";
+      display: block;
+      position: relative;
       width: 100%;
       height: 100%;
+      border-radius: inherit;
+      background-color: #040019;
+    }
+
+    .flare1,
+    .flare2 {
+      width: 80%;
+      height: 80%;
       border-radius: 50%;
-      border: 10px solid white;
+      position: absolute;
+      z-index: -1;
     }
 
-    .circle {
-      background: white;
+    .flare1 {
+      background-image: radial-gradient(#d904b563, #d904b500 60%);
+      left: -20%;
+      top: -20%;
     }
 
-    .wave {
-      background: url(https://coiger.github.io/fill-water-animation/wave.svg)
-        repeat-x;
-      opacity: 0.8;
-    }
-
-    .wave-below {
-      background-color: #3b46d3;
-    }
-
-    .wave._0 {
-      background-position: 0% 110%;
-    }
-    .wave-below._0 {
-      clip-path: polygon(0% 110%, 0% 110%, 110% 110%, 110% 110%);
-    }
-
-    .wave._50 {
-      background-position: 0% 57%;
-    }
-    .wave-below._50 {
-      clip-path: polygon(0% 110%, 0% 58%, 110% 58%, 110% 110%);
-    }
-
-    .wave._100 {
-      background-position: 0% 5%;
-    }
-    .wave-below._100 {
-      clip-path: polygon(0% 110%, 0% 15%, 110% 15%, 110% 110%);
-    }
-
-    @keyframes fill-wave {
-      from {
-        background-position: -1200px 110%;
-      }
-    }
-
-    @keyframes fill-below {
-      from {
-        clip-path: polygon(0% 110%, 0% 110%, 110% 110%, 110% 110%);
-      }
-    }
-
-    /*
-     * DEFINE WAVE ANIMATION
-     */
-
-    @keyframes wave-0 {
-      to {
-        background-position: 1200px 110%;
-      }
-    }
-
-    @keyframes wave-50 {
-      to {
-        background-position: 1200px 57%;
-      }
-    }
-
-    @keyframes wave-100 {
-      to {
-        background-position: 1200px 5%;
-      }
-    }
-
-    /*
-     * GIVE FILLING & WAVE ANIMATION
-     */
-
-    .wave {
-      animation-name: fill-wave, wave-0;
-      animation-duration: 5s, 7s;
-      animation-delay: 0s, 5s;
-      animation-fill-mode: forwards, none;
-      animation-iteration-count: 1, infinite;
-      animation-timing-function: var(--ease-in), var(--ease-out);
-    }
-
-    .wave:nth-child(2) {
-      animation-duration: 5s, 11s;
-    }
-
-    .wave:nth-child(3) {
-      animation-duration: 5s, 13s;
-    }
-
-    .wave-below {
-      animation: 5s var(--ease-in) forwards fill-below;
+    .flare2 {
+      background-image: radial-gradient(#2f2b8c63, #d904b500 60%);
+      right: -20%;
+      bottom: -20%;
     }
   }
 }
