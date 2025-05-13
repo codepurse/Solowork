@@ -4,8 +4,10 @@ import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";
 import LineChart from "../components/Pages/Dashboard/LineChart";
 import DailyCheckList from "../components/Pages/Dashboard/Widgets/DailyCheckList";
+import PomodoroWidget from "../components/Pages/Dashboard/Widgets/PomodoroWidget";
 import RecentActivity from "../components/Pages/Dashboard/Widgets/RecentActivity";
 import TaskWidgets from "../components/Pages/Dashboard/Widgets/TaskWidgets";
+
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
 export default function Dashboard() {
@@ -25,6 +27,7 @@ export default function Dashboard() {
       { i: "chart", x: 0, y: 6, w: 12, h: 16 },
       { i: "recent-activity", x: 0, y: 22, w: 12, h: 16 },
       { i: "daily-checklist", x: 0, y: 38, w: 3, h: 16 },
+      { i: "pomodoro", x: 3, y: 38, w: 3, h: 16 },
     ],
     md: [
       { i: "todo", x: 0, y: 0, w: 3, h: 6 },
@@ -34,6 +37,7 @@ export default function Dashboard() {
       { i: "chart", x: 0, y: 6, w: 9, h: 16 },
       { i: "recent-activity", x: 9, y: 6, w: 3, h: 16 },
       { i: "daily-checklist", x: 0, y: 22, w: 3, h: 16 },
+      { i: "pomodoro", x: 3, y: 22, w: 3, h: 16 },
     ],
     sm: [
       { i: "todo", x: 0, y: 0, w: 3, h: 6 },
@@ -41,8 +45,9 @@ export default function Dashboard() {
       { i: "completed", x: 0, y: 6, w: 3, h: 6 },
       { i: "cancelled", x: 3, y: 6, w: 3, h: 6 },
       { i: "chart", x: 0, y: 12, w: 6, h: 16 },
-      { i: "recent-activity", x: 6, y: 12, w: 6, h: 16 },
-      { i: "daily-checklist", x: 0, y: 28, w: 3, h: 16 },
+      { i: "recent-activity", x: 0, y: 28, w: 6, h: 16 },
+      { i: "daily-checklist", x: 0, y: 44, w: 3, h: 16 },
+      { i: "pomodoro", x: 3, y: 44, w: 3, h: 16 },
     ],
   };
 
@@ -89,6 +94,9 @@ export default function Dashboard() {
         </div>
         <div key="daily-checklist">
           <DailyCheckList />
+        </div>
+        <div key="pomodoro">
+          <PomodoroWidget />
         </div>
       </ResponsiveGridLayout>
     </div>

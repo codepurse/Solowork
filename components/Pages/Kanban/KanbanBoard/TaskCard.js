@@ -1,6 +1,5 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { ClipboardList } from "lucide-react";
 import React, { useContext, useEffect, useState } from "react";
 import {
   storage,
@@ -158,10 +157,7 @@ export default function TaskCard({ task, isDragOverlay = false }) {
       {checklist?.length > 0 && (
         <div className="kanban-task-card-checklist mb-2">
           <Space gap={10} align="evenly">
-            <Space gap={5}>
-              <ClipboardList size={15} color="#fff" />
-              <p className="kanban-task-card-checklist-title">Checklist</p>
-            </Space>
+            <p className="kanban-task-card-checklist-title">Checklist</p>
             <p className="kanban-task-card-checklist-count">
               {`${checklist.filter((item) => item.completed).length}/${
                 checklist?.length
