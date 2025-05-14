@@ -24,39 +24,47 @@ import Space from "../../../space";
 interface AddTaskProps {
   show: boolean;
   onHide: () => void;
+  data: any;
 }
 
-export default function AddTask({ show, onHide }: Readonly<AddTaskProps>) {
+export default function AddTask({
+  show,
+  onHide,
+  data,
+}: Readonly<AddTaskProps>) {
   const [tags, setTags] = useState<string[]>([]);
   const [taskName, setTaskName] = useState<string>("");
   const [status, setStatus] = useState<any>(null);
   const [priority, setPriority] = useState<any>(null);
   const [dependency, setDependency] = useState<string>("");
-  const [dueDate, setDueDate] = useState<Date | string>(new Date());
+  const [dueDate, setDueDate] = useState(dayjs(new Date()));
   const [description, setDescription] = useState<string>("");
-  const { useStoreProjects, useStoreTasks, useStoreUser } = useStore();
+  const { useStoreProjects, useStoreTasks, useStoreUser, useStoreKanban } =
+    useStore();
   const { selectedProject } = useStoreProjects();
+  const { setShowDrawerInfo } = useStoreKanban();
   const { user } = useStoreUser();
   const { setTasks } = useStoreTasks();
   const [loading, setLoading] = useState<boolean>(false);
-  const [file, setFile] = useState<File[]>([]);
+  const [file, setFile] = useState<(File | string)[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [checklist, setChecklist] = useState<
     { name: string; completed: boolean }[]
   >([]);
+  const [editTask, setEditTask] = useState<boolean>(false);
   const router = useRouter();
   const { kanban } = router.query;
 
   const priorityOptions = [
-    { label: "Low", value: "low" },
-    { label: "Medium", value: "medium" },
-    { label: "High", value: "high" },
+    { label: "Low", value: "Low" },
+    { label: "Medium", value: "Medium" },
+    { label: "High", value: "High" },
   ];
 
   const statusOptions = [
-    { label: "To Do", value: "to-do" },
-    { label: "In Progress", value: "in-progress" },
-    { label: "Completed", value: "completed" },
+    { label: "To Do", value: "To Do" },
+    { label: "In Progress", value: "In Progress" },
+    { label: "Completed", value: "Completed" },
   ];
 
   const handleAddTag = (
@@ -77,6 +85,27 @@ export default function AddTask({ show, onHide }: Readonly<AddTaskProps>) {
       e.currentTarget.value = "";
     }
   };
+
+  useEffect(() => {
+    if (data) {
+      console.log(data, "data");
+      setEditTask(true);
+      setDescription(data.description);
+      setTaskName(data.title);
+      setStatus({ label: data.status, value: data.status });
+      setPriority({ label: data.priority, value: data.priority });
+      if (data.dueDate) {
+        setDueDate(dayjs(data.dueDate));
+      }
+      setTags(data.tags);
+      if (data.checklist) {
+        setChecklist(JSON.parse(data.checklist));
+      }
+      if (data.fileId && Array.isArray(data.fileId)) {
+        setFile(data.fileId);
+      }
+    }
+  }, [data]);
 
   const tagsClass = [
     "violet-tag",
@@ -102,13 +131,14 @@ export default function AddTask({ show, onHide }: Readonly<AddTaskProps>) {
     setTasks(tasks.documents);
   };
 
-  const handleAddTask = async () => {
+  const handleSaveTask = async () => {
     setLoading(true);
     try {
       const uploadedFileIds = [];
 
-      if (Array.isArray(file) && file.length > 0) {
-        for (const f of file) {
+      const newFiles = file.filter((f) => f instanceof File) as File[];
+      if (newFiles.length > 0) {
+        for (const f of newFiles) {
           const uploaded = await storage.createFile(
             TASKS_ATTACHMENTS_BUCKET_ID,
             ID.unique(),
@@ -118,36 +148,65 @@ export default function AddTask({ show, onHide }: Readonly<AddTaskProps>) {
         }
       }
 
-      await databases.createDocument(
-        DATABASE_ID,
-        KANBAN_COLLECTION_ID,
-        ID.unique(),
-        {
-          kanbanId: kanban,
-          title: taskName,
-          status: status.label,
-          priority: priority.label,
-          dueDate,
-          description,
-          tags,
-          checklist: JSON.stringify(checklist),
-          fileId: uploadedFileIds, // array
-        }
-      );
+      const existingFileIds = file.filter(
+        (f) => typeof f === "string"
+      ) as string[];
 
-      await databases.createDocument(
-        DATABASE_ID,
-        RECENT_ACTIVITY_COLLECTION_ID,
-        ID.unique(),
-        {
-          type: "added-task",
-          title: "Added task",
-          description: `${taskName} is being added to the board.`,
-          board: selectedProject,
-          createdAt: new Date().toISOString(),
-          userId: user.$id,
-        }
-      );
+      const taskData = {
+        kanbanId: kanban,
+        title: taskName,
+        status: status.label,
+        priority: priority.label,
+        dueDate: dueDate.format("YYYY-MM-DD hh:mm A"),
+        description,
+        tags,
+        checklist: JSON.stringify(checklist),
+        fileId: [...existingFileIds, ...uploadedFileIds],
+      };
+
+      if (editTask && data.$id) {
+        await databases.updateDocument(
+          DATABASE_ID,
+          KANBAN_COLLECTION_ID,
+          data.$id,
+          taskData
+        );
+
+        await databases.createDocument(
+          DATABASE_ID,
+          RECENT_ACTIVITY_COLLECTION_ID,
+          ID.unique(),
+          {
+            type: "edited-task",
+            title: "Edited task",
+            description: `${taskName} was updated on the board.`,
+            board: selectedProject,
+            createdAt: new Date().toISOString(),
+            userId: user.$id,
+          }
+        );
+      } else {
+        await databases.createDocument(
+          DATABASE_ID,
+          KANBAN_COLLECTION_ID,
+          ID.unique(),
+          taskData
+        );
+
+        await databases.createDocument(
+          DATABASE_ID,
+          RECENT_ACTIVITY_COLLECTION_ID,
+          ID.unique(),
+          {
+            type: "added-task",
+            title: "Added task",
+            description: `${taskName} is being added to the board.`,
+            board: selectedProject,
+            createdAt: new Date().toISOString(),
+            userId: user.$id,
+          }
+        );
+      }
 
       fetchTasks();
       onHide();
@@ -156,6 +215,7 @@ export default function AddTask({ show, onHide }: Readonly<AddTaskProps>) {
     } finally {
       mutate("kanban_tasks");
       setLoading(false);
+      setShowDrawerInfo(false);
     }
   };
 
@@ -174,10 +234,6 @@ export default function AddTask({ show, onHide }: Readonly<AddTaskProps>) {
     updatedChecklist.splice(index, 1);
     setChecklist(updatedChecklist);
   };
-
-  useEffect(() => {
-    console.log(checklist);
-  }, [checklist]);
 
   return (
     <Modal show={show} onHide={onHide} centered className="modal-container">
@@ -209,7 +265,10 @@ export default function AddTask({ show, onHide }: Readonly<AddTaskProps>) {
             <p className="modal-form-title">Status</p>
             <Dropdown
               options={statusOptions}
-              onChange={(e) => setStatus(e)}
+              onChange={(e) => {
+                setStatus(e);
+                console.log(e);
+              }}
               value={status}
             />
           </Col>
@@ -236,9 +295,10 @@ export default function AddTask({ show, onHide }: Readonly<AddTaskProps>) {
               withTime={false}
               timeZone="Asia/Manila"
               value={dueDate}
-              onChange={(e) => {
-                const formattedDate = dayjs(e).format("YYYY-MM-DD hh:mm A");
-                setDueDate(formattedDate);
+              onChange={(newDate) => {
+                if (!dayjs(newDate).isBefore(dayjs())) {
+                  setDueDate(newDate);
+                }
               }}
             />
           </Col>
@@ -312,21 +372,19 @@ export default function AddTask({ show, onHide }: Readonly<AddTaskProps>) {
                   className="not-faded-line"
                   style={{ margin: "10px 0px", background: "#252525" }}
                 />
-                {checklist.map((checklist, index) => {
+                {checklist.map((item, index) => {
                   return (
                     <Space key={index} align="evenly" gap={10}>
                       <div className="modern-checkbox mb-2" key={index}>
                         <input
                           type="checkbox"
-                          id={`${checklist}-${index}`}
-                          checked={checklist.completed}
+                          id={`checklist-item-${index}`}
+                          checked={item.completed}
                           onChange={(e) => updateTask(index, e.target.checked)}
                         />
-                        <label htmlFor={`${checklist}-${index}`}>
+                        <label htmlFor={`checklist-item-${index}`}>
                           <span className="checkbox-icon"></span>
-                          <span className="checkbox-text">
-                            {checklist.name}
-                          </span>
+                          <span className="checkbox-text">{item.name}</span>
                         </label>
                       </div>
                       <div>
@@ -366,7 +424,9 @@ export default function AddTask({ show, onHide }: Readonly<AddTaskProps>) {
                   <div key={index} className="task-attachments-container-file">
                     <Space gap={10} align="evenly">
                       <div>
-                        <p className="task-attachments-title">{f.name}</p>
+                        <p className="task-attachments-title">
+                          {f instanceof File ? f.name : f}
+                        </p>
                       </div>
                       <i>
                         <X
@@ -387,7 +447,7 @@ export default function AddTask({ show, onHide }: Readonly<AddTaskProps>) {
               multiple
               onChange={(e) => {
                 const files = Array.from(e.target.files);
-                setFile(files);
+                setFile(files.map((f) => (f instanceof File ? f : f.name)));
               }}
               ref={fileInputRef}
             />
@@ -401,8 +461,8 @@ export default function AddTask({ show, onHide }: Readonly<AddTaskProps>) {
             />
           </Col>
           <Col lg={12} className="d-flex justify-content-end">
-            <Button onClick={handleAddTask} loading={loading}>
-              Add Task
+            <Button onClick={handleSaveTask} loading={loading}>
+              {editTask ? "Update Task" : "Add Task"}
             </Button>
           </Col>
         </Row>

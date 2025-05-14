@@ -1723,6 +1723,7 @@ main {
 .pomodoro-widget {
   border-radius: 10px;
   border: 1px solid #212121;
+  overflow: hidden;
   .pomodoro-widget-header {
     background-color: #110d28;
     padding: 10px 15px;
@@ -1769,6 +1770,7 @@ main {
   padding: 10px 35px;
   margin-top: 15px;
   position: relative;
+  animation-duration: 0.3s;
 }
 
 .pomodoro-widget-timer-hours-container {
@@ -1797,6 +1799,13 @@ main {
   font-size: 11px;
   font-weight: 300;
   color: $primary-color;
+}
+
+.pomodoro-widget-timer-status {
+  font-size: 12px;
+  font-weight: 300;
+  color: $primary-color;
+  margin-bottom: 0px;
 }
 
 .pomodoro-widget-timer-hours-label,
@@ -1841,6 +1850,16 @@ main {
   width: 100%;
   height: 100%;
   position: relative;
+
+  .breath-break {
+    &::before {
+      background: linear-gradient(
+        135deg,
+        #00ff8866,
+        #228b2266
+      ) !important; // even more transparent
+    }
+  }
 
   .breath {
     width: 100%;
@@ -1887,16 +1906,80 @@ main {
       z-index: -1;
     }
 
-    .flare1 {
+    .session-glow1 {
       background-image: radial-gradient(#d904b563, #d904b500 60%);
       left: -20%;
       top: -20%;
     }
 
-    .flare2 {
+    .session-glow2 {
       background-image: radial-gradient(#2f2b8c63, #d904b500 60%);
       right: -20%;
       bottom: -20%;
+    }
+    .break-glow1 {
+      background-image: radial-gradient(#00ff8863, #00ff8800 60%);
+      left: -20%;
+      top: -20%;
+    }
+
+    .break-glow2 {
+      background-image: radial-gradient(#228b2263, #00ff8800 60%);
+      right: -20%;
+      bottom: -20%;
+    }
+  }
+}
+
+.pomodoro-widget-settings {
+  padding: 10px 15px;
+  animation-duration: 0.3s;
+  .pomodoro-widget-settings-header {
+    border-bottom: 1px solid #313131;
+    padding-bottom: 10px;
+    .pomodoro-widget-settings-title {
+      font-size: 14px;
+      font-weight: 400;
+      color: lightgray;
+      margin-bottom: 0px;
+    }
+    .pomodoro-widget-settings-close {
+      cursor: pointer;
+      color: #888;
+      &:hover {
+        color: $primary-color;
+      }
+    }
+  }
+  .pomodoro-widget-settings-body {
+    margin-top: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    .pomodoro-widget-settings-body-item-title {
+      font-size: 14px;
+      font-weight: 400;
+      color: #888;
+      margin-bottom: 0px;
+    }
+    .pomodoro-widget-settings-body-item-value {
+      font-size: 14px;
+      font-weight: 400;
+      color: lightgray;
+      margin-bottom: 0px;
+    }
+    .pomodoro-widget-settings-body-item-button {
+      cursor: pointer;
+      border-radius: 50%;
+      width: 25px;
+      height: 25px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #888;
+      &:hover {
+        color: $primary-color;
+      }
     }
   }
 }

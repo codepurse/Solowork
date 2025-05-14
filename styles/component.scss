@@ -892,6 +892,15 @@ $primary-color: #7c4dff;
   align-items: center;
 }
 
+.ellipsis {
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: calc(100% - 20px);
+}
+
 .modern-checkbox input[type="checkbox"] {
   position: absolute;
   opacity: 0;

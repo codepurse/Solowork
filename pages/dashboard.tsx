@@ -4,7 +4,7 @@ import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";
 import LineChart from "../components/Pages/Dashboard/LineChart";
 import DailyCheckList from "../components/Pages/Dashboard/Widgets/DailyCheckList";
-import PomodoroWidget from "../components/Pages/Dashboard/Widgets/PomodoroWidget";
+import PomodoroWidget from "../components/Pages/Dashboard/Widgets/Pomodoro/PomodoroWidget";
 import RecentActivity from "../components/Pages/Dashboard/Widgets/RecentActivity";
 import TaskWidgets from "../components/Pages/Dashboard/Widgets/TaskWidgets";
 

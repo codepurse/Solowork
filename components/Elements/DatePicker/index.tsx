@@ -32,8 +32,17 @@ export default function DateCmp({ withTime, value, onChange, timeZone }) {
   usePositionDropdown({ isOpen, calendarRef, dateCmpRef, setPosition });
 
   useEffect(() => {
-    if (value) {
-      setWithTime(withTime);
+    if (!value) return;
+
+    const newDate = dayjs(value);
+    if (!newDate.isValid()) return;
+
+    // Only update if the dates are actually different
+    // Compare only the relevant parts (date and time) instead of full ISO string
+    const currentDateStr = dayjs(date).format("YYYY-MM-DD HH:mm:ss");
+    const newDateStr = newDate.format("YYYY-MM-DD HH:mm:ss");
+
+    if (currentDateStr !== newDateStr) {
       if (firstRun) {
         const convertedDate = dayjs(value).tz(timeZone);
         setDate(convertedDate, false);
@@ -42,7 +51,7 @@ export default function DateCmp({ withTime, value, onChange, timeZone }) {
         setDate(value, !doFormat);
       }
     }
-  }, [value]);
+  }, [value, timeZone]);
 
   useEffect(() => {
     if (onChange && dayjs(date).isValid()) {

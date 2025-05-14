@@ -17,6 +17,7 @@ import {
 } from "../../../../utils/CommonFunc";
 import Badge from "../../../Elements/Badge";
 import Space from "../../../space";
+import AddTask from "../Modal/AddTask";
 
 export default function DrawerInfo() {
   const { useStoreKanban } = useStore();
@@ -26,9 +27,9 @@ export default function DrawerInfo() {
   const [showModal, setShowModal] = useState(false);
   const [loading, setLoading] = useState(false);
   const [checklist, setChecklist] = useState([]);
+  const [showAddTaskModal, setShowAddTaskModal] = useState(false);
 
   useEffect(() => {
-    console.log(drawerInfo);
     if (drawerInfo?.checklist) {
       setChecklist(JSON.parse(drawerInfo?.checklist));
     }
@@ -113,7 +114,7 @@ export default function DrawerInfo() {
           <i>
             <Timer size={15} />
           </i>
-          <i>
+          <i onClick={() => setShowAddTaskModal(true)}>
             <Pencil size={15} />
           </i>
           <i onClick={handleCloseDrawer}>
@@ -320,6 +321,13 @@ export default function DrawerInfo() {
           )}
         </button>
       </Modal>
+      {showAddTaskModal && (
+        <AddTask
+          show={showAddTaskModal}
+          onHide={() => setShowAddTaskModal(false)}
+          data={drawerInfo}
+        />
+      )}
     </div>
   );
 }

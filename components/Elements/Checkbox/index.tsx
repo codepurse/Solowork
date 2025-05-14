@@ -1,8 +1,9 @@
 interface CheckboxProps {
   label: string;
   id: string;
+  ellipsis?: boolean;
 }
-export default function Checkbox({ label, id }: CheckboxProps) {
+export default function Checkbox({ label, id, ellipsis }: CheckboxProps) {
   return (
     <div className="checkbox-wrapper-4" onClick={(e) => e.stopPropagation()}>
       <input className="inp-cbx" id={id} type="checkbox" />
@@ -12,7 +13,7 @@ export default function Checkbox({ label, id }: CheckboxProps) {
             <use xlinkHref="#check-4"></use>
           </svg>
         </span>
-        <span>{label} </span>
+        <span className={ellipsis ? "ellipsis" : ""}>{label} </span>
       </label>
       <svg className="inline-svg">
         <symbol id="check-4" viewBox="0 0 12 10">

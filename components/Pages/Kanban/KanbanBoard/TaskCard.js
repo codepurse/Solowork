@@ -6,6 +6,7 @@ import {
   TASKS_ATTACHMENTS_BUCKET_ID,
 } from "../../../../constant/appwrite";
 import { useStore } from "../../../../store/store";
+import Checkbox from "../../../Elements/Checkbox";
 import Space from "../../../space";
 // Optional: Create a context to know when dragging is occurring
 export const DragContext = React.createContext({ isDragging: false });
@@ -102,6 +103,10 @@ export default function TaskCard({ task, isDragOverlay = false }) {
     }
   };
 
+  useEffect(() => {
+    console.log(checklist, "checklist");
+  }, [checklist]);
+
   // Regular sortable card
   return (
     <div
@@ -150,6 +155,18 @@ export default function TaskCard({ task, isDragOverlay = false }) {
                 objectFit: "cover",
                 borderRadius: "4px",
               }}
+            />
+          </div>
+        ))}
+      </div>
+      <div style={{ marginLeft: "-7px" }}>
+        {checklist?.map((item, index) => (
+          <div key={index}>
+            <Checkbox
+              checked={item.completed}
+              onChange={(e) => {}}
+              label={item.name}
+              ellipsis={true}
             />
           </div>
         ))}
