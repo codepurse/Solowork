@@ -2,11 +2,25 @@ interface CheckboxProps {
   label: string;
   id: string;
   ellipsis?: boolean;
+  checked?: boolean;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
-export default function Checkbox({ label, id, ellipsis }: CheckboxProps) {
+export default function Checkbox({
+  label,
+  id,
+  ellipsis,
+  checked,
+  onChange,
+}: Readonly<CheckboxProps>) {
   return (
     <div className="checkbox-wrapper-4" onClick={(e) => e.stopPropagation()}>
-      <input className="inp-cbx" id={id} type="checkbox" />
+      <input
+        className="inp-cbx"
+        id={id}
+        type="checkbox"
+        checked={checked}
+        onChange={onChange}
+      />
       <label className="cbx mb-0 pb-0 pt-0" htmlFor={id}>
         <span>
           <svg width="12px" height="10px">

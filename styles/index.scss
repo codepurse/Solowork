@@ -56,21 +56,30 @@ main {
   width: calc(100vw - 250px);
   background-color: #040019;
   height: 100%;
+  transition: all 0.2s ease;
+  position: relative;
 }
 
 .navbar-container {
-  width: calc(100vw - 250px);
   height: 55px;
   background-color: #040019;
   border-bottom: 1px solid #252525;
   position: fixed;
   top: 0;
   right: 0;
-  z-index: 1;
+  z-index: 3;
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 15px;
+  transition: all 0.2s ease;
+  .menu-icon {
+    cursor: pointer;
+    color: #fff;
+    &:hover {
+      color: #7a3dff;
+    }
+  }
   .avatar-user {
     width: 30px;
     height: 30px;

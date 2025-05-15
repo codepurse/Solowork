@@ -37,6 +37,11 @@ interface TasksStore {
   setTasks: (tasks: any[]) => void;
 }
 
+type SidebarStore = {
+  showSidebar: boolean;
+  setShowSidebar: (show: boolean) => void;
+};
+
 const useStoreNotes = create<NotesStore>((set) => ({
   selectedNotes: null,
   setSelectedNotes: (notes: string) => set({ selectedNotes: notes }),
@@ -75,6 +80,11 @@ const useStoreTasks = create<TasksStore>((set) => ({
   setTasks: (tasks: any[]) => set({ tasks: tasks }),
 }));
 
+const useStoreSidebar = create<SidebarStore>((set) => ({
+  showSidebar: false,
+  setShowSidebar: (show: boolean) => set({ showSidebar: show }),
+}));
+
 export function useStore() {
   return {
     useStoreNotes,
@@ -82,5 +92,6 @@ export function useStore() {
     useStoreProjects,
     useStoreUser,
     useStoreTasks,
+    useStoreSidebar,
   };
 }

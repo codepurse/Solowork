@@ -159,18 +159,20 @@ export default function TaskCard({ task, isDragOverlay = false }) {
           </div>
         ))}
       </div>
-      <div style={{ marginLeft: "-7px" }}>
-        {checklist?.map((item, index) => (
-          <div key={index}>
-            <Checkbox
-              checked={item.completed}
-              onChange={(e) => {}}
-              label={item.name}
-              ellipsis={true}
-            />
-          </div>
-        ))}
-      </div>
+      {task.fileId.length === 0 && (
+        <div style={{ marginLeft: "-7px", pointerEvents: "none" }}>
+          {checklist?.map((item, index) => (
+            <div key={index} style={{ marginTop: "2px", marginBottom: "2px" }}>
+              <Checkbox
+                checked={item.completed}
+                onChange={(e) => {}}
+                label={item.name}
+                ellipsis={true}
+              />
+            </div>
+          ))}
+        </div>
+      )}
       {checklist?.length > 0 && (
         <div className="kanban-task-card-checklist mb-2">
           <Space gap={10} align="evenly">

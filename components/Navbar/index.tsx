@@ -1,4 +1,11 @@
-import { ChevronDown, LogOut, Settings, UserRound } from "lucide-react";
+import {
+  ArrowLeftToLine,
+  ArrowRightToLine,
+  ChevronDown,
+  LogOut,
+  Settings,
+  UserRound,
+} from "lucide-react";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { account } from "../../constant/appwrite";
@@ -9,8 +16,9 @@ import Space from "../space";
 export default function Navbar() {
   const [show, setShow] = useState(false);
   const router = useRouter();
-  const { useStoreUser } = useStore();
+  const { useStoreUser, useStoreSidebar } = useStore();
   const { user } = useStoreUser();
+  const { setShowSidebar, showSidebar } = useStoreSidebar();
 
   const handleShow = () => setShow((prev) => !prev);
 
@@ -25,15 +33,24 @@ export default function Navbar() {
     }
   };
 
+  const handleShowSidebar = () => setShowSidebar(!showSidebar);
+
+  const style = {
+    width: showSidebar ? "calc(100vw - 250px)" : "100vw",
+  };
+
   return (
-    <div className="navbar-container">
+    <div className="navbar-container" style={style}>
       <Space align="evenly" fill>
-        <div>
-          <Text
-            className="input-type"
-            as="search"
-            variant="md"
-          />
+        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+          <i className="menu-icon" onClick={handleShowSidebar}>
+            {showSidebar ? (
+              <ArrowLeftToLine size={18} />
+            ) : (
+              <ArrowRightToLine size={18} />
+            )}
+          </i>
+          <Text className="input-type" as="search" variant="md" />
         </div>
         <div
           style={{ cursor: "pointer", position: "relative" }}

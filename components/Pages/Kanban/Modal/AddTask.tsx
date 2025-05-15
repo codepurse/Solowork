@@ -446,8 +446,8 @@ export default function AddTask({
               className="d-none"
               multiple
               onChange={(e) => {
-                const files = Array.from(e.target.files);
-                setFile(files.map((f) => (f instanceof File ? f : f.name)));
+                const files = Array.from(e.target.files || []);
+                setFile(files.map((f: File) => f));
               }}
               ref={fileInputRef}
             />
