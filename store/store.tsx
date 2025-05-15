@@ -81,7 +81,7 @@ const useStoreTasks = create<TasksStore>((set) => ({
 }));
 
 const useStoreSidebar = create<SidebarStore>((set) => ({
-  showSidebar: false,
+  showSidebar: true,
   setShowSidebar: (show: boolean) => set({ showSidebar: show }),
 }));
 
