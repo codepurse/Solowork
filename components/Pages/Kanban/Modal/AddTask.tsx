@@ -39,10 +39,21 @@ export default function AddTask({
   const [dependency, setDependency] = useState<string>("");
   const [dueDate, setDueDate] = useState(dayjs(new Date()));
   const [description, setDescription] = useState<string>("");
-  const { useStoreProjects, useStoreTasks, useStoreUser, useStoreKanban } =
-    useStore();
+  const {
+    useStoreProjects,
+    useStoreTasks,
+    useStoreUser,
+    useStoreToast,
+    useStoreKanban,
+  } = useStore();
   const { selectedProject } = useStoreProjects();
   const { setShowDrawerInfo } = useStoreKanban();
+  const {
+    setShowToast,
+    setToastType,
+    setToastMessage,
+    setToastTitle,
+  } = useStoreToast();
   const { user } = useStoreUser();
   const { setTasks } = useStoreTasks();
   const [loading, setLoading] = useState<boolean>(false);
@@ -207,6 +218,14 @@ export default function AddTask({
           }
         );
       }
+
+      setShowToast(true);
+      setToastTitle(editTask ? "Edit Task" : "Add Task");
+      setToastMessage(
+        editTask
+          ? "Task updated! Your changes have been saved."
+          : "Task added! It’s been successfully created."
+      );
 
       fetchTasks();
       onHide();

@@ -42,6 +42,17 @@ type SidebarStore = {
   setShowSidebar: (show: boolean) => void;
 };
 
+interface ToastStore {
+  showToast: boolean;
+  setShowToast: (show: boolean) => void;
+  toastType: string;
+  setToastType: (type: string) => void;
+  toastMessage: string;
+  setToastMessage: (message: string) => void;
+  toastTitle: string;
+  setToastTitle: (title: string) => void;
+}
+
 const useStoreNotes = create<NotesStore>((set) => ({
   selectedNotes: null,
   setSelectedNotes: (notes: string) => set({ selectedNotes: notes }),
@@ -85,6 +96,17 @@ const useStoreSidebar = create<SidebarStore>((set) => ({
   setShowSidebar: (show: boolean) => set({ showSidebar: show }),
 }));
 
+const useStoreToast = create<ToastStore>((set) => ({
+  showToast: false,
+  setShowToast: (show: boolean) => set({ showToast: show }),
+  toastType: "success",
+  setToastType: (type: string) => set({ toastType: type }),
+  toastTitle: "",
+  setToastTitle: (title: string) => set({ toastTitle: title }),
+  toastMessage: "",
+  setToastMessage: (message: string) => set({ toastMessage: message }),
+}));
+
 export function useStore() {
   return {
     useStoreNotes,
@@ -93,5 +115,6 @@ export function useStore() {
     useStoreUser,
     useStoreTasks,
     useStoreSidebar,
+    useStoreToast,
   };
 }

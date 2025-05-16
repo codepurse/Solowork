@@ -12,6 +12,10 @@ class MyDocument extends Document {
         <Head>
           <link
             rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/frappe-gantt/dist/frappe-gantt.css"
+          ></link>
+          <link
+            rel="stylesheet"
             href="https://use.fontawesome.com/releases/v5.13.0/css/all.css"
           />
           <link

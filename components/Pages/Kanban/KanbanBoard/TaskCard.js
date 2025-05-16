@@ -103,10 +103,6 @@ export default function TaskCard({ task, isDragOverlay = false }) {
     }
   };
 
-  useEffect(() => {
-    console.log(checklist, "checklist");
-  }, [checklist]);
-
   // Regular sortable card
   return (
     <div
