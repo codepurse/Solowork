@@ -1,9 +1,10 @@
 interface CheckboxProps {
-  label: string;
+  label?: string;
   id: string;
   ellipsis?: boolean;
   checked?: boolean;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  style?: React.CSSProperties;
 }
 export default function Checkbox({
   label,
@@ -11,9 +12,14 @@ export default function Checkbox({
   ellipsis,
   checked,
   onChange,
+  style,
 }: Readonly<CheckboxProps>) {
   return (
-    <div className="checkbox-wrapper-4" onClick={(e) => e.stopPropagation()}>
+    <div
+      className="checkbox-wrapper-4"
+      onClick={(e) => e.stopPropagation()}
+      style={style}
+    >
       <input
         className="inp-cbx"
         id={id}

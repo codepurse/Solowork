@@ -9,6 +9,8 @@ body,
 }
 
 $primary-color: #7c4dff;
+$primary-color-light: #b39ddb;
+$color-gray: #9e9e9e;
 
 body {
   background-color: #040019;
@@ -2040,4 +2042,201 @@ main {
 // Override frappe-gantt default styles
 .gantt .bar-wrapper {
   height: 100%;
+}
+
+.files-container {
+  height: 100%;
+  overflow-x: auto;
+  padding-top: 80px !important;
+
+  .files-header {
+    .files-header-title {
+      font-size: 20px;
+      font-weight: 500;
+      color: lightgray;
+      margin-bottom: 0px;
+    }
+    .files-header-view-all {
+      font-size: 14px;
+      font-weight: 400;
+      color: #888;
+      margin-bottom: 0px;
+      cursor: pointer;
+      &:hover {
+        color: $primary-color;
+      }
+    }
+    .files-header-icon {
+      margin-top: -4px;
+      color: #888;
+      cursor: pointer;
+      &:hover {
+        color: $primary-color;
+      }
+    }
+  }
+  .files-content {
+    margin-top: 18px;
+    overflow-x: auto;
+    user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    .files-content-cards {
+      display: flex;
+      gap: 10px;
+      padding-bottom: 10px;
+      .folder-card {
+        background: linear-gradient(to bottom, #020107 0%, #201b46 100%);
+        border: 1px solid #212121;
+        border-radius: 10px;
+        width: 250px;
+        min-width: 250px;
+        padding: 15px;
+
+        .folder-card-header {
+          .folder-icon {
+            color: $primary-color;
+            font-size: 20px;
+            border: 1px solid $primary-color;
+            border-radius: 50%;
+            background-color: #171031;
+            width: 40px;
+            padding: 5px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          }
+          .folder-card-title {
+            font-size: 15px;
+            font-weight: 500;
+            color: #b39ddb;
+            margin-bottom: 0px;
+            margin-top: 15px;
+          }
+          .folder-card-count {
+            font-size: 14px;
+            font-weight: 400;
+            color: lightgray;
+            margin-bottom: 0px;
+          }
+          .folder-card-size {
+            font-size: 14px;
+            font-weight: 400;
+            color: lightgray;
+            margin-bottom: 0px;
+          }
+        }
+      }
+    }
+  }
+  .file-recent {
+    margin-top: 15px;
+    .file-recent-title {
+      font-size: 18px;
+      font-weight: 500;
+      color: lightgray;
+      margin-bottom: 0px;
+    }
+    .file-recent-icon {
+      color: #888;
+      cursor: pointer;
+      &:hover {
+        color: $primary-color;
+      }
+    }
+  }
+  .file-table {
+    margin-top: 15px;
+
+    .file-table-table {
+      width: 100%;
+      border-collapse: collapse;
+      overflow: hidden;
+
+      thead {
+        background-color: #110d28;
+        border: 1px solid #212121;
+        tr {
+          th {
+            font-size: 14px;
+            font-weight: 400;
+            color: $color-gray;
+            padding: 8px 0px;
+          }
+        }
+      }
+      tbody {
+        tr {
+          cursor: pointer;
+
+          &:hover {
+            * {
+              color: $primary-color;
+            }
+          }
+          td {
+            padding: 4px 0px;
+            font-size: 14px;
+            font-weight: 300;
+            color: whitesmoke;
+          }
+        }
+      }
+    }
+  }
+}
+
+.donut-chart-container {
+  height: calc(100vh - 90px);
+  border-radius: 12px;
+  position: sticky;
+  top: 10px;
+  border: 1px solid #212121;
+  padding: 0px 0px;
+  overflow: hidden;
+  background-color: #110d28;
+
+  .donut-chart-header {
+    padding: 10px 15px;
+    background-color: #110d28;
+    border-bottom: 1px solid #212121;
+
+    .donut-chart-title {
+      font-size: 15px;
+      font-weight: 500;
+      color: lightgray;
+      margin-bottom: 0px;
+    }
+
+    .donut-chart-subtitle {
+      font-size: 12px;
+      font-weight: 400;
+      color: #888;
+      margin-bottom: 0px;
+    }
+  }
+
+  .donut-chart-wrapper {
+    height: 280px;
+    padding: 15px;
+  }
+  .donut-chart-label {
+    font-size: 14px;
+    font-weight: 400;
+    color: lightgray;
+    margin-bottom: 0px;
+  }
+  .donut-chart-files {
+    font-size: 14px;
+    font-weight: 300;
+    color: $color-gray;
+    margin-bottom: 0px;
+  }
+  .donut-chart-size {
+    color: $primary-color-light;
+    font-size: 14px;
+    font-weight: 400;
+    margin-bottom: 0px;
+  }
 }

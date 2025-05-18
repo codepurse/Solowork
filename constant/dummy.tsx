@@ -234,3 +234,36 @@ export const DUMMY_TAGS = [
   "UI/UX",
   "Frontend",
 ];
+
+export const UPLOAD_FILES = [
+  {
+    id: "1",
+    name: "Invoice april 2025.pdf",
+    size: 235678, // ~230 KB
+    type: "application/pdf",
+  },
+  {
+    id: "2",
+    name: "Profile picture.jpg",
+    size: 158904, // ~155 KB
+    type: "image/jpeg",
+  },
+  {
+    id: "3",
+    name: "Project brief.docx",
+    size: 482304, // ~470 KB
+    type: "document",
+  },
+  {
+    id: "4",
+    name: "Demo video.mp4",
+    size: 5242880, // ~5 MB
+    type: "video/mp4",
+  },
+  {
+    id: "5",
+    name: "Presentation deck.pptx",
+    size: 1048576, // ~1 MB
+    type: "presentation",
+  },
+];

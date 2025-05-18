@@ -16,22 +16,28 @@ export default function Workspace() {
       name: "Documents",
       icon: <File size={17} color="gray" />,
       collapsed: true,
+      onClick: () => router.push("/files"),
     },
     {
       id: 2,
       name: "Roadmap",
       icon: <Construction size={17} color="gray" />,
       collapsed: true,
+      onClick: () => router.push("/roadmap"),
     },
     {
       id: 3,
       name: "Resources",
       icon: <FolderSymlink size={17} color="gray" />,
+      collapsed: true,
+      onClick: () => router.push("/resources"),
     },
     {
       id: 4,
       name: "Analytics",
       icon: <ChartLine size={17} color="gray" />,
+      collapsed: true,
+      onClick: () => router.push("/analytics"),
     },
   ];
   return (
@@ -45,7 +51,7 @@ export default function Workspace() {
             className="sidebar-menu-item"
             align="evenly"
           >
-            <div>
+            <div onClick={item.onClick}>
               <Space gap={10}>
                 <i style={{ marginTop: "-3px" }}>{item.icon}</i>
                 <label className="sidebar-menu-item-name">{item.name}</label>
