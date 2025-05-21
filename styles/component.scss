@@ -1067,3 +1067,87 @@ div.svg-wrap {
     margin-bottom: 0px;
   }
 }
+
+// Switch Component Styles
+.switch-wrapper {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  user-select: none;
+
+  &:has(.switch-disabled) {
+    cursor: not-allowed;
+  }
+}
+
+.switch-component {
+  position: relative;
+  display: inline-block;
+  background: #2a2a2a;
+  border-radius: 999px;
+  transition: all 0.2s ease-in-out;
+  
+  // Default (medium) size
+  width: 44px;
+  height: 24px;
+
+  &.switch-small {
+    width: 36px;
+    height: 20px;
+    .switch-toggle {
+      width: 16px;
+      height: 16px;
+    }
+  }
+
+  &.switch-large {
+    width: 52px;
+    height: 28px;
+    .switch-toggle {
+      width: 24px;
+      height: 24px;
+    }
+  }
+
+  &.switch-checked {
+    background: $primary-color;
+    .switch-toggle {
+      left: calc(100% - 22px); // Fixed position for medium size
+    }
+    &.switch-small .switch-toggle {
+      left: calc(100% - 18px); // Fixed position for small size
+    }
+    &.switch-large .switch-toggle {
+      left: calc(100% - 26px); // Fixed position for large size
+    }
+  }
+
+  &.switch-disabled {
+    opacity: 0.5;
+    .switch-toggle {
+      background: #888;
+    }
+  }
+
+  .switch-toggle {
+    position: absolute;
+    left: 2px;
+    top: 2px; // Fixed position from top
+    width: 20px;
+    height: 20px;
+    background: white;
+    border-radius: 50%;
+    transition: all 0.2s ease-in-out;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  }
+}
+
+.switch-label {
+  font-size: 14px;
+  color: #fff;
+  
+  &.switch-label-disabled {
+    opacity: 0.5;
+  }
+}

@@ -1,0 +1,14 @@
+.Light_Theme {
+  body {
+    background-color: #fafafa !important;
+  }
+  .sidebar {
+    background-color: #f1eded !important;
+    .sidebar-menu {
+      .sidebar-menu-item-name,
+      .sidebar-menu-title {
+        color: #000 !important;
+      }
+    }
+  }
+}

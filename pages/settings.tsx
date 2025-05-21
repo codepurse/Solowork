@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { Col, Container, Row } from "react-bootstrap";
 import Account from "../components/Pages/Settings/account";
+import GeneralSettings from "../components/Pages/Settings/GeneralSettings";
+import SecuritySettings from "../components/Pages/Settings/SecuritySettings";
 import Space from "../components/space";
 
 export default function Settings() {
@@ -9,7 +11,7 @@ export default function Settings() {
   const handleClick = (e: any) => {
     setActive(e);
   };
-  
+
   return (
     <Container className="settings">
       <Row>
@@ -66,7 +68,11 @@ export default function Settings() {
             </Space>
           </div>
         </Col>
-        <Col lg={8}>{active === "account" && <Account />}</Col>
+        <Col lg={8}>
+          {active === "account" && <Account />}
+          {active === "general" && <GeneralSettings />}
+          {active === "security" && <SecuritySettings />}
+        </Col>
       </Row>
     </Container>
   );

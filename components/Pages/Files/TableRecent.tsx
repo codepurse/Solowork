@@ -1,5 +1,12 @@
 import dayjs from "dayjs";
-import { Camera, File, Headphones, Pencil, Video } from "lucide-react";
+import {
+  Camera,
+  Download,
+  File,
+  Headphones,
+  Pencil,
+  Video,
+} from "lucide-react";
 import { useState } from "react";
 import { UPLOAD_FILES } from "../../../constant/dummy";
 import Checkbox from "../../Elements/Checkbox";
@@ -103,7 +110,6 @@ export default function TableRecent() {
                 }}
               >
                 <Checkbox
-                  style={{ marginTop: "-25px" }}
                   id={file.id}
                   checked={selectedFiles.includes(file.id)}
                   onChange={(e) => handleSelectFile(file.id, e.target.checked)}
@@ -124,6 +130,9 @@ export default function TableRecent() {
                 <Space gap={10}>
                   <i>
                     <Pencil size={15} color="lightgray" />
+                  </i>
+                  <i>
+                    <Download size={15} color="lightgray" />
                   </i>
                 </Space>
               </td>

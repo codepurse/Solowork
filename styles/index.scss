@@ -1,5 +1,6 @@
 @import url("https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&family=Manrope:wght@200..800&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Quicksand:wght@300..700&display=swap");
 @import "./component.scss";
+@import "./theme.scss";
 
 html,
 body,
@@ -1692,6 +1693,24 @@ main {
       color: #888;
       margin-bottom: 0px;
     }
+    .settings-min-title {
+      font-size: 14px;
+      font-weight: 400;
+      color: whitesmoke;
+      margin-bottom: 4px;
+    }
+    .settings-min-title-right {
+      font-size: 13px;
+      font-weight: 300;
+      color: lightgray;
+      margin-bottom: 10px !important;
+    }
+    .settings-min-subtitle {
+      font-size: 13px;
+      font-weight: 300;
+      color: #888;
+      margin-bottom: 0px;
+    }
   }
   .settings-title-inside-right {
     font-size: 13px;
@@ -2153,7 +2172,10 @@ main {
       width: 100%;
       border-collapse: collapse;
       overflow: hidden;
-
+      .file-table-size {
+        margin-bottom: 0px;
+        color: $color-gray;
+      }
       thead {
         background-color: #110d28;
         border: 1px solid #212121;
@@ -2171,12 +2193,13 @@ main {
           cursor: pointer;
 
           &:hover {
+            background-color: #110d28;
             * {
               color: $primary-color;
             }
           }
           td {
-            padding: 4px 0px;
+            padding: 8px 0px;
             font-size: 14px;
             font-weight: 300;
             color: whitesmoke;
@@ -2238,5 +2261,147 @@ main {
     font-size: 14px;
     font-weight: 400;
     margin-bottom: 0px;
+  }
+}
+
+.settings-card {
+  border: 1px solid #212121;
+  border-radius: 10px;
+  width: 100%;
+  cursor: pointer;
+  background-color: #110d28;
+
+  .settings-card-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background-color: #110d28;
+    padding: 10px 12px;
+    border-bottom: 1px solid #212121;
+    .settings-card-header-label {
+      font-size: 14px;
+      font-weight: 400;
+      color: lightgray;
+      margin-bottom: 0px;
+    }
+    i {
+      color: whitesmoke;
+    }
+  }
+  &.Light {
+    .settings-card-body-item {
+      background-color: #fafafa !important;
+      .div1 {
+        background-color: #f1eded !important;
+        border-right: 1px solid lightgray;
+      }
+      .div2 {
+        background-color: #fafafa !important;
+        border-bottom: 1px solid lightgray;
+      }
+      .div3 {
+        background-color: #f1eded !important;
+        border-bottom: 1px solid lightgray;
+      }
+      .div4 {
+        background-color: #f1eded !important;
+        border-bottom: 1px solid lightgray;
+      }
+      .div5 {
+        background-color: #f1eded !important;
+        border-bottom: 1px solid lightgray;
+      }
+    }
+  }
+  .settings-card-body {
+    padding: 10px 12px;
+  }
+
+  .settings-card-body-item {
+    position: relative;
+    height: 150px;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid #212121;
+    background-color: #040019;
+    .div1 {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 20%;
+      height: 100%;
+      background-color: #040019;
+      border-right: 1px solid #212121;
+    }
+    .div2 {
+      position: absolute;
+      top: 0;
+      left: 20%;
+      height: 15%;
+      width: 100%;
+      background-color: #040019;
+      border-bottom: 1px solid #212121;
+    }
+    .div3 {
+      position: absolute;
+      top: 25%;
+      left: 25%;
+      height: 15%;
+      width: 20%;
+      background-color: #110d28;
+      border-radius: 5px;
+      border-bottom: 1px solid #212121;
+    }
+    .div4 {
+      position: absolute;
+      top: 25%;
+      left: 50%;
+      height: 15%;
+      width: 20%;
+      background-color: #110d28;
+      border-bottom: 1px solid #212121;
+      border-radius: 5px;
+    }
+    .div5 {
+      position: absolute;
+      top: 25%;
+      left: 75%;
+      height: 15%;
+      width: 20%;
+      background-color: #110d28;
+      border-bottom: 1px solid #212121;
+      border-radius: 5px;
+    }
+  }
+}
+
+.active-sessions-container {
+  .active-session {
+    margin-bottom: 10px;
+    .session-client-name {
+      font-size: 14px;
+      font-weight: 300;
+      color: whitesmoke;
+      margin-bottom: 0px;
+    }
+    .session-device-name {
+      font-size: 14px;
+      font-weight: 300;
+      color: $color-gray;
+      margin-bottom: 0px;
+      text-transform: capitalize;
+    }
+    .session-current-time-true {
+      font-size: 13px;
+      font-weight: 400;
+      color: #66BB6A;
+      margin-bottom: 0px;
+    }
+    .session-current-time-false {
+      font-size: 13px;
+      font-weight: 300;
+      color: $color-gray;
+      margin-bottom: 0px;
+    }
   }
 }
