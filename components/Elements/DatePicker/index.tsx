@@ -5,59 +5,83 @@ import utc from "dayjs/plugin/utc";
 import { Calendar } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import Space from "../../../components/space";
+import DatePickerParent from "./DatePickerParent";
 import Days from "./days.js";
 import HeaderControl from "./HeaderControl";
 import useClickOutsideDate from "./hooks/useClickOutsideDate.js";
 import usePositionDropdown from "./hooks/usePositionDropdown.js";
 import InputDate from "./InputDate";
 import Month from "./month";
-import dateStore from "./store";
+import { useDateStore } from "./store";
 import AmPm from "./timepicker/ampm";
 import Hour from "./timepicker/hour";
 import Minutes from "./timepicker/minutes";
 import Weeks from "./weeks";
 import Year from "./year";
+
 dayjs.extend(customParseFormat);
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
-export default function DateCmp({ withTime, value, onChange, timeZone }) {
+function DatePickerComponent({ withTime, value, onChange, timeZone }) {
+  const dateStore = useDateStore();
   const { date, setDate, setWithTime, isOpen, doFormat } = dateStore();
   const dateCmpRef = useRef(null);
   const calendarRef = useRef(null);
   const [position, setPosition] = useState("bottom");
   const [firstRun, setFirstRun] = useState(true);
+  const [internalUpdate, setInternalUpdate] = useState(false);
 
   useClickOutsideDate({ dateCmpRef });
   usePositionDropdown({ isOpen, calendarRef, dateCmpRef, setPosition });
 
   useEffect(() => {
-    if (!value) return;
+    console.log(date,"Date");
+  }, [date]);
+
+  // Handle external value changes
+  useEffect(() => {
+    if (!value || internalUpdate) return;
 
     const newDate = dayjs(value);
     if (!newDate.isValid()) return;
 
-    // Only update if the dates are actually different
-    // Compare only the relevant parts (date and time) instead of full ISO string
-    const currentDateStr = dayjs(date).format("YYYY-MM-DD HH:mm:ss");
-    const newDateStr = newDate.format("YYYY-MM-DD HH:mm:ss");
+    const currentDateStr = dayjs(date).format("YYYY-MM-DD");
+    const newDateStr = newDate.format("YYYY-MM-DD");
 
     if (currentDateStr !== newDateStr) {
       if (firstRun) {
         const convertedDate = dayjs(value).tz(timeZone);
-        setDate(convertedDate, false);
+        setInternalUpdate(true);
+        setDate(convertedDate);
         setFirstRun(false);
+        setInternalUpdate(false);
       } else {
-        setDate(value, !doFormat);
+        setInternalUpdate(true);
+        setDate(value);
+        setInternalUpdate(false);
       }
     }
   }, [value, timeZone]);
 
+  // Handle internal date changes
   useEffect(() => {
-    if (onChange && dayjs(date).isValid()) {
-      onChange(dayjs(date));
+    if (!onChange || !dayjs(date).isValid() || internalUpdate) return;
+
+    const currentValue = value ? dayjs(value) : null;
+    const newDate = dayjs(date);
+
+    // Only trigger onChange if the dates are actually different
+    if (!currentValue || !currentValue.isSame(newDate, 'day')) {
+      onChange(newDate);
     }
   }, [date]);
+
+  useEffect(() => {
+    if (withTime) {
+      setWithTime(true);
+    }
+  }, [withTime]);
 
   return (
     <div className="date-cmp" ref={dateCmpRef}>
@@ -75,7 +99,11 @@ export default function DateCmp({ withTime, value, onChange, timeZone }) {
             </Space>
           </div>
           <Weeks />
-          <Days date={date} setDate={setDate} />
+          <Days date={date} setDate={(newDate) => {
+            setInternalUpdate(true);
+            setDate(newDate);
+            setInternalUpdate(false);
+          }} />
           {withTime && (
             <div className="time-picker-container">
               <Space gap={10}>
@@ -89,5 +117,14 @@ export default function DateCmp({ withTime, value, onChange, timeZone }) {
         </div>
       )}
     </div>
+  );
+}
+
+// Export a wrapped version that includes the Provider
+export default function DateCmp(props) {
+  return (
+    <DatePickerParent>
+      <DatePickerComponent {...props} />
+    </DatePickerParent>
   );
 }

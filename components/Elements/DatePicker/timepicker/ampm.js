@@ -1,7 +1,8 @@
 import dayjs from "dayjs";
-import dateStore from "../store";
+import { useDateStore } from "../store";
 
 export default function AmPm() {
+  const dateStore = useDateStore();
   const { date, setDate, validDate } = dateStore();
   const parsedDate = dayjs(date);
   const isValid = parsedDate.isValid();

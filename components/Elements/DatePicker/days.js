@@ -1,8 +1,10 @@
 import dayjs from "dayjs";
 import { useEffect, useState } from "react";
 import { setFinalDate } from "./helper";
-import dateStore from "./store";
+import { useDateStore } from "./store";
+
 export default function Days({ date, setDate }) {
+  const dateStore = useDateStore();
   const { invalid, validDate, setDoFormat } = dateStore();
   const currentMonthStart = dayjs(date).startOf("month");
   const currentMonthEnd = dayjs(date).endOf("month");

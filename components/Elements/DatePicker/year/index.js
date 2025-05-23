@@ -3,9 +3,10 @@ import { ChevronDown } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { setFinalDate } from "../helper";
 import useHideDropdown from "../hooks/useHideDropdown";
-import dateStore from "../store";
+import { useDateStore } from "../store";
 
 export default function Year() {
+  const dateStore = useDateStore();
   const { date, setDate, invalid, validDate } = dateStore();
   const [yearLabel, setYearLabel] = useState(dayjs(date).format("YYYY"));
   const [isOpen, setIsOpen] = useState(false);

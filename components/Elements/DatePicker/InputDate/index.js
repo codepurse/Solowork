@@ -1,8 +1,9 @@
 import dayjs from "dayjs";
 import { useState } from "react";
-import dateStore from "../store";
+import { useDateStore } from "../store";
 
 export default function InputDate({ timeZone }) {
+  const dateStore = useDateStore();
   const {
     date,
     setDate,

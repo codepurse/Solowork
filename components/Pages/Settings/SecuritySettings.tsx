@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Col, Container, Row } from "react-bootstrap";
 import { account } from "../../../constant/appwrite";
 import { useStore } from "../../../store/store";
@@ -17,6 +17,8 @@ export default function SecuritySettings() {
   const [activeSessions, setActiveSessions] = useState<any[]>([]);
   const { useStoreUser } = useStore();
   const { user } = useStoreUser();
+  const newPasswordRef = useRef<HTMLInputElement>(null);
+  const [isPasswordFocused, setIsPasswordFocused] = useState(false);
 
   useEffect(() => {
     setIsTwoFactorEnabled(user?.prefs?.twoFactor);
@@ -38,7 +40,10 @@ export default function SecuritySettings() {
   const updateTwoFactor = async () => {
     setIsLoadingTwoFactor(true);
     try {
+      const currentUser = await account.get();
+      const currentPrefs = currentUser.prefs || {};
       await account.updatePrefs({
+        ...currentPrefs,
         twoFactor: isTwoFactorEnabled,
       });
     } catch (error) {
@@ -48,11 +53,61 @@ export default function SecuritySettings() {
     }
   };
 
+  const checkPassword = (
+    password: string,
+    criteria: "length" | "uppercase" | "lowercase" | "special"
+  ) => {
+    const minLength = 8;
+    const hasUpperCase = /[A-Z]/.test(password);
+    const hasLowerCase = /[a-z]/.test(password);
+    const hasSpecialChar = /[!@#$%^&*]/.test(password);
+
+    switch (criteria) {
+      case "length":
+        return password.length >= minLength;
+      case "uppercase":
+        return hasUpperCase;
+      case "lowercase":
+        return hasLowerCase;
+      case "special":
+        return hasSpecialChar;
+      default:
+        return false;
+    }
+  };
+
   const handlePasswordChange = async () => {
     setIsLoadingPassword(true);
+
+    const passwordError = [];
     try {
       if (!password || !newPassword) {
         alert("Please fill in both password fields.");
+        return;
+      }
+
+      if (!checkPassword(newPassword, "length")) {
+        passwordError.push("New password must be at least 8 characters long.");
+      }
+      if (!checkPassword(newPassword, "uppercase")) {
+        passwordError.push(
+          "New password must contain at least one uppercase letter."
+        );
+      }
+      if (!checkPassword(newPassword, "lowercase")) {
+        passwordError.push(
+          "New password must contain at least one lowercase letter."
+        );
+      }
+
+      if (!checkPassword(newPassword, "special")) {
+        passwordError.push(
+          "New password must contain at least one special character."
+        );
+      }
+
+      if (passwordError.length > 0) {
+        console.log(passwordError.join("\n"));
         return;
       }
 
@@ -92,7 +147,7 @@ export default function SecuritySettings() {
               Change your password to keep your account secure.
             </p>
           </Col>
-          <Col lg={8}>
+          <Col lg={8} style={{ overflow: "hidden" }}>
             <p className="settings-min-title settings-min-title-right">
               Current Password
             </p>
@@ -102,6 +157,7 @@ export default function SecuritySettings() {
               placeholder="Enter your password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              autoComplete="current-password"
             />
             <p className="settings-min-title mt-2 settings-min-title-right">
               New Password
@@ -112,7 +168,98 @@ export default function SecuritySettings() {
               placeholder="Enter your password"
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
+              autoComplete="new-password"
+              ref={newPasswordRef}
+              onFocus={() => setIsPasswordFocused(true)}
+              onBlur={() => setIsPasswordFocused(false)}
             />
+            {isPasswordFocused && (
+              <div
+                className="mt-2 nimate__animated animate__slideInLeft"
+                style={{ animationDuration: "0.2s" }}
+              >
+                <div
+                  className="modern-checkbox mb-1"
+                  key={"minimum-characters"}
+                  id={
+                    checkPassword(newPassword, "length")
+                      ? "completed"
+                      : "error-checkbox"
+                  }
+                >
+                  <input
+                    type="checkbox"
+                    checked={checkPassword(newPassword, "length")}
+                  />
+                  <label htmlFor="minimum-characters" className={"completed"}>
+                    <span className="checkbox-icon"></span>
+                    <span className="checkbox-text">
+                      Minimum characters in password: 8
+                    </span>
+                  </label>
+                </div>
+                <div
+                  className="modern-checkbox mb-1"
+                  id={
+                    checkPassword(newPassword, "uppercase")
+                      ? "completed"
+                      : "error-checkbox"
+                  }
+                  key={"uppercase-letter"}
+                >
+                  <input
+                    type="checkbox"
+                    checked={checkPassword(newPassword, "uppercase")}
+                  />
+                  <label htmlFor="uppercase-letter" className={"completed"}>
+                    <span className="checkbox-icon"></span>
+                    <span className="checkbox-text">
+                      At least one uppercase letter
+                    </span>
+                  </label>
+                </div>
+                <div
+                  className="modern-checkbox mb-1"
+                  id={
+                    checkPassword(newPassword, "lowercase")
+                      ? "completed"
+                      : "error-checkbox"
+                  }
+                  key={"lowercase-letter"}
+                >
+                  <input
+                    type="checkbox"
+                    checked={checkPassword(newPassword, "lowercase")}
+                  />
+                  <label htmlFor="lowercase-letter" className={"completed"}>
+                    <span className="checkbox-icon"></span>
+                    <span className="checkbox-text">
+                      At least one lowercase letter
+                    </span>
+                  </label>
+                </div>
+                <div
+                  className="modern-checkbox mb-1"
+                  id={
+                    checkPassword(newPassword, "special")
+                      ? "completed"
+                      : "error-checkbox"
+                  }
+                  key={"special-character"}
+                >
+                  <input
+                    type="checkbox"
+                    checked={checkPassword(newPassword, "special")}
+                  />
+                  <label htmlFor="special-character" className={"completed"}>
+                    <span className="checkbox-icon"></span>
+                    <span className="checkbox-text">
+                      At least one special character
+                    </span>
+                  </label>
+                </div>
+              </div>
+            )}
             <Button
               className="ml-auto d-flex mt-3 mb-1"
               onClick={handlePasswordChange}

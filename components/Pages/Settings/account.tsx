@@ -85,7 +85,10 @@ export default function Account() {
   const handleSave = async () => {
     try {
       setIsLoading(true);
+      const currentUser = await account.get();
+      const currentPrefs = currentUser.prefs || {};
       await account.updatePrefs({
+        ...currentPrefs,
         fullname: fullName,
       });
       if (email !== initialEmail) {

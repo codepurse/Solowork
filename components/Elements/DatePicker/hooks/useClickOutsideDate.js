@@ -1,8 +1,9 @@
 import dayjs from "dayjs";
 import { useEffect } from "react";
-import dateStore from "../store";
+import { useDateStore } from "../store";
 
 export default function useClickOutsideDate({ dateCmpRef }) {
+  const dateStore = useDateStore();
   const { isOpen, setIsOpen, date, setDate, format, setDoFormat, validDate } =
     dateStore();
 

@@ -6,6 +6,7 @@ interface TextProps extends React.InputHTMLAttributes<HTMLInputElement> {
   as?: "search" | "text" | "folder";
   variant?: "sm" | "md" | "lg";
   transparent?: boolean;
+  ref?: React.RefObject<HTMLInputElement>;
 }
 
 export default function Text({
@@ -14,6 +15,7 @@ export default function Text({
   as,
   variant,
   transparent,
+  ref,
   ...props
 }: Readonly<TextProps>) {
   const style = {
@@ -45,6 +47,7 @@ export default function Text({
         className={className + " input-type"}
         {...props}
         style={style}
+        ref={ref}
       />
     </div>
   );

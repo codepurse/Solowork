@@ -1,12 +1,18 @@
-import { ChevronDown, GripVertical } from "lucide-react";
+import { ChevronDown, GripVertical, Pencil, Plus } from "lucide-react";
 import { useState } from "react";
+import Modal from "react-bootstrap/esm/Modal";
 import { useStore } from "../../../store/store";
 import Space from "../../space";
+import ModalAddWorkSpace from "./ModalAddWorkSpace";
+
 export default function ProjectList() {
   const { useStoreProjects } = useStore();
   const { projects, setSelectedProject } = useStoreProjects();
   const [activeProject] = useState(0);
   const [showProjects, setShowProjects] = useState(false);
+  const [showModalAddWorkspace, setShowModalAddWorkspace] = useState(false);
+  const [edit, setEdit] = useState(false);
+  const [info, setInfo] = useState({});
   const projectList = projects;
 
   const handleKeyDown = (event) => {
@@ -44,21 +50,58 @@ export default function ProjectList() {
         <div className="projects-list">
           <p className="switch-project">Switch Project</p>
           {projectList?.map((project) => (
-            <div
-              key={project.id}
-              className="project-item"
-              onClick={() => {
-                handleProjectClick(project.$id);
-              }}
-            >
-              <i>
-                <GripVertical size={14} color="#fff" />
+            <Space gap={5} align="evenly" key={project.id}>
+              <div
+                key={project.id}
+                className="project-item"
+                onClick={() => {
+                  handleProjectClick(project.$id);
+                }}
+              >
+                <i>
+                  <GripVertical size={14} color="#fff" />
+                </i>
+                <span>{project?.name}</span>
+              </div>
+              <i
+                onClick={() => {
+                  setEdit(true);
+                  setShowModalAddWorkspace(true);
+                  setInfo(project);
+                }}
+              >
+                <Pencil size={12} color="#fff" />
               </i>
-              <span>{project?.name}</span>
-            </div>
+            </Space>
           ))}
+          <div
+            className="add-workspace-container mt-2"
+            onClick={() => {
+              setEdit(false);
+              setShowModalAddWorkspace(true);
+            }}
+          >
+            <Space gap={5}>
+              <i>
+                <Plus size={12} color="#fff" />
+              </i>
+              <p className="add-workspace">Add Workspace</p>
+            </Space>
+          </div>
         </div>
       )}
+      <Modal
+        show={showModalAddWorkspace}
+        onHide={() => setShowModalAddWorkspace(false)}
+        centered
+        className="modal-container"
+      >
+        <ModalAddWorkSpace
+          onHide={() => setShowModalAddWorkspace(false)}
+          edit={edit}
+          info={info}
+        />
+      </Modal>
     </div>
   );
 }

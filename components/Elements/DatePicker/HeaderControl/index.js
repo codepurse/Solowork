@@ -1,8 +1,9 @@
 import dayjs from "dayjs";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import Space from "../../../space";
-import dateStore from "../store";
+import { useDateStore } from "../store";
 export default function HeaderControl() {
+  const dateStore = useDateStore();
   const { date, setDate } = dateStore();
 
   return (

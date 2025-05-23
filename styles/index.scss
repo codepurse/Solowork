@@ -63,6 +63,22 @@ main {
   position: relative;
 }
 
+.add-workspace-container {
+  width: 100%;
+  border-top: 1px solid #252525;
+  padding: 5px 0px 0px 0px;
+  .add-workspace {
+    font-size: 13px;
+    font-weight: 300;
+    color: #fff;
+    cursor: pointer;
+    margin-bottom: 0px;
+    &:hover {
+      color: #7a3dff;
+    }
+  }
+}
+
 .navbar-container {
   height: 55px;
   background-color: #040019;
@@ -265,8 +281,8 @@ main {
         margin-bottom: 5px;
       }
       .project-item {
-        padding: 5px 10px;
-        border-radius: 5px;
+        padding: 5px 0px;
+        border-radius: 8px;
         font-size: 13px;
         font-weight: 400;
         transition: all 0.2s ease;
@@ -274,7 +290,8 @@ main {
         align-items: center;
         gap: 5px;
         &:hover {
-          background-color: #3d3d3d;
+          background-color: #171433;
+          color: #7a3dff;
         }
       }
     }
@@ -2394,7 +2411,7 @@ main {
     .session-current-time-true {
       font-size: 13px;
       font-weight: 400;
-      color: #66BB6A;
+      color: #66bb6a;
       margin-bottom: 0px;
     }
     .session-current-time-false {
@@ -2403,5 +2420,45 @@ main {
       color: $color-gray;
       margin-bottom: 0px;
     }
+  }
+}
+
+.modal-add-workspace {
+  .workspace-logo-container {
+    width: 90px;
+    height: 80px;
+    border-radius: 8px;
+    background-color: #110d28;
+    border: 1px solid #212121;
+  }
+  .button-upload {
+    border: 1px solid $color-gray;
+    font-size: 12px;
+    font-weight: 300;
+    color: $color-gray;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    width: max-content;
+    margin-bottom: 5px;
+    transition: all 0.2s ease;
+    &:hover {
+      background-color: $primary-color;
+      color: white;
+      border-color: $primary-color;
+    }
+  }
+  .modal-form-description {
+    font-size: 12px;
+    font-weight: 300;
+    color: $color-gray;
+    margin-bottom: 0px;
+  }
+  .delete-workspace-text {
+    font-size: 13px;
+    font-weight: 300;
+    color: #ef5350;
+    margin-bottom: 0px;
+    cursor: pointer;
   }
 }

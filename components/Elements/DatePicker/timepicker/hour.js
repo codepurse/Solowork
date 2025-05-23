@@ -4,9 +4,10 @@ import { useEffect, useRef, useState } from "react";
 import Space from "../../../../components/space";
 import { setFinalDate } from "../helper";
 import useHideDropdown from "../hooks/useHideDropdown";
-import dateStore from "../store";
+import { useDateStore } from "../store";
 
 export default function Hour() {
+  const dateStore = useDateStore();
   const { date, setDate, invalid, validDate } = dateStore();
   const [isOpen, setIsOpen] = useState(false);
   const [hourLabel, setHourLabel] = useState(dayjs(date).format("hh"));

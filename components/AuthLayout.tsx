@@ -1,6 +1,7 @@
 import { Query } from "appwrite";
 import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
+import useSWR from "swr";
 import {
   account,
   DATABASE_ID,
@@ -8,6 +9,21 @@ import {
   PROJECTS_COLLECTION_ID,
 } from "../constant/appwrite";
 import { useStore } from "../store/store";
+
+// Create a fetcher function outside the component
+const projectsFetcher = async (userId: string) => {
+  try {
+    const response = await databases.listDocuments(
+      DATABASE_ID,
+      PROJECTS_COLLECTION_ID,
+      [Query.equal("userId", userId)]
+    );
+    return response.documents;
+  } catch (error) {
+    console.error("❌ Error fetching projects:", error);
+    throw error; // Let SWR handle the error
+  }
+};
 
 export default function AuthLayout({
   children,
@@ -19,22 +35,25 @@ export default function AuthLayout({
   const isFirstRun = useRef(true);
   const { useStoreUser, useStoreProjects } = useStore();
   const { user, setUser } = useStoreUser();
-  const { setProjects, setSelectedProject, selectedProject } =
-    useStoreProjects();
+  const { setProjects, setSelectedProject } = useStoreProjects();
   const [error, setError] = useState<string | null>(null);
-  const fetchProjects = async (userId) => {
-    try {
-      const response = await databases.listDocuments(
-        DATABASE_ID,
-        PROJECTS_COLLECTION_ID,
-        [Query.equal("userId", userId)]
-      );
-      return response.documents;
-    } catch (error) {
-      console.error("❌ Error fetching projects:", error);
-      return [];
+
+  // Add SWR hook for projects
+  const { data: projects, error: projectsError } = useSWR(
+    // Only fetch if we have a user
+    user && user.$id ? "projects" : null,
+    () => projectsFetcher(user?.$id)
+  );
+
+  // Handle projects data effect
+  useEffect(() => {
+    if (projects) {
+      setProjects(projects);
+      if (projects.length > 0) {
+        setSelectedProject(projects[0].$id);
+      }
     }
-  };
+  }, [projects]);
 
   useEffect(() => {
     const checkUser = async () => {
@@ -55,13 +74,6 @@ export default function AuthLayout({
           if (router.pathname === "/login") {
             router.replace("/dashboard");
             return;
-          }
-
-          // Fetch projects for logged in user
-          const project = await fetchProjects(user.$id);
-          setProjects(project);
-          if (project.length > 0) {
-            setSelectedProject(project[0].$id);
           }
         }
       } catch (error) {

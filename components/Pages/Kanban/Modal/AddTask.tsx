@@ -13,6 +13,7 @@ import {
   storage,
   TASKS_ATTACHMENTS_BUCKET_ID,
 } from "../../../../constant/appwrite";
+import { useFormValidation } from "../../../../hooks/useFormValidation";
 import { useStore } from "../../../../store/store";
 import Button from "../../../Elements/Button";
 import DatePicker from "../../../Elements/DatePicker";
@@ -48,15 +49,12 @@ export default function AddTask({
   } = useStore();
   const { selectedProject } = useStoreProjects();
   const { setShowDrawerInfo } = useStoreKanban();
-  const {
-    setShowToast,
-    setToastType,
-    setToastMessage,
-    setToastTitle,
-  } = useStoreToast();
+  const { setShowToast, setToastType, setToastMessage, setToastTitle } =
+    useStoreToast();
   const { user } = useStoreUser();
   const { setTasks } = useStoreTasks();
   const [loading, setLoading] = useState<boolean>(false);
+  const [startDate, setStartDate] = useState(dayjs(new Date()));
   const [file, setFile] = useState<(File | string)[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [checklist, setChecklist] = useState<
@@ -99,7 +97,6 @@ export default function AddTask({
 
   useEffect(() => {
     if (data) {
-      console.log(data, "data");
       setEditTask(true);
       setDescription(data.description);
       setTaskName(data.title);
@@ -142,7 +139,44 @@ export default function AddTask({
     setTasks(tasks.documents);
   };
 
+  const validationRules = {
+    taskName: {
+      required: true,
+      minLength: 3,
+      message: "Task name is required and must be at least 3 characters",
+    },
+    status: {
+      required: true,
+      message: "Status is required",
+    },
+    priority: {
+      required: true,
+      message: "Priority is required",
+    },
+    dates: {
+      custom: () => {
+        if (!startDate || !dueDate) return true;
+        return !dayjs(startDate).isAfter(dueDate);
+      },
+      message: "Start date cannot be after due date",
+    },
+  };
+
+  const { errors, validateForm, clearError } =
+    useFormValidation(validationRules);
+
   const handleSaveTask = async () => {
+    const isValid = validateForm({
+      taskName,
+      status,
+      priority,
+      dates: { startDate, dueDate },
+    });
+
+    if (!isValid) {
+      return;
+    }
+
     setLoading(true);
     try {
       const uploadedFileIds = [];
@@ -168,6 +202,7 @@ export default function AddTask({
         title: taskName,
         status: status.label,
         priority: priority.label,
+        startDate: startDate.format("YYYY-MM-DD hh:mm A"),
         dueDate: dueDate.format("YYYY-MM-DD hh:mm A"),
         description,
         tags,
@@ -224,7 +259,7 @@ export default function AddTask({
       setToastMessage(
         editTask
           ? "Task updated! Your changes have been saved."
-          : "Task added! It’s been successfully created."
+          : "Task added! It's been successfully created."
       );
 
       fetchTasks();
@@ -277,8 +312,12 @@ export default function AddTask({
               variant="md"
               type="text"
               value={taskName}
-              onChange={(e) => setTaskName(e.target.value)}
+              onChange={(e) => {
+                setTaskName(e.target.value);
+                clearError("taskName");
+              }}
             />
+            {errors.taskName && <p className="error-text">{errors.taskName}</p>}
           </Col>
           <Col lg={6}>
             <p className="modal-form-title">Status</p>
@@ -286,27 +325,37 @@ export default function AddTask({
               options={statusOptions}
               onChange={(e) => {
                 setStatus(e);
-                console.log(e);
+                clearError("status");
               }}
               value={status}
             />
+            {errors.status && <p className="error-text">{errors.status}</p>}
           </Col>
           <Col lg={6}>
             <p className="modal-form-title">Priority</p>
             <Dropdown
               options={priorityOptions}
-              onChange={(e) => setPriority(e)}
+              onChange={(e) => {
+                setPriority(e);
+                clearError("priority");
+              }}
               value={priority}
             />
+            {errors.priority && <p className="error-text">{errors.priority}</p>}
           </Col>
           <Col lg={6} className="mt-1">
-            <p className="modal-form-title">Dependency</p>
-            <Text
-              variant="md"
-              type="text"
-              value={dependency}
-              onChange={(e) => setDependency(e.target.value)}
+            <p className="modal-form-title">Start Date</p>
+            <DatePicker
+              withTime={false}
+              timeZone="Asia/Manila"
+              value={startDate}
+              onChange={(newDate) => {
+                if (!dayjs(newDate).isBefore(dayjs())) {
+                  setStartDate(newDate);
+                }
+              }}
             />
+            {errors.dates && <p className="error-text">{errors.dates}</p>}
           </Col>
           <Col lg={6} className="mt-1">
             <p className="modal-form-title">Due Date</p>
@@ -317,8 +366,18 @@ export default function AddTask({
               onChange={(newDate) => {
                 if (!dayjs(newDate).isBefore(dayjs())) {
                   setDueDate(newDate);
+                  clearError("dates");
                 }
               }}
+            />
+          </Col>
+          <Col lg={12} className="mt-1">
+            <p className="modal-form-title">Dependency</p>
+            <Text
+              variant="md"
+              type="text"
+              value={dependency}
+              onChange={(e) => setDependency(e.target.value)}
             />
           </Col>
           <Col lg={12}>

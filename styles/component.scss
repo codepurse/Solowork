@@ -925,6 +925,25 @@ $dark-color: #110d24;
   transition: all 0.2s ease;
 }
 
+#error-checkbox {
+  .checkbox-icon {
+    border-color: $error-color !important;
+  }
+  .modern-checkbox input[type="checkbox"]:checked + label .checkbox-icon {
+    background-color: $error-color !important;
+    border-color: $error-color !important;
+  }
+  .modern-checkbox
+    input[type="checkbox"]:checked
+    + label
+    .checkbox-icon::after {
+    border: solid $error-color !important;
+  }
+  .checkbox-text {
+    color: $error-color !important;
+  }
+}
+
 .checkbox-icon {
   position: relative;
   display: inline-block;
@@ -1087,7 +1106,7 @@ div.svg-wrap {
   background: #2a2a2a;
   border-radius: 999px;
   transition: all 0.2s ease-in-out;
-  
+
   // Default (medium) size
   width: 44px;
   height: 24px;
@@ -1146,8 +1165,16 @@ div.svg-wrap {
 .switch-label {
   font-size: 14px;
   color: #fff;
-  
+
   &.switch-label-disabled {
     opacity: 0.5;
   }
+}
+
+.error-text {
+  color: $error-color;
+  font-size: 13px;
+  font-weight: 300;
+  margin-bottom: 0px;
+  margin-top: 2px;
 }
