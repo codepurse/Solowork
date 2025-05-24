@@ -68,7 +68,7 @@ export default function Settings() {
             </Space>
           </div>
         </Col>
-        <Col lg={8}>
+        <Col lg={8} style={{ overflow: "hidden" }}>
           {active === "account" && <Account />}
           {active === "general" && <GeneralSettings />}
           {active === "security" && <SecuritySettings />}

@@ -103,7 +103,10 @@ export default function Account() {
   };
 
   return (
-    <div className="settings-content-right">
+    <div
+      className="settings-content-right animate__fadeIn animate__animated"
+      style={{ animationDuration: "0.3s" }}
+    >
       <Space gap={10} align="evenly">
         <div>
           <p className="settings-content-title-right">Account</p>

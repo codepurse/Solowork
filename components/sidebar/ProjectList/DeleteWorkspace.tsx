@@ -1,14 +1,44 @@
-import { CircleX, Trash, X } from "lucide-react";
+import { CircleX, X } from "lucide-react";
+import { useState } from "react";
+import { mutate } from "swr";
+import {
+  DATABASE_ID,
+  databases,
+  PROJECTS_COLLECTION_ID,
+} from "../../../constant/appwrite";
+import { useStore } from "../../../store/store";
 import Button from "../../Elements/Button";
 import Space from "../../space";
-
 interface DeleteWorkspaceProps {
   onHide: () => void;
+  id: string;
 }
 
 export default function DeleteWorkspace({
   onHide,
+  id,
 }: Readonly<DeleteWorkspaceProps>) {
+  const { useStoreToast } = useStore();
+  const { setToastTitle, setToastMessage, setShowToast } = useStoreToast();
+  const [loading, setLoading] = useState<boolean>(false);
+
+  const softDeleteWorkspace = async () => {
+    try {
+      setLoading(true);
+      await databases.updateDocument(DATABASE_ID, PROJECTS_COLLECTION_ID, id, {
+        isDeleted: true,
+      });
+      setToastTitle("Delete Workspace");
+      setToastMessage("Workspace deleted successfully");
+      setShowToast(true);
+      mutate("projects");
+      onHide();
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
   return (
     <div
       className="animate__animated animate__fadeInLeft"
@@ -53,23 +83,14 @@ export default function DeleteWorkspace({
         <Button style={{ width: "100%" }} onClick={onHide}>
           Cancel
         </Button>
-        <button
-          className="btn-delete"
-          style={{
-            width: "100%",
-            textAlign: "center",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            gap: "10px",
-            background: "#ff5252",
-          }}
+        <Button
+          variant="delete"
+          style={{ width: "100%" }}
+          onClick={softDeleteWorkspace}
+          loading={loading}
         >
-          <i>
-            <Trash size={16} />
-          </i>
-          <span>Delete account</span>
-        </button>
+          Delete
+        </Button>
       </Space>
     </div>
   );

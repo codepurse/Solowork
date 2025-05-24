@@ -54,7 +54,10 @@ const ThemesCard = ({ label }: Readonly<ThemesCardProps>) => {
 
 export default function GeneralSettings() {
   return (
-    <div className="settings-content-right">
+    <div
+      className="settings-content-right animate__fadeIn animate__animated"
+      style={{ animationDuration: "0.3s" }}
+    >
       <p className="settings-content-title-right">General</p>
       <p className="settings-content-subtitle-right">
         Everything related to your profile and access.

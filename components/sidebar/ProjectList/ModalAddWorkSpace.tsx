@@ -105,7 +105,7 @@ export default function ModalAddWorkSpace({
       }}
     >
       {isDelete ? (
-        <DeleteWorkspace onHide={onHide} />
+        <DeleteWorkspace onHide={onHide} id={info?.$id} />
       ) : (
         <div>
           <Space align="evenly">

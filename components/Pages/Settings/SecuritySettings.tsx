@@ -133,7 +133,10 @@ export default function SecuritySettings() {
   };
 
   return (
-    <div className="settings-content-right">
+    <div
+      className="settings-content-right animate__fadeIn animate__animated"
+      style={{ animationDuration: "0.3s" }}
+    >
       <p className="settings-content-title-right">Security</p>
       <p className="settings-content-subtitle-right">
         Everything related to your security and privacy.

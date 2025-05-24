@@ -49,31 +49,33 @@ export default function ProjectList() {
       {showProjects && (
         <div className="projects-list">
           <p className="switch-project">Switch Project</p>
-          {projectList?.map((project) => (
-            <Space gap={5} align="evenly" key={project.id}>
-              <div
-                key={project.id}
-                className="project-item"
-                onClick={() => {
-                  handleProjectClick(project.$id);
-                }}
-              >
-                <i>
-                  <GripVertical size={14} color="#fff" />
+          {projectList
+            ?.filter((project) => !project.isDeleted)
+            .map((project) => (
+              <Space gap={5} align="evenly" key={project.id}>
+                <div
+                  key={project.id}
+                  className="project-item"
+                  onClick={() => {
+                    handleProjectClick(project.$id);
+                  }}
+                >
+                  <i>
+                    <GripVertical size={14} color="#fff" />
+                  </i>
+                  <span>{project?.name}</span>
+                </div>
+                <i
+                  onClick={() => {
+                    setEdit(true);
+                    setShowModalAddWorkspace(true);
+                    setInfo(project);
+                  }}
+                >
+                  <Pencil size={12} color="#fff" />
                 </i>
-                <span>{project?.name}</span>
-              </div>
-              <i
-                onClick={() => {
-                  setEdit(true);
-                  setShowModalAddWorkspace(true);
-                  setInfo(project);
-                }}
-              >
-                <Pencil size={12} color="#fff" />
-              </i>
-            </Space>
-          ))}
+              </Space>
+            ))}
           <div
             className="add-workspace-container mt-2"
             onClick={() => {
