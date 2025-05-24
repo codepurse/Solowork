@@ -12,6 +12,7 @@ import Button from "../../Elements/Button";
 import Text from "../../Elements/Text";
 import TextArea from "../../Elements/TextArea";
 import Space from "../../space";
+import DeleteWorkspace from "./DeleteWorkspace";
 
 interface ModalProps {
   onHide: () => void;
@@ -36,6 +37,7 @@ export default function ModalAddWorkSpace({
   const [workspaceName, setWorkspaceName] = useState("");
   const [description, setDescription] = useState("");
   const [loading, setLoading] = useState(false);
+  const [isDelete, setIsDelete] = useState(false);
 
   const handleAddWorkspace = async () => {
     setLoading(true);
@@ -96,64 +98,76 @@ export default function ModalAddWorkSpace({
   return (
     <div
       className="modal-add-workspace"
+      style={{ overflow: "hidden" }}
       onClick={(e) => {
         e.stopPropagation();
         e.preventDefault();
       }}
     >
-      <Space align="evenly">
-        <p className="modal-title">
-          {edit ? "Edit Workspace" : "Add Workspace"}
-        </p>
-        <i className="modal-close-icon" onClick={onHide}>
-          <X size={17} />
-        </i>
-      </Space>
-      <p className="modal-description mt-1">
-        A workspace keeps all your tasks, notes, and boards in one clear space —
-        perfect for solo projects.
-      </p>
-      <div>
-        <hr
-          className="not-faded-line"
-          style={{ margin: "15px 0px 10px 0px", background: "#252525" }}
-        />
-      </div>
-      <div>
-        <p className="modal-form-title">Workspace Logo</p>
-        <Space gap={15} className="mb-2 mt-2">
-          <div className="workspace-logo-container"></div>
-          <div>
-            <div className="button-upload">Upload Image</div>
-            <p className="modal-form-description">
-              We support .png and .jpg and files up to 1mb.
+      {isDelete ? (
+        <DeleteWorkspace onHide={onHide} />
+      ) : (
+        <div>
+          <Space align="evenly">
+            <p className="modal-title">
+              {edit ? "Edit Workspace" : "Add Workspace"}
             </p>
+            <i className="modal-close-icon" onClick={onHide}>
+              <X size={17} />
+            </i>
+          </Space>
+          <p className="modal-description mt-1">
+            A workspace keeps all your tasks, notes, and boards in one clear
+            space — perfect for solo projects.
+          </p>
+          <div>
+            <hr
+              className="not-faded-line"
+              style={{ margin: "15px 0px 10px 0px", background: "#252525" }}
+            />
           </div>
-        </Space>
-        <p className="modal-form-title">Workspace Name</p>
-        <Text
-          variant="md"
-          type="text"
-          value={workspaceName}
-          onChange={(e) => setWorkspaceName(e.target.value)}
-        />
-        <p className="modal-form-title">Description</p>
-        <TextArea
-          rows={3}
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-        />
-        <div className="d-flex justify-content-between align-items-center">
-          <p className="delete-workspace-text">Delete workspace</p>
-          <Button
-            className="mt-2"
-            onClick={handleAddWorkspace}
-            loading={loading}
-          >
-            {edit ? "Update Workspace" : "Add Workspace"}
-          </Button>
+          <div>
+            <p className="modal-form-title">Workspace Logo</p>
+            <Space gap={15} className="mb-2 mt-2">
+              <div className="workspace-logo-container"></div>
+              <div>
+                <div className="button-upload">Upload Image</div>
+                <p className="modal-form-description">
+                  We support .png and .jpg and files up to 1mb.
+                </p>
+              </div>
+            </Space>
+            <p className="modal-form-title">Workspace Name</p>
+            <Text
+              variant="md"
+              type="text"
+              value={workspaceName}
+              onChange={(e) => setWorkspaceName(e.target.value)}
+            />
+            <p className="modal-form-title">Description</p>
+            <TextArea
+              rows={3}
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+            />
+            <div className="d-flex justify-content-between align-items-center">
+              <p
+                className="delete-workspace-text"
+                onClick={() => setIsDelete(true)}
+              >
+                Delete workspace
+              </p>
+              <Button
+                className="mt-2"
+                onClick={handleAddWorkspace}
+                loading={loading}
+              >
+                {edit ? "Update Workspace" : "Add Workspace"}
+              </Button>
+            </div>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

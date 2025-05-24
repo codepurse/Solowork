@@ -9,6 +9,7 @@ import {
   PROJECTS_COLLECTION_ID,
 } from "../constant/appwrite";
 import { useStore } from "../store/store";
+import FullLoader from "./FullLoader";
 
 // Create a fetcher function outside the component
 const projectsFetcher = async (userId: string) => {
@@ -97,7 +98,7 @@ export default function AuthLayout({
 
   // Show loading state while checking authentication
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <FullLoader />;
   }
 
   // Define public routes that don't require authentication

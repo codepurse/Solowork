@@ -2461,4 +2461,68 @@ main {
     margin-bottom: 0px;
     cursor: pointer;
   }
+  .modal-description-delete {
+    font-size: 13px;
+    font-weight: 300;
+    color: whitesmoke;
+    margin-bottom: 4px;
+  }
+  ul {
+    list-style-type: none;
+    padding-left: 0px;
+    margin-bottom: 0px;
+    margin-top: 10px;
+    li {
+      font-size: 13px;
+      font-weight: 300;
+      color: whitesmoke;
+      margin-bottom: 5px;
+    }
+  }
+}
+
+.full-loader-wrapper {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  .loader-container {
+    width: auto;
+    height: auto;
+  }
+  ul {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    animation: rot 16s linear infinite;
+  }
+  @keyframes rot {
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+  li {
+    width: 25px;
+    height: 25px;
+    background: $primary-color;
+    border-radius: 4px;
+    box-shadow: 0 0 1px #fff, 0 0 5px $primary-color, 0 0 10px $primary-color,
+      0 0 15px $primary-color, 0 0 25px $primary-color, 0 0 55px $primary-color;
+    animation: scale 0.8s linear alternate infinite;
+    @for $i from 1 through 25 {
+      &:nth-child(#{$i}) {
+        z-index: #{25 - $i};
+
+        $delay-step: 0.1s;
+        $delay: 0.1s * (($i - 1) % 5 + 1);
+        animation-delay: $delay;
+      }
+    }
+  }
+  @keyframes scale {
+    100% {
+      transform: scale(0.1);
+      opacity: 0;
+    }
+  }
 }
