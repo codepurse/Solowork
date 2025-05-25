@@ -2,7 +2,7 @@ import { MessageCircle, Phone, Settings } from "lucide-react";
 import { useRouter } from "next/router";
 import Space from "../../space";
 
-export default function Support() {
+export default function Support({ showSidebar }: { showSidebar: boolean }) {
   const router = useRouter();
   const menuItems = [
     {
@@ -34,15 +34,24 @@ export default function Support() {
   ];
   return (
     <div className="sidebar-menu mt-2">
-      <label className="sidebar-menu-title">Support</label>
-
+      {showSidebar && <label className="sidebar-menu-title">Support</label>}
       <div className="sidebar-menu-container">
         {menuItems.map((item) => (
-          <div onClick={item.onClick} key={item.id}>
-            <Space gap={10} className="sidebar-menu-item">
+          <div
+            onClick={item.onClick}
+            key={item.id}
+            className="sidebar-menu-item"
+          >
+            <Space gap={10}>
               <i style={{ marginTop: "-3px" }}>{item.icon}</i>
-              <label className="sidebar-menu-item-name">{item.name}</label>
-              {item.beta && <span className="beta-badge">Beta</span>}
+              {showSidebar && (
+                <>
+                  <label className="sidebar-menu-item-name animate__animated animate__slideInLeft">
+                    {item.name}
+                  </label>
+                  {item.beta && <span className="beta-badge">Beta</span>}
+                </>
+              )}
             </Space>
           </div>
         ))}

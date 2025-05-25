@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState } from "react";
+import Space from "../../space";
 
 interface Tab {
   id: string;
   label: string;
+  icon: React.ReactNode;
 }
 
 interface TabsProps {
@@ -12,7 +14,7 @@ interface TabsProps {
 }
 
 export const Tabs = ({ tabs, activeTab, onTabChange }: TabsProps) => {
-  const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
+  const tabRefs = useRef<(HTMLDivElement | null)[]>([]);
   const [sliderStyle, setSliderStyle] = useState({ width: 0, left: 0 });
 
   useEffect(() => {
@@ -29,16 +31,21 @@ export const Tabs = ({ tabs, activeTab, onTabChange }: TabsProps) => {
   return (
     <div className="tabs-container">
       {tabs.map((tab, i) => (
-        <button
+        <div
+          className="tab-container"
           key={tab.id}
           ref={(el) => {
             tabRefs.current[i] = el;
           }}
-          className={`tab ${activeTab === tab.id ? "active" : ""}`}
           onClick={() => onTabChange(tab.id)}
         >
-          {tab.label}
-        </button>
+          <Space gap={5}>
+            {tab?.icon && <i style={{ color: "#888" }}>{tab.icon}</i>}
+            <button className={`tab ${activeTab === tab.id ? "active" : ""}`}>
+              {tab.label}
+            </button>
+          </Space>
+        </div>
       ))}
       <div className="tab-slider" style={sliderStyle} />
     </div>

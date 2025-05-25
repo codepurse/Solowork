@@ -5,7 +5,7 @@ import { useStore } from "../../../store/store";
 import Space from "../../space";
 import ModalAddWorkSpace from "./ModalAddWorkSpace";
 
-export default function ProjectList() {
+export default function ProjectList({ showSidebar }) {
   const { useStoreProjects } = useStore();
   const { projects, setSelectedProject } = useStoreProjects();
   const [activeProject] = useState(0);
@@ -25,26 +25,33 @@ export default function ProjectList() {
     setSelectedProject(projectId);
   };
 
+  const style = { padding: showSidebar ? "6px 12px" : "4px" };
+
   return (
     <div
       className="dropdown-projects"
       onClick={() => setShowProjects(!showProjects)}
       role="button"
       tabIndex={0}
+      style={style}
       onKeyDown={handleKeyDown}
     >
       <Space gap={10} align="evenly">
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           <img src="/image/logo.png" className="img-fluid logo" />
-          <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
-            <label className="project-name">
-              {projectList[activeProject]?.name}
-            </label>
-          </div>
+          {showSidebar && (
+            <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
+              <label className="project-name">
+                {projectList[activeProject]?.name}
+              </label>
+            </div>
+          )}
         </div>
-        <i>
-          <ChevronDown size={17} color="#fff" />
-        </i>
+        {showSidebar && (
+          <i>
+            <ChevronDown size={17} color="#fff" />
+          </i>
+        )}
       </Space>
       {showProjects && (
         <div className="projects-list">

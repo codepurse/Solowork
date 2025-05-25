@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight, BadgeDollarSign } from "lucide-react";
 import { useEffect, useState } from "react";
 import Space from "../../space";
 
@@ -35,7 +35,11 @@ const Star = ({
   />
 );
 
-export default function BannerPremium() {
+export default function BannerPremium({
+  showSidebar,
+}: {
+  showSidebar: boolean;
+}) {
   const [stars, setStars] = useState<
     Array<{ id: number; top: number; left: number; delay: number }>
   >([]);
@@ -52,8 +56,10 @@ export default function BannerPremium() {
     setStars(newStars);
   }, []);
 
+  const style = { width: showSidebar ? "100%" : "40px" };
+
   return (
-    <div className="banner-premium-container">
+    <div className="banner-premium-container" style={style}>
       <div
         className="banner-premium"
         style={{ position: "relative", overflow: "hidden" }}
@@ -68,19 +74,25 @@ export default function BannerPremium() {
           />
         ))}
         {/* Your banner content goes here */}
-        <p className="banner-premium-title">Premium</p>
-        <p className="banner-premium-description">
-          Level up your productivity with our premium features and get 100%
-          access to all of our features.
-        </p>
-        <div className="mt-1" style={{ cursor: "pointer" }}>
-          <Space gap={5}>
-            <p className="banner-premium-upgrade">Upgrade to premium</p>
-            <i style={{ color: "#c5b1ff", cursor: "pointer" }}>
-              <ArrowUpRight size={16} />
-            </i>
-          </Space>
-        </div>
+        {showSidebar ? (
+          <>
+            <p className="banner-premium-title">Premium</p>
+            <p className="banner-premium-description">
+              Level up your productivity with our premium features and get 100%
+              access to all of our features.
+            </p>
+            <div className="mt-1" style={{ cursor: "pointer" }}>
+              <Space gap={5}>
+                <p className="banner-premium-upgrade">Upgrade to premium</p>
+                <i style={{ color: "#c5b1ff", cursor: "pointer" }}>
+                  <ArrowUpRight size={16} />
+                </i>
+              </Space>
+            </div>
+          </>
+        ) : (
+          <BadgeDollarSign size={16} />
+        )}
       </div>
     </div>
   );

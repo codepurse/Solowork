@@ -1,4 +1,5 @@
 import dayjs from "dayjs";
+import { Col, Container, Row } from "react-bootstrap";
 import { Responsive, WidthProvider } from "react-grid-layout";
 import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";
@@ -7,7 +8,6 @@ import DailyCheckList from "../components/Pages/Dashboard/Widgets/DailyCheckList
 import PomodoroWidget from "../components/Pages/Dashboard/Widgets/Pomodoro/PomodoroWidget";
 import RecentActivity from "../components/Pages/Dashboard/Widgets/RecentActivity";
 import TaskWidgets from "../components/Pages/Dashboard/Widgets/TaskWidgets";
-
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
 export default function Dashboard() {
@@ -52,53 +52,65 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="dashboard-container">
-      <div className="dashboard-header">
-        <p className="dashboard-title">
-          {checkTime()}, Alfon <span className="wave-emoji">👋</span>
-        </p>
-        <p className="dashboard-date">{dayjs().format("dddd, DD MMMM YYYY")}</p>
-      </div>
+    <Container className="dashboard-container p-0">
+      <Row>
+        <Col>
+          <div className="dashboard-header">
+            <p className="dashboard-title">
+              {checkTime()}, Alfon <span className="wave-emoji">👋</span>
+            </p>
+            <p className="dashboard-date">
+              {dayjs().format("dddd, DD MMMM YYYY")}
+            </p>
+          </div>
 
-      <ResponsiveGridLayout
-        className="layout"
-        layouts={layouts}
-        breakpoints={{ lg: 1200, md: 900, sm: 768, xs: 480 }}
-        cols={{ lg: 12, md: 12, sm: 6, xs: 4 }}
-        rowHeight={10}
-        isResizable={true}
-        isDraggable={false}
-        margin={[15, 15]}
-        style={{ padding: "0px" }}
-      >
-        <div key="todo">
-          <TaskWidgets label="To Do" subLabel="Waiting for approval" />
-        </div>
-        <div key="inprogress">
-          <TaskWidgets
-            label="In Progress"
-            subLabel="Currently being worked on"
-          />
-        </div>
-        <div key="completed">
-          <TaskWidgets label="Completed" subLabel="Task finished last month" />
-        </div>
-        <div key="cancelled">
-          <TaskWidgets label="Cancelled" subLabel="Task cancelled last week" />
-        </div>
-        <div key="chart">
-          <LineChart />
-        </div>
-        <div key="recent-activity">
-          <RecentActivity />
-        </div>
-        <div key="daily-checklist">
-          <DailyCheckList />
-        </div>
-        <div key="pomodoro">
-          <PomodoroWidget />
-        </div>
-      </ResponsiveGridLayout>
-    </div>
+          <ResponsiveGridLayout
+            className="layout"
+            layouts={layouts}
+            breakpoints={{ lg: 1200, md: 900, sm: 768, xs: 480 }}
+            cols={{ lg: 12, md: 12, sm: 6, xs: 4 }}
+            rowHeight={10}
+            isResizable={true}
+            isDraggable={false}
+            margin={[15, 15]}
+            style={{ padding: "0px" }}
+          >
+            <div key="todo">
+              <TaskWidgets label="To Do" subLabel="Waiting for approval" />
+            </div>
+            <div key="inprogress">
+              <TaskWidgets
+                label="In Progress"
+                subLabel="Currently being worked on"
+              />
+            </div>
+            <div key="completed">
+              <TaskWidgets
+                label="Completed"
+                subLabel="Task finished last month"
+              />
+            </div>
+            <div key="cancelled">
+              <TaskWidgets
+                label="Cancelled"
+                subLabel="Task cancelled last week"
+              />
+            </div>
+            <div key="chart">
+              <LineChart />
+            </div>
+            <div key="recent-activity">
+              <RecentActivity />
+            </div>
+            <div key="daily-checklist">
+              <DailyCheckList />
+            </div>
+            <div key="pomodoro">
+              <PomodoroWidget />
+            </div>
+          </ResponsiveGridLayout>
+        </Col>
+      </Row>
+    </Container>
   );
 }

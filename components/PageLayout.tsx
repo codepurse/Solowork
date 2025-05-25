@@ -14,9 +14,9 @@ export default function PageLayout({
     router.pathname === "/login"
       ? { marginLeft: "0ox" }
       : {
-          marginLeft: showSidebar ? "250px" : "0px",
-          width: showSidebar ? "calc(100vw - 250px)" : "100vw",
-          zIndex: showSidebar ? 0 : 2,
+          marginLeft: showSidebar ? "250px" : "58px",
+          width: showSidebar ? "calc(100vw - 250px)" : "calc(100vw - 58px)",
+          zIndex: showSidebar ? 0 : 1,
         };
 
   return (

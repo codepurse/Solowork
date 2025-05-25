@@ -73,9 +73,9 @@ export default function KanbanPage() {
           <hr className="not-faded-line" style={{ marginTop: "-13px" }} />
         </Col>
       </Row>
-      {selectedKanban === 1 && <KanbanBoard tasksList={tasks} />}
-      {selectedKanban === 2 && <TableView tasksList={tasks} />}
-      {selectedKanban === 3 && <Overview tasksList={tasks} />}
+      {selectedKanban === "kanban" && <KanbanBoard tasksList={tasks} />}
+      {selectedKanban === "table" && <TableView tasksList={tasks} />}
+      {selectedKanban === "gantt" && <Overview tasksList={tasks} />}
       {showDrawerInfo && <DrawerInfo />}
     </Container>
   );

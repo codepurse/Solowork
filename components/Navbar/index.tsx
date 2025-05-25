@@ -36,7 +36,7 @@ export default function Navbar() {
   const handleShowSidebar = () => setShowSidebar(!showSidebar);
 
   const style = {
-    width: showSidebar ? "calc(100vw - 250px)" : "100vw",
+    width: showSidebar ? "calc(100vw - 250px)" : "calc(100vw - 50px)",
   };
 
   return (

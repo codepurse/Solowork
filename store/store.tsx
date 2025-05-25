@@ -10,11 +10,11 @@ interface NotesStore {
 }
 
 interface KanbanStore {
-  selectedKanban: number;
+  selectedKanban: string;
   selectedKanbanId: string;
   showDrawerInfo: boolean;
   setShowDrawerInfo: (show: boolean) => void;
-  setSelectedKanban: (kanban: number) => void;
+  setSelectedKanban: (kanban: string) => void;
   setSelectedKanbanId: (kanbanId: string) => void;
   drawerInfo: any;
   setDrawerInfo: (info: any) => void;

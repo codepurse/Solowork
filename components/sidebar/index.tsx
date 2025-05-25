@@ -1,6 +1,7 @@
 import Container from "react-bootstrap/Container";
 import Col from "react-bootstrap/esm/Col";
 import Row from "react-bootstrap/esm/Row";
+import { useStore } from "../../store/store";
 import BannerPremium from "./BannerPremium";
 import General from "./General";
 import ProjectList from "./ProjectList";
@@ -8,19 +9,26 @@ import Support from "./Support";
 import Workspace from "./Workspace";
 
 export default function Sidebar() {
+  const { useStoreSidebar } = useStore();
+  const { showSidebar } = useStoreSidebar();
+
+  const style = {
+    width: showSidebar ? "250px" : "58px",
+    padding: showSidebar ? "8px 20px" : "8px 12px",
+  };
   return (
-    <Container className="sidebar">
+    <Container className="sidebar" style={style}>
       <Row style={{ height: "100%" }}>
         <Col>
-          <ProjectList />
+          <ProjectList showSidebar={showSidebar} />
           <div className="sidebar-container mt-3">
-            <General />
+            <General showSidebar={showSidebar} />
             <hr className="faded-line" />
-            <Workspace />
+            <Workspace showSidebar={showSidebar} />
             <hr className="faded-line" />
-            <Support />
+            <Support showSidebar={showSidebar} />
           </div>
-          <BannerPremium />
+          <BannerPremium showSidebar={showSidebar} />
         </Col>
       </Row>
     </Container>

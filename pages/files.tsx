@@ -1,3 +1,4 @@
+import { Folder, FolderKanban } from "lucide-react";
 import { useState } from "react";
 import { Col, Container, Row } from "react-bootstrap";
 import { Tabs } from "../components/Elements/Tab/Tab";
@@ -8,8 +9,8 @@ export default function Files() {
   const [activeTab, setActiveTab] = useState("dashboard");
 
   const tabs = [
-    { id: "dashboard", label: "Dashboard" },
-    { id: "folders", label: "Folders" },
+    { id: "dashboard", label: "Dashboard", icon: <FolderKanban size={15} /> },
+    { id: "folders", label: "Folders", icon: <Folder size={15} /> },
   ];
 
   return (
