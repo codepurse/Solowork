@@ -1,7 +1,7 @@
 import { create } from "zustand";
 
 interface NotesStore {
-  selectedNotes: string;
+  selectedNotes: string | number;
   setSelectedNotes: (notes: string) => void;
   hideSideNotes: boolean;
   setHideSideNotes: (hide: boolean) => void;
@@ -63,9 +63,9 @@ const useStoreNotes = create<NotesStore>((set) => ({
 }));
 
 const useStoreKanban = create<KanbanStore>((set) => ({
-  selectedKanban: 1,
+  selectedKanban: "kanban",
   selectedKanbanId: "",
-  setSelectedKanban: (kanban: number) => set({ selectedKanban: kanban }),
+  setSelectedKanban: (kanban: string) => set({ selectedKanban: kanban }),
   setSelectedKanbanId: (kanbanId: string) =>
     set({ selectedKanbanId: kanbanId }),
   showDrawerInfo: false,
