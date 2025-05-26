@@ -171,7 +171,6 @@ export default function SelectedNotes({
                   setContent(e);
                 }}
                 editable={true}
-                hideToolbar
                 spellCheck={false}
               />
             </div>
