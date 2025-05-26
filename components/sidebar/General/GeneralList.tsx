@@ -81,8 +81,8 @@ export default function GeneralList({
       </div>
       <Collapse in={show}>
         <div>
-          {modalType === "Notes" && <NotesList />}
-          {modalType === "Kanban" && <KanbanList />}
+          {modalType === "Notes" && showSidebar && <NotesList />}
+          {modalType === "Kanban" && showSidebar && <KanbanList />}
         </div>
       </Collapse>
       <Modal

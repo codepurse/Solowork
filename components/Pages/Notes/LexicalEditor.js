@@ -5,56 +5,52 @@ import { AutoFocusPlugin } from "@lexical/react/LexicalAutoFocusPlugin";
 import { LexicalComposer } from "@lexical/react/LexicalComposer";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { ContentEditable } from "@lexical/react/LexicalContentEditable";
-import { LexicalErrorBoundary } from "@lexical/react/LexicalErrorBoundary";
+import ErrorBoundary from "@lexical/react/LexicalErrorBoundary";
 import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
+import { ListPlugin } from "@lexical/react/LexicalListPlugin";
 import { OnChangePlugin } from "@lexical/react/LexicalOnChangePlugin";
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
 import { HeadingNode, QuoteNode } from "@lexical/rich-text";
 import { TableCellNode, TableNode, TableRowNode } from "@lexical/table";
-import { EditorState } from "lexical";
 import { useEffect } from "react";
 import FloatingToolbar from "./FloatingToolbar";
+import Toolbar from "./Toolbar";
 
-interface LexicalEditorProps {
-  value?: any;
-  onChange?: (editorState: any) => void;
-  spellCheck?: boolean;
-  editable?: boolean;
-}
-
-function EditorUpdatePlugin({ editorState }: { editorState: any }) {
+function EditorUpdatePlugin({ editorState }) {
   const [editor] = useLexicalComposerContext();
-  
+
   useEffect(() => {
     // Only update if there's valid editor state and editor is not already focused
     if (!editorState) return;
-    
+
     const updateEditor = () => {
       try {
         let parsedState;
-        
-        if (typeof editorState === 'string') {
+
+        if (typeof editorState === "string") {
           // Parse the string to get JSON
           parsedState = JSON.parse(editorState);
         } else {
           // If it's already an object/JSON
           parsedState = editorState;
         }
-        
+
         // Only set state if it's different from current state
         const currentEditorState = editor.getEditorState().toJSON();
-        if (JSON.stringify(currentEditorState) !== JSON.stringify(parsedState)) {
+        if (
+          JSON.stringify(currentEditorState) !== JSON.stringify(parsedState)
+        ) {
           editor.setEditorState(editor.parseEditorState(parsedState));
         }
       } catch (e) {
-        console.error('Failed to parse editor state:', e);
+        console.error("Failed to parse editor state:", e);
       }
     };
-    
+
     // Only run this once when the component mounts or when editorState changes
     updateEditor();
   }, [editor, editorState]);
-  
+
   return null;
 }
 
@@ -65,7 +61,7 @@ const theme = {
   paragraph: "editor-paragraph",
 };
 
-function onError(error: Error) {
+function onError(error) {
   console.error(error);
 }
 
@@ -74,7 +70,8 @@ export default function LexicalEditor({
   onChange,
   spellCheck,
   editable = true,
-}: Readonly<LexicalEditorProps>) {
+  hideToolbar = false,
+}) {
   const initialConfig = {
     namespace: "MyEditor",
     theme,
@@ -99,20 +96,22 @@ export default function LexicalEditor({
   return (
     <LexicalComposer initialConfig={initialConfig}>
       <div className="editor-container">
+        {!hideToolbar && <Toolbar />}
         <RichTextPlugin
           contentEditable={<ContentEditable className="editor-input" />}
           placeholder={
             <div className="editor-placeholder">Enter some text...</div>
           }
-          ErrorBoundary={LexicalErrorBoundary}
+          ErrorBoundary={ErrorBoundary}
         />
         <HistoryPlugin />
         <AutoFocusPlugin />
+        <ListPlugin />
         <FloatingToolbar />
         <EditorUpdatePlugin editorState={value} />
         {onChange && (
           <OnChangePlugin
-            onChange={(editorState: EditorState) => {
+            onChange={(editorState) => {
               onChange(editorState.toJSON());
             }}
           />

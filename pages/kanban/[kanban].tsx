@@ -47,7 +47,7 @@ export default function KanbanPage() {
   }, [data]);
 
   return (
-    <Container fluid className="kanban-container">
+    <Container className="kanban-container">
       <Row>
         <Col className="p-0">
           <div className="kanban-header">

@@ -22,7 +22,7 @@
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx"
-, "components/Pages/Dashboard/LineChart.js"  ],
+, "components/Pages/Dashboard/LineChart.js", "components/Pages/Notes/LexicalEditor.js"  ],
   "exclude": [
     "node_modules"
   ]

@@ -1,6 +1,5 @@
 import dayjs from "dayjs";
 import { Calendar, EllipsisVertical } from "lucide-react";
-import { useEffect } from "react";
 import { useStore } from "../../../store/store";
 import Badge from "../../Elements/Badge";
 import Space from "../../space";
@@ -26,15 +25,7 @@ export default function NotesList({ notesList }: Readonly<NotesListProps>) {
     setEditMode(true);
   };
 
-  useEffect(() => {
-    console.log(notesList);
-  }, [notesList]);
-
-  const taggClasses = [
-    "badge-blue",
-    "badge-green",
-    "badge-yellow",
-  ];
+  const taggClasses = ["badge-blue", "badge-green", "badge-yellow"];
 
   const randomTagClass = () => {
     return taggClasses[Math.floor(Math.random() * taggClasses.length)];
@@ -57,7 +48,7 @@ export default function NotesList({ notesList }: Readonly<NotesListProps>) {
             </i>
           </Space>
           <div className="note-content">
-            <LexicalEditor value={note.content} editable={false} />
+            <LexicalEditor value={note.content} editable={false} hideToolbar />
           </div>
           <Space gap={5} align="evenly" className="mt-2">
             <Space gap={5}>

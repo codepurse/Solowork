@@ -146,7 +146,9 @@ export default function SelectedNotes({
               value={title}
               onChange={(e) => setTitle(e.target.value)}
             />
-            <Button onClick={handleSave}>Save</Button>
+            <Button onClick={handleSave} className="d-none">
+              Save
+            </Button>
             <div className="selected-notes-tags">
               <Space gap={10}>
                 {tags.map((tag, index) => (
