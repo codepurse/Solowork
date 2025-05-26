@@ -48,7 +48,13 @@ export default function NotesList({ notesList }: Readonly<NotesListProps>) {
             </i>
           </Space>
           <div className="note-content">
-            <LexicalEditor value={note.content} editable={false} hideToolbar />
+            <LexicalEditor
+              value={note.content}
+              editable={false}
+              hideToolbar
+              onChange={() => {}}
+              spellCheck={false}
+            />
           </div>
           <Space gap={5} align="evenly" className="mt-2">
             <Space gap={5}>
