@@ -54,6 +54,7 @@ export default function NotesList({ notesList }: Readonly<NotesListProps>) {
               hideToolbar
               onChange={() => {}}
               spellCheck={false}
+              hidePlaceholder={true}
             />
           </div>
           <Space gap={5} align="evenly" className="mt-2">

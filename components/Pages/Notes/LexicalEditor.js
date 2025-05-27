@@ -59,6 +59,13 @@ const theme = {
   rtl: "rtl",
   placeholder: "editor-placeholder",
   paragraph: "editor-paragraph",
+  text: {
+    bold: "editor-text-bold",
+    italic: "editor-text-italic", 
+    underline: "editor-text-underline",
+    strikethrough: "editor-text-strikethrough",
+    code: "editor-text-code",
+  },
 };
 
 function onError(error) {
@@ -71,6 +78,7 @@ export default function LexicalEditor({
   spellCheck,
   editable = true,
   hideToolbar = false,
+  hidePlaceholder = false,
 }) {
   const initialConfig = {
     namespace: "MyEditor",
@@ -100,7 +108,9 @@ export default function LexicalEditor({
         <RichTextPlugin
           contentEditable={<ContentEditable className="editor-input" />}
           placeholder={
-            <div className="editor-placeholder">Enter some text...</div>
+            !hidePlaceholder && (
+              <div className="editor-placeholder">Enter some text...</div>
+            )
           }
           ErrorBoundary={ErrorBoundary}
         />

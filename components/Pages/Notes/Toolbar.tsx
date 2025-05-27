@@ -1,36 +1,31 @@
 import {
-    INSERT_ORDERED_LIST_COMMAND,
-    INSERT_UNORDERED_LIST_COMMAND,
+  INSERT_ORDERED_LIST_COMMAND,
+  INSERT_UNORDERED_LIST_COMMAND,
 } from "@lexical/list";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import {
-    $getSelection,
-    $isRangeSelection,
-    REDO_COMMAND,
-    TextFormatType,
-    TextNode,
-    UNDO_COMMAND,
+  $getSelection,
+  $isRangeSelection,
+  TextFormatType,
+  TextNode,
 } from "lexical";
 import {
-    AlignCenter,
-    AlignLeft,
-    AlignRight,
-    Bold,
-    Code,
-    Heading1,
-    Heading2,
-    Heading3,
-    Italic,
-    List,
-    ListOrdered,
-    Palette,
-    Redo,
-    Strikethrough,
-    Underline,
-    Undo,
-    X,
+  AlignCenter,
+  AlignLeft,
+  AlignRight,
+  Bold,
+  Code,
+  Heading1,
+  Heading2,
+  Heading3,
+  Italic,
+  List,
+  ListOrdered,
+  Palette,
+  Strikethrough,
+  Underline
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 type FontSize = "12px" | "16px" | "20px" | "24px";
 type Alignment = "left" | "center" | "right";
@@ -41,6 +36,23 @@ export default function Toolbar() {
   const [fontSize, setFontSize] = useState<FontSize>("16px");
   const [showColorPicker, setShowColorPicker] = useState<boolean>(false);
   const [selectedColor, setSelectedColor] = useState<string>("#ffffff");
+  const [activeFormats, setActiveFormats] = useState<Set<TextFormatType>>(new Set());
+
+  useEffect(() => {
+    return editor.registerUpdateListener(({ editorState }) => {
+      editorState.read(() => {
+        const selection = $getSelection();
+        if ($isRangeSelection(selection)) {
+          const formats = new Set<TextFormatType>();
+          if (selection.hasFormat('bold')) formats.add('bold');
+          if (selection.hasFormat('italic')) formats.add('italic');
+          if (selection.hasFormat('underline')) formats.add('underline');
+          if (selection.hasFormat('strikethrough')) formats.add('strikethrough');
+          setActiveFormats(formats);
+        }
+      });
+    });
+  }, [editor]);
 
   const formatText = (format: TextFormatType): void => {
     editor.update(() => {
@@ -178,28 +190,28 @@ export default function Toolbar() {
       <div className="toolbar-group">
         <button
           onClick={() => formatText("bold")}
-          className="toolbar-button"
+          className={`toolbar-button ${activeFormats.has('bold') ? 'toolbar-button-active' : ''}`}
           title="Bold"
         >
           <Bold size={14} />
         </button>
         <button
           onClick={() => formatText("italic")}
-          className="toolbar-button"
+          className={`toolbar-button ${activeFormats.has('italic') ? 'toolbar-button-active' : ''}`}
           title="Italic"
         >
           <Italic size={14} />
         </button>
         <button
           onClick={() => formatText("underline")}
-          className="toolbar-button"
+          className={`toolbar-button ${activeFormats.has('underline') ? 'toolbar-button-active' : ''}`}
           title="Underline"
         >
           <Underline size={14} />
         </button>
         <button
           onClick={() => formatText("strikethrough")}
-          className="toolbar-button"
+          className={`toolbar-button ${activeFormats.has('strikethrough') ? 'toolbar-button-active' : ''}`}
           title="Strikethrough"
         >
           <Strikethrough size={14} />
@@ -294,32 +306,13 @@ export default function Toolbar() {
         >
           <Code size={14} />
         </button>
-        <button
+     {/*    <button
           onClick={clearFormatting}
           className="toolbar-button"
           title="Clear Formatting"
         >
           <X size={14} />
-        </button>
-      </div>
-
-      <div className="toolbar-separator" />
-
-      <div className="toolbar-group">
-        <button
-          onClick={() => editor.dispatchCommand(UNDO_COMMAND, undefined)}
-          className="toolbar-button"
-          title="Undo"
-        >
-          <Undo size={14} />
-        </button>
-        <button
-          onClick={() => editor.dispatchCommand(REDO_COMMAND, undefined)}
-          className="toolbar-button"
-          title="Redo"
-        >
-          <Redo size={14} />
-        </button>
+        </button> */}
       </div>
 
       <div className="toolbar-separator" />

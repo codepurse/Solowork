@@ -7,6 +7,8 @@ interface ButtonProps {
   loading?: boolean;
   style?: React.CSSProperties;
   variant?: "delete" | "default";
+  size?: "sm" | "md" | "lg";
+  fill?: boolean;
 }
 
 const Loader = () => {
@@ -32,12 +34,16 @@ export default function Button({
   loading,
   style,
   variant = "default",
+  size = "md",
+  fill = false,
 }: Readonly<ButtonProps>) {
   return (
     <button
       className={`button-component ${className} ${
         loading ? "btn-loading" : ""
-      } ${variant === "delete" ? "btn-delete" : ""}`}
+      } ${variant === "delete" ? "btn-delete" : ""} ${"btn-" + size} ${
+        fill ? "btn-fill" : ""
+      }`}
       onClick={onClick}
       style={style}
     >

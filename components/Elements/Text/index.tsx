@@ -29,11 +29,31 @@ export default function Text({
     paddingLeft: as === "search" || as === "folder" ? "30px" : "7px",
     backgroundColor: transparent ? "transparent" : "#171031",
   };
+
+  const sizeIcon = () => {
+    if (variant === "sm") {
+      return 12;
+    } else if (variant === "md") {
+      return 14;
+    } else if (variant === "lg") {
+      return 16;
+    }
+  };
+
+  const positionIcon = () => {
+    if (variant === "sm") {
+      return { top: "50%" };
+    } else if (variant === "md") {
+      return { top: "45%" };
+    } else if (variant === "lg") {
+      return { top: "50%" };
+    }
+  };
   return (
     <div className="input-container">
       {as === "search" && (
-        <i>
-          <Search size={15} color="#fff" />
+        <i style={{ ...positionIcon(), position: "absolute" }}>
+          <Search size={sizeIcon()} color="#fff" />
         </i>
       )}
       {as === "folder" && (

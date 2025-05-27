@@ -1,5 +1,5 @@
 import { ID } from "appwrite";
-import { Info, Menu } from "lucide-react";
+import { Info, Menu, Plus, Settings } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Col, Container, Row } from "react-bootstrap";
 import {
@@ -10,8 +10,9 @@ import {
 import { useStore } from "../../../store/store";
 import Button from "../../Elements/Button";
 import Space from "../../space";
+import EmojiNotes from "./EmojiNotes";
 import LexicalEditor from "./LexicalEditor";
-
+import TagsNotes from "./TagsNotes";
 interface SelectedNotesProps {
   selectedNote: any;
 }
@@ -33,7 +34,9 @@ export default function SelectedNotes({
   const [title, setTitle] = useState<string>("");
   const [content, setContent] = useState<any>(null);
   const [tags, setTags] = useState<any>([]);
-
+  const [showEmojiNotes, setShowEmojiNotes] = useState<boolean>(false);
+  const [emoji, setEmoji] = useState<string>("📓");
+  const [showTagsNotes, setShowTagsNotes] = useState<boolean>(false);
   useEffect(() => {
     if (selectedNotes) {
       console.log("selectedNotes", selectedNotes);
@@ -108,6 +111,7 @@ export default function SelectedNotes({
             userId: user.$id,
             folderId: selectedNote,
             title: title,
+            emoji: emoji,
             content: JSON.stringify(content),
             tags: tags,
             createdAt: new Date().toISOString(),
@@ -139,37 +143,81 @@ export default function SelectedNotes({
       <Row>
         <Col>
           <div className="selected-notes-title-container">
-            <input
-              type="text"
-              placeholder="Enter a title"
-              className="selected-notes-title"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-            />
+            <Space gap={5} align="evenly" className="mb-3">
+              <p className="selected-notes-folder-name">
+                Parent Folder / Child Folder / Sub Child Folder
+              </p>
+              <i className="settings-icon">
+                <Settings size={20} />
+              </i>
+            </Space>
+            <div className="cover-image-container animate__animated animate__slideInDown" />
+            <Space gap={5} style={{ position: "relative" }}>
+              <div
+                className="selected-notes-title-icon"
+                onClick={() => setShowEmojiNotes((e) => !e)}
+              >
+                {emoji}
+              </div>
+              {showEmojiNotes && (
+                <EmojiNotes
+                  onClose={() => setShowEmojiNotes(false)}
+                  onSelect={(emoji) => {
+                    setEmoji(emoji);
+                    setShowEmojiNotes(false);
+                  }}
+                />
+              )}
+              <input
+                type="text"
+                placeholder="New post title here..."
+                className="selected-notes-title"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+              />
+            </Space>
+            <Space gap={5} className="mt-3 ml-1">
+              {tags.map((tag, index) => (
+                <div
+                  key={tag}
+                  className="selected-notes-tag"
+                  style={{
+                    color: color[index].color,
+                  }}
+                >
+                  {tag}
+                </div>
+              ))}
+              <Space gap={5} style={{ position: "relative" }}>
+                <i
+                  style={{ marginTop: "-4px" }}
+                  onClick={() => setShowTagsNotes((e) => !e)}
+                >
+                  <Plus size={15} color="#bdbdbd" />
+                </i>
+                <span
+                  className="add-tag"
+                  onClick={() => setShowTagsNotes((e) => !e)}
+                >
+                  Add tags
+                </span>
+                {showTagsNotes && (
+                  <TagsNotes onClose={() => setShowTagsNotes(false)} />
+                )}
+              </Space>
+            </Space>
             <Button onClick={handleSave} className="d-none">
               Save
             </Button>
-            <div className="selected-notes-tags">
-              <Space gap={10}>
-                {tags.map((tag, index) => (
-                  <div
-                    key={tag}
-                    className="selected-notes-tag"
-                    style={{
-                      color: color[index].color,
-                    }}
-                  >
-                    {tag}
-                  </div>
-                ))}
-              </Space>
-            </div>
+
+            <hr className="not-faded-line" />
             <div className="lexical-notes">
               <LexicalEditor
                 value={content}
                 onChange={(e) => {
                   setContent(e);
                 }}
+                hideToolbar={true}
                 editable={true}
                 spellCheck={false}
               />
