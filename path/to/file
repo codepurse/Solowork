@@ -1,0 +1,15 @@
+import { useCallback, useEffect } from 'react';
+import { debounce } from 'lodash';
+
+const debouncedSave = useCallback(
+  debounce(() => {
+    handleSave();
+  }, 1000),
+  [handleSave]
+);
+
+useEffect(() => {
+  if (title || content || tags.length > 0) {
+    debouncedSave();
+  }
+}, [title, content, tags, debouncedSave]); 

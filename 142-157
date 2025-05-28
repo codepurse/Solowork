@@ -1,0 +1,20 @@
+const debouncedLog = useCallback(() => {
+  let timeoutId: NodeJS.Timeout;
+  return () => {
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => {
+      handleSave();
+    }, 1000);
+  };
+}, [
+  editMode,
+  user.$id,
+  selectedNote,
+  title,
+  content,
+  tags,
+  emoji,
+  handleSave,
+]);
+
+const debouncedLogRef = useCallback(debouncedLog(), []); 

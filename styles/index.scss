@@ -572,7 +572,7 @@ main {
       padding: 20px;
       max-width: 900px;
       margin: 0 auto;
-      padding-top: 30px;
+      padding-top: 60px;
       .emoji-notes {
         position: absolute;
         top: 50px;
@@ -2890,4 +2890,13 @@ main {
 // Add this to handle multiple decorations
 .editor-text-underline.editor-text-strikethrough {
   text-decoration: underline line-through !important;
+}
+.col-side-notes {
+  transition: all 0.3s ease-in-out;
+  margin-left: 0;
+  width: 300px; /* or your preferred width */
+}
+
+.col-side-notes.hidden {
+  margin-left: -300px; /* same as width, makes it slide out of view */
 }

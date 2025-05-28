@@ -4,6 +4,7 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { Col, Container, Row } from "react-bootstrap";
 import useSWR from "swr";
+import EmptyNotes from "../../components/Pages/Notes/EmptyNotes";
 import NotesList from "../../components/Pages/Notes/NotesList";
 import SelectedNotes from "../../components/Pages/Notes/SelectedNotes";
 import Space from "../../components/space";
@@ -16,7 +17,7 @@ import { useStore } from "../../store/store";
 
 export default function Notes() {
   const { useStoreNotes, useStoreUser } = useStore();
-  const { hideSideNotes } = useStoreNotes();
+  const { hideSideNotes, selectedNotes } = useStoreNotes();
   const { user } = useStoreUser();
   const router = useRouter();
   const { notes } = router.query;
@@ -42,7 +43,6 @@ export default function Notes() {
 
   useEffect(() => {
     if (data) {
-      console.log(data, "data");
       setNotesList(data);
     }
   }, [data]);
@@ -50,44 +50,46 @@ export default function Notes() {
   return (
     <Container fluid className="notes-container">
       <Row style={{ height: "100%" }}>
-        {!hideSideNotes && (
-          <Col className="col-side-notes">
-            <div className="all-notes-container">
-              <Space align="evenly">
-                <p className="all-notes">All Notes</p>
-                <i>
-                  <PenLine size={17} />
-                </i>
-              </Space>
-            </div>
-            <div className="search-notes">
-              <Space gap={10}>
-                <i>
-                  <Search size={17} color="#888" />
-                </i>
-                <input
-                  type="text"
-                  placeholder="Search all notes"
-                  className="search-notes-input"
-                  value={search}
-                  onChange={(e) => {
-                    setSearch(e.target.value);
-                    setNotesList(
-                      data.filter((note) => {
-                        return note.title
-                          .toLowerCase()
-                          .includes(e.target.value.toLowerCase());
-                      })
-                    );
-                  }}
-                />
-              </Space>
-            </div>
-            <NotesList notesList={notesList} />
-          </Col>
-        )}
+        <Col className={`col-side-notes ${hideSideNotes ? "hidden" : ""}`}>
+          <div className="all-notes-container">
+            <Space align="evenly">
+              <p className="all-notes">All Notes</p>
+              <i>
+                <PenLine size={17} />
+              </i>
+            </Space>
+          </div>
+          <div className="search-notes">
+            <Space gap={10}>
+              <i>
+                <Search size={17} color="#888" />
+              </i>
+              <input
+                type="text"
+                placeholder="Search all notes"
+                className="search-notes-input"
+                value={search}
+                onChange={(e) => {
+                  setSearch(e.target.value);
+                  setNotesList(
+                    data.filter((note) => {
+                      return note.title
+                        .toLowerCase()
+                        .includes(e.target.value.toLowerCase());
+                    })
+                  );
+                }}
+              />
+            </Space>
+          </div>
+          <NotesList notesList={notesList} />
+        </Col>
         <Col className="p-0">
-          <SelectedNotes selectedNote={notes} />
+          {selectedNotes ? (
+            <SelectedNotes selectedNote={notes} />
+          ) : (
+            <EmptyNotes />
+          )}
         </Col>
       </Row>
     </Container>

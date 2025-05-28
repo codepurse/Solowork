@@ -1,5 +1,10 @@
 import { ID } from "appwrite";
-import { Info, Menu, Plus, Settings } from "lucide-react";
+import {
+  ChevronsLeftRight,
+  ChevronsRightLeft,
+  Plus,
+  Settings,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 import { Col, Container, Row } from "react-bootstrap";
 import {
@@ -8,7 +13,7 @@ import {
   NOTES_COLLECTION_ID,
 } from "../../../constant/appwrite";
 import { useStore } from "../../../store/store";
-import Button from "../../Elements/Button";
+import Badge from "../../Elements/Badge";
 import Space from "../../space";
 import EmojiNotes from "./EmojiNotes";
 import LexicalEditor from "./LexicalEditor";
@@ -22,6 +27,7 @@ interface Note {
   title: string;
   content: string;
   tags: string[];
+  emoji: string;
 }
 
 export default function SelectedNotes({
@@ -35,13 +41,39 @@ export default function SelectedNotes({
   const [content, setContent] = useState<any>(null);
   const [tags, setTags] = useState<any>([]);
   const [showEmojiNotes, setShowEmojiNotes] = useState<boolean>(false);
-  const [emoji, setEmoji] = useState<string>("📓");
+  const [emoji, setEmoji] = useState<string>("❔");
   const [showTagsNotes, setShowTagsNotes] = useState<boolean>(false);
+  const [expandNotes, setExpandNotes] = useState<boolean>(false);
+  const [hasChanges, setHasChanges] = useState<boolean>(false);
+
+  const color = [
+    {
+      backgroundColor: "#101914",
+      color: "#3DAF6C",
+    },
+    {
+      backgroundColor: "#0F1419",
+      color: "#32649C",
+    },
+    {
+      backgroundColor: "#1A170F",
+      color: "#B88F31",
+    },
+  ];
+
+  const getColorByIndex = (index: number) => {
+    return color[index % color.length];
+  };
+
   useEffect(() => {
     if (selectedNotes) {
-      console.log("selectedNotes", selectedNotes);
       const note = selectedNotes as unknown as Note;
-      if (title !== note.title) setTitle(note.title);
+      setTitle(note?.title);
+      if (note?.emoji) {
+        setEmoji(note?.emoji);
+      } else {
+        setEmoji("❔");
+      }
 
       if (content !== note.content) {
         try {
@@ -62,26 +94,8 @@ export default function SelectedNotes({
     }
   }, [selectedNotes]);
 
-  const color = [
-    {
-      backgroundColor: "#101914",
-      color: "#3DAF6C",
-    },
-    {
-      backgroundColor: "#0F1419",
-      color: "#32649C",
-    },
-    {
-      backgroundColor: "#1A170F",
-      color: "#B88F31",
-    },
-  ];
-
-  const onClickMenu = () => {
-    setHideSideNotes(!hideSideNotes);
-  };
-
   const handleSave = async () => {
+    console.log("trigger");
     if (editMode) {
       try {
         await databases.updateDocument(
@@ -94,6 +108,7 @@ export default function SelectedNotes({
             title: title,
             content: JSON.stringify(content),
             tags: tags,
+            emoji: emoji,
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
           }
@@ -124,22 +139,28 @@ export default function SelectedNotes({
     }
   };
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (hasChanges) {
+        handleSave();
+        setHasChanges(false);
+      }
+    }, 1000); // save every 5 seconds only if changes
+
+    return () => clearInterval(interval);
+  }, [
+    title,
+    hasChanges,
+    editMode,
+    emoji,
+    tags,
+    selectedNote,
+    content,
+    user.$id,
+  ]);
+
   return (
     <Container className="selected-notes">
-      <Row>
-        <Col className="p-0">
-          <div className="selected-notes-header">
-            <Space align="evenly">
-              <i onClick={onClickMenu}>
-                <Menu size={17} />
-              </i>
-              <i>
-                <Info size={17} />
-              </i>
-            </Space>
-          </div>
-        </Col>
-      </Row>
       <Row>
         <Col>
           <div className="selected-notes-title-container">
@@ -147,9 +168,23 @@ export default function SelectedNotes({
               <p className="selected-notes-folder-name">
                 Parent Folder / Child Folder / Sub Child Folder
               </p>
-              <i className="settings-icon">
-                <Settings size={20} />
-              </i>
+              <div>
+                <Space gap={10}>
+                  <i
+                    className="settings-icon"
+                    onClick={() => setHideSideNotes(!hideSideNotes)}
+                  >
+                    {expandNotes ? (
+                      <ChevronsLeftRight size={20} />
+                    ) : (
+                      <ChevronsRightLeft size={20} />
+                    )}
+                  </i>
+                  <i className="settings-icon">
+                    <Settings size={20} />
+                  </i>
+                </Space>
+              </div>
             </Space>
             <div className="cover-image-container animate__animated animate__slideInDown" />
             <Space gap={5} style={{ position: "relative" }}>
@@ -164,6 +199,7 @@ export default function SelectedNotes({
                   onClose={() => setShowEmojiNotes(false)}
                   onSelect={(emoji) => {
                     setEmoji(emoji);
+                    setHasChanges(true);
                     setShowEmojiNotes(false);
                   }}
                 />
@@ -173,20 +209,17 @@ export default function SelectedNotes({
                 placeholder="New post title here..."
                 className="selected-notes-title"
                 value={title}
-                onChange={(e) => setTitle(e.target.value)}
+                onChange={(e) => {
+                  setTitle(e.target.value);
+                  setHasChanges(true);
+                }}
               />
             </Space>
             <Space gap={5} className="mt-3 ml-1">
               {tags.map((tag, index) => (
-                <div
-                  key={tag}
-                  className="selected-notes-tag"
-                  style={{
-                    color: color[index].color,
-                  }}
-                >
+                <Badge key={index} index={index} randomColor={true}>
                   {tag}
-                </div>
+                </Badge>
               ))}
               <Space gap={5} style={{ position: "relative" }}>
                 <i
@@ -202,20 +235,24 @@ export default function SelectedNotes({
                   Add tags
                 </span>
                 {showTagsNotes && (
-                  <TagsNotes onClose={() => setShowTagsNotes(false)} />
+                  <TagsNotes
+                    onClose={() => {
+                      setShowTagsNotes(false);
+                      setHasChanges(true);
+                    }}
+                    setTags={setTags}
+                    tags={tags}
+                  />
                 )}
               </Space>
             </Space>
-            <Button onClick={handleSave} className="d-none">
-              Save
-            </Button>
-
             <hr className="not-faded-line" />
             <div className="lexical-notes">
               <LexicalEditor
                 value={content}
                 onChange={(e) => {
                   setContent(e);
+                  setHasChanges(true);
                 }}
                 hideToolbar={true}
                 editable={true}

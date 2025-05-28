@@ -852,54 +852,57 @@ $dark-color: #110d24;
 
 .badge-blue {
   max-width: max-content;
-  border-color: rgba(33, 150, 243, 0.3);
+  border: 1px solid rgba(33, 150, 243, 0.3);
   background-color: rgba(33, 150, 243, 0.1);
   color: rgb(33, 150, 243);
   border-radius: 5px;
   font-weight: 300;
+  height: max-content;
+  padding: 4px 5px !important;
 }
 
 .badge-green {
   max-width: max-content;
-  border-color: rgba(0, 230, 118, 0.3);
+  border: 1px solid rgba(0, 230, 118, 0.3);
   background-color: rgba(0, 230, 118, 0.1);
   color: rgb(0, 230, 118) !important;
   border-radius: 5px;
   font-weight: 300;
   height: max-content;
-  padding: 7px !important;
+  padding: 4px 5px !important;
 }
 
 .badge-gray {
   max-width: max-content;
-  border-color: rgba(158, 158, 158, 0.3);
+  border: 1px solid rgba(158, 158, 158, 0.3);
   background-color: rgba(158, 158, 158, 0.1);
   color: rgb(158, 158, 158) !important;
   border-radius: 5px;
   font-weight: 300;
   height: max-content;
-  padding: 7px !important;
+  padding: 4px 5px !important;
 }
 
 .badge-red {
   max-width: max-content;
-  border-color: rgba(244, 63, 94, 0.3);
+  border: 1px solid rgba(244, 63, 94, 0.3);
   background-color: rgba(244, 63, 94, 0.1);
   color: rgb(244, 63, 94) !important;
   border-radius: 5px;
   font-weight: 300;
   height: max-content;
-  padding: 7px !important;
+  padding: 4px 5px !important;
 }
 
 .badge-yellow {
   max-width: max-content;
-  border-color: rgba(255, 234, 0, 0.3);
+  border: 1px solid rgba(255, 234, 0, 0.3);
   background-color: rgba(255, 234, 0, 0.1);
   color: rgb(255, 234, 0) !important;
   border-radius: 5px;
   font-weight: 300;
   height: max-content;
+  padding: 4px 5px !important;
 }
 
 /* Modern Checkbox Styling */
@@ -1435,4 +1438,169 @@ div.svg-wrap {
 
 .ham2.active {
   margin-left: -45px !important;
+}
+
+// Empty Notes Animation Styles
+.empty-notes-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 2rem;
+  text-align: center;
+  .empty-notes-animation {
+    margin-bottom: 0.5rem;
+    position: relative;
+  }
+
+  .empty-notes-svg {
+    transform-origin: center;
+    animation: float 6s ease-in-out infinite;
+  }
+
+  .empty-notes-title {
+    color: #fff;
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    margin-top: -10px;
+  }
+
+  .empty-notes-description {
+    color: #888;
+    font-size: 14px;
+    max-width: 300px;
+    line-height: 1.5;
+  }
+
+  // SVG Elements Styling
+  .paper-stack-bg,
+  .paper-stack-middle,
+  .paper-main {
+    fill: #1a1a1a;
+    stroke: $primary-color;
+    stroke-width: 2;
+  }
+
+  .paper-stack-bg {
+    opacity: 0.3;
+    animation: stackBg 3s ease-in-out infinite;
+  }
+
+  .paper-stack-middle {
+    opacity: 0.6;
+    animation: stackMiddle 3s ease-in-out infinite;
+  }
+
+  .paper-main {
+    animation: stackMain 3s ease-in-out infinite;
+  }
+
+  .note-line {
+    stroke: rgba(124, 77, 255, 0.5);
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-dasharray: 100;
+    stroke-dashoffset: 100;
+    animation: drawLine 3s ease-in-out infinite;
+  }
+
+  .note-line:nth-child(2) {
+    animation-delay: 0.5s;
+  }
+
+  .note-line:nth-child(3) {
+    animation-delay: 1s;
+  }
+
+  .pencil {
+    stroke: $primary-color;
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    animation: writePencil 3s ease-in-out infinite;
+  }
+
+  // Animations
+  @keyframes float {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-20px);
+    }
+  }
+
+  @keyframes stackBg {
+    0%,
+    100% {
+      transform: translate(-2px, -2px);
+    }
+    50% {
+      transform: translate(0, 0);
+    }
+  }
+
+  @keyframes stackMiddle {
+    0%,
+    100% {
+      transform: translate(-1px, -1px);
+    }
+    50% {
+      transform: translate(0, 0);
+    }
+  }
+
+  @keyframes stackMain {
+    0%,
+    100% {
+      transform: translate(0, 0);
+    }
+    50% {
+      transform: translate(1px, 1px);
+    }
+  }
+
+  @keyframes drawLine {
+    0% {
+      stroke-dashoffset: 100;
+    }
+    40% {
+      stroke-dashoffset: 0;
+    }
+    60% {
+      stroke-dashoffset: 0;
+    }
+    100% {
+      stroke-dashoffset: -100;
+    }
+  }
+
+  @keyframes writePencil {
+    0% {
+      transform: translate(0, 0);
+      opacity: 0;
+    }
+    20% {
+      opacity: 1;
+    }
+    35% {
+      transform: translate(-20px, 20px);
+    }
+    45% {
+      transform: translate(-20px, 20px);
+    }
+    65% {
+      transform: translate(0, 0);
+    }
+    85% {
+      opacity: 1;
+    }
+    100% {
+      transform: translate(0, 0);
+      opacity: 0;
+    }
+  }
 }
