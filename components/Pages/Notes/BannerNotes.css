@@ -1,0 +1,135 @@
+.pinterest-grid {
+  display: flex;
+  gap: 16px;
+  padding: 16px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  min-height: 200px;
+}
+
+/* Customize scrollbar for webkit browsers */
+.pinterest-grid::-webkit-scrollbar {
+  height: 8px;
+}
+
+.pinterest-grid::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.pinterest-grid::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+.pinterest-grid::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+.color-block {
+  flex: 0 0 auto;
+  border-radius: 16px;
+  position: relative;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  overflow: hidden;
+  scroll-snap-align: start;
+  min-width: 150px;
+}
+
+.color-block.large {
+  width: 200px;
+  height: 160px;
+}
+
+.color-block.medium {
+  width: 170px;
+  height: 140px;
+}
+
+.color-block.small {
+  width: 150px;
+  height: 120px;
+}
+
+.color-block:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+}
+
+.color-block-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.3);
+  opacity: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.3s ease;
+}
+
+.color-block:hover .color-block-overlay {
+  opacity: 1;
+}
+
+.color-block-actions {
+  transform: translateY(20px);
+  transition: transform 0.3s ease;
+}
+
+.color-block:hover .color-block-actions {
+  transform: translateY(0);
+}
+
+.action-button {
+  background: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: 500;
+  color: #333;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.action-button:hover {
+  background: #f0f0f0;
+  transform: scale(1.05);
+}
+
+.check-icon {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 50%;
+  padding: 4px;
+  backdrop-filter: blur(4px);
+}
+
+.color-block.selected {
+  box-shadow: 0 0 0 3px white, 0 0 0 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Animation for new blocks */
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.color-block {
+  animation: slideInRight 0.5s ease forwards;
+  animation-delay: calc(var(--animation-order) * 0.1s);
+} 

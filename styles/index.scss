@@ -653,6 +653,7 @@ main {
         margin-bottom: 0px;
         cursor: pointer;
       }
+
       .cover-image-container {
         width: 100%;
         height: 170px;
@@ -665,6 +666,29 @@ main {
         border-radius: 10px;
         margin-bottom: 20px;
         animation-duration: 0.2s !important;
+        position: relative;
+        .cover-image-container-actions {
+          position: absolute;
+          top: 5px;
+          right: 5px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 5px 10px;
+          z-index: 1000;
+          background-color: #110d28;
+          border: 1px solid #252525;
+          border-radius: 8px;
+          animation-duration: 0.2s !important;
+          i {
+            color: #888;
+            cursor: pointer;
+            margin-bottom: 2px;
+            &:hover {
+              color: #7a3dff;
+            }
+          }
+        }
       }
       .add-cover-image-icon {
         color: $color-gray-light;
@@ -2899,4 +2923,60 @@ main {
 
 .col-side-notes.hidden {
   margin-left: -300px; /* same as width, makes it slide out of view */
+}
+
+.cover-image-colors-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  gap: 12px;
+  padding: 16px;
+}
+
+.cover-image-container-color {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cover-image-container-color:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.cover-image-container-color.selected {
+  border: 2px solid white;
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.2);
+}
+
+.check-icon {
+  position: absolute;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 50%;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Add a subtle ripple effect */
+.cover-image-container-color::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 8px;
+  top: 0;
+  left: 0;
+  background: radial-gradient(circle, rgba(255,255,255,0.7) 0%, transparent 70%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.cover-image-container-color:active::after {
+  opacity: 1;
 }

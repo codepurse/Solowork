@@ -3,7 +3,7 @@ import {
   ChevronsLeftRight,
   ChevronsRightLeft,
   Plus,
-  Settings,
+  Settings
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Col, Container, Row } from "react-bootstrap";
@@ -15,6 +15,7 @@ import {
 import { useStore } from "../../../store/store";
 import Badge from "../../Elements/Badge";
 import Space from "../../space";
+import BannerNotes from "./BannerNotes";
 import EmojiNotes from "./EmojiNotes";
 import LexicalEditor from "./LexicalEditor";
 import TagsNotes from "./TagsNotes";
@@ -186,7 +187,7 @@ export default function SelectedNotes({
                 </Space>
               </div>
             </Space>
-            <div className="cover-image-container animate__animated animate__slideInDown" />
+            <BannerNotes />
             <Space gap={5} style={{ position: "relative" }}>
               <div
                 className="selected-notes-title-icon"
