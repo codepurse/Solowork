@@ -7,6 +7,7 @@ import useSWR from "swr";
 import EmptyNotes from "../../components/Pages/Notes/EmptyNotes";
 import NotesList from "../../components/Pages/Notes/NotesList";
 import SelectedNotes from "../../components/Pages/Notes/SelectedNotes";
+import SelectedNotesHeader from "../../components/Pages/Notes/SelectedNotesHeader";
 import Space from "../../components/space";
 import {
   DATABASE_ID,
@@ -58,7 +59,8 @@ export default function Notes() {
               </i>
             </Space>
           </div>
-          <div className="search-notes">
+          <SelectedNotesHeader />
+          <div className="search-notes d-none">
             <Space gap={10}>
               <i>
                 <Search size={17} color="#888" />
@@ -81,6 +83,7 @@ export default function Notes() {
               />
             </Space>
           </div>
+
           <NotesList notesList={notesList} />
         </Col>
         <Col className="p-0">
