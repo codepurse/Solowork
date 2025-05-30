@@ -3,7 +3,7 @@ import {
   ChevronsLeftRight,
   ChevronsRightLeft,
   Plus,
-  Settings
+  Settings,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Col, Container, Row } from "react-bootstrap";
@@ -187,7 +187,7 @@ export default function SelectedNotes({
                 </Space>
               </div>
             </Space>
-            <BannerNotes />
+            <BannerNotes selectedNote={selectedNotes} />
             <Space gap={5} style={{ position: "relative" }}>
               <div
                 className="selected-notes-title-icon"

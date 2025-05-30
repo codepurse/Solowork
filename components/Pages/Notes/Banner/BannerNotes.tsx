@@ -1,14 +1,27 @@
 import { Image, Palette, Pencil, Trash, X } from "lucide-react";
-import { useState } from "react";
+import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
 import { Modal } from "react-bootstrap";
+import { mutate } from "swr";
+import {
+  DATABASE_ID,
+  databases,
+  NOTES_COLLECTION_ID,
+} from "../../../../constant/appwrite";
+import { useStore } from "../../../../store/store";
 import { Tabs } from "../../../Elements/Tab/Tab";
 import Space from "../../../space";
 import BannerColors from "./BannerColors";
 import UnsplashImage from "./UnsplashImage";
 
-export default function BannerNotes() {
+export default function BannerNotes({ selectedNote }: any) {
+  const { useStoreNotes } = useStore();
+  const { selectedNotes } = useStoreNotes();
   const [showModal, setShowModal] = useState(false);
   const [showIcons, setShowIcons] = useState(false);
+  const [banner, setBanner] = useState<any>(null);
+  const router = useRouter();
+  const { notes } = router.query;
 
   const [activeTab, setActiveTab] = useState("colors");
 
@@ -17,10 +30,35 @@ export default function BannerNotes() {
     { id: "image", label: "Image", icon: <Image size={15} /> },
   ];
 
+  const handleSave = async () => {
+    try {
+      await databases.updateDocument(
+        DATABASE_ID,
+        NOTES_COLLECTION_ID,
+        (selectedNotes as any).$id,
+        {
+          banner: banner,
+        }
+      );
+      mutate(`notes/${notes}`);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    if (selectedNote) {
+      setBanner(selectedNote?.banner);
+    }
+  }, [selectedNote]);
+
   return (
     <>
       <div
         className="cover-image-container animate__animated animate__slideInDown"
+        style={{
+          backgroundImage: banner,
+        }}
         onMouseEnter={() => setShowIcons(true)}
         onMouseLeave={() => setShowIcons(false)}
       >
@@ -34,7 +72,6 @@ export default function BannerNotes() {
                     e.stopPropagation();
                     e.preventDefault();
                     setShowModal(true);
-                    console.log("clicked");
                   }}
                 />
               </i>
@@ -50,11 +87,20 @@ export default function BannerNotes() {
         show={showModal}
         centered
         size="lg"
-        onHide={() => setShowModal(false)}
+        onHide={() => {
+          setShowModal(false);
+          handleSave();
+        }}
       >
         <Space align="evenly">
           <p className="modal-title">Edit cover image</p>
-          <i className="modal-close-icon" onClick={() => setShowModal(false)}>
+          <i
+            className="modal-close-icon"
+            onClick={() => {
+              setShowModal(false);
+              handleSave();
+            }}
+          >
             <X size={17} />
           </i>
         </Space>
@@ -66,8 +112,20 @@ export default function BannerNotes() {
             onTabChange={(e) => setActiveTab(e)}
           />
         </div>
-        {activeTab === "colors" && <BannerColors />}
-        {activeTab === "image" && <UnsplashImage />}
+        {activeTab === "colors" && (
+          <BannerColors
+            onSelect={(e) => {
+              setBanner(e);
+            }}
+          />
+        )}
+        {activeTab === "image" && (
+          <UnsplashImage
+            onSelect={(e) => {
+              setBanner(e);
+            }}
+          />
+        )}
       </Modal>
     </>
   );
