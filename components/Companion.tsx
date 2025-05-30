@@ -5,7 +5,7 @@ import {
   useMotionValue,
   useSpring,
 } from "framer-motion";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 
 const OrbContainer = styled(motion.div)`
@@ -49,25 +49,40 @@ const Tooltip = styled(motion.div)`
 
 interface GlowingOrbProps {
   $isIdle: boolean;
+  $isLongPressing?: boolean;
 }
 
-const GlowingOrb = styled(motion.div)<GlowingOrbProps>`
+const GlowingOrb = styled(motion.div)<GlowingOrbProps & { $pressProgress: number }>`
   width: 48px;
   height: 48px;
   border-radius: 50%;
-  background: ${(props) =>
-    props.$isIdle
+  background: ${(props) => {
+    if (props.$pressProgress > 0) {
+      // Interpolate between pink and red based on progress
+      return `radial-gradient(circle at 30% 30%, 
+        rgb(${255}, ${105 - props.$pressProgress * 105}, ${180 - props.$pressProgress * 180}) 0%,
+        rgb(${218 - props.$pressProgress * 90}, ${112 - props.$pressProgress * 112}, ${214 - props.$pressProgress * 214}) 45%,
+        rgb(${147 - props.$pressProgress * 48}, ${112 - props.$pressProgress * 112}, ${219 - props.$pressProgress * 219}) 100%)`
+    }
+    return props.$isIdle
       ? "radial-gradient(circle at 30% 30%, #808080 0%, #4a4a4a 45%, #2d2d2d 100%)"
-      : "radial-gradient(circle at 30% 30%, #FF69B4 0%, #DA70D6 45%, #9370DB 100%)"};
-  box-shadow: ${(props) =>
-    props.$isIdle
+      : "radial-gradient(circle at 30% 30%, #FF69B4 0%, #DA70D6 45%, #9370DB 100%)"
+  }};
+  box-shadow: ${(props) => {
+    if (props.$pressProgress > 0) {
+      return `0 0 16px rgba(255, ${105 - props.$pressProgress * 105}, ${180 - props.$pressProgress * 180}, 0.5),
+              0 0 32px rgba(255, ${105 - props.$pressProgress * 105}, ${180 - props.$pressProgress * 180}, 0.3),
+              0 0 48px rgba(255, ${105 - props.$pressProgress * 105}, ${180 - props.$pressProgress * 180}, 0.2)`
+    }
+    return props.$isIdle
       ? "0 0 8px rgba(100, 100, 100, 0.3)"
-      : "0 0 16px rgba(255, 105, 180, 0.5), 0 0 32px rgba(218, 112, 214, 0.3), 0 0 48px rgba(147, 112, 219, 0.2)"};
+      : "0 0 16px rgba(255, 105, 180, 0.5), 0 0 32px rgba(218, 112, 214, 0.3), 0 0 48px rgba(147, 112, 219, 0.2)"
+  }};
   position: relative;
   display: flex;
   justify-content: center;
   align-items: center;
-  transition: all 0.5s ease;
+  transition: all 0.1s ease;
 `;
 
 const InnerCore = styled(motion.div)<GlowingOrbProps>`
@@ -203,13 +218,26 @@ const getRandomPosition = () => ({
 export const FloatingOrb: React.FC<FloatingOrbProps> = ({
   initialX = 20,
   initialY = 20,
-  idleTimeout = 10000, // 10 seconds default
+  idleTimeout = 10000,
 }) => {
+  // Move isHidden to the top with other state declarations
+  const [isHidden, setIsHidden] = useState(false);
+
+  // Early return before any other logic if component is hidden
+  if (isHidden) {
+    return null;
+  }
+
   const [isExpanded, setIsExpanded] = useState(false);
   const [isIdle, setIsIdle] = useState(false);
-  const [particles, setParticles] = useState<
-    { id: number; x: number; y: number }[]
-  >([]);
+  const [particles, setParticles] = useState<Array<{
+    id: number;
+    x: number;
+    y: number;
+    rotate: number;
+    scale: number;
+    color: string;
+  }>>([]);
   const [isHeart, setIsHeart] = useState(false);
   const [hearts, setHearts] = useState<{ id: number; x: number; y: number }[]>(
     []
@@ -225,22 +253,21 @@ export const FloatingOrb: React.FC<FloatingOrbProps> = ({
   const [isDragging, setIsDragging] = useState(false);
   const [dragMessage, setDragMessage] = useState("Drag me anywhere! ✨");
   const [sleepingZ, setSleepingZ] = useState<{ id: number; scale: number }[]>([]);
+  const [isLongPressing, setIsLongPressing] = useState(false);
+  const longPressTimer = useRef<NodeJS.Timeout | null>(null);
+  const [pressProgress, setPressProgress] = useState(0);
+  const pressAnimationRef = useRef<NodeJS.Timeout | null>(null);
 
   const x = useMotionValue(initialX);
   const y = useMotionValue(initialY);
-
   const controls = useAnimation();
-
-  // Floating animation
-  const floatY = useSpring(0, {
+  const floatY = useSpring(0, { stiffness: 100, damping: 10 });
+  const roll = useSpring(0, { stiffness: 200, damping: 15 });
+  
+  // Create a separate spring for the combined y motion
+  const combinedY = useSpring(y.get() + floatY.get(), {
     stiffness: 100,
     damping: 10,
-  });
-
-  // Rolling animation
-  const roll = useSpring(0, {
-    stiffness: 200,
-    damping: 15,
   });
 
   // User activity tracking
@@ -438,11 +465,14 @@ export const FloatingOrb: React.FC<FloatingOrbProps> = ({
   }, [isIdle]);
 
   const createParticles = () => {
-    if (isIdle) return; // No particles when idle
+    if (isIdle) return;
     const newParticles = Array.from({ length: 8 }, (_, i) => ({
       id: Date.now() + i,
       x: (Math.random() - 0.5) * 100,
       y: (Math.random() - 0.5) * 100,
+      rotate: Math.random() * 360,
+      scale: Math.random() * 0.5 + 0.5,
+      color: '#ffffff'
     }));
     setParticles(newParticles);
     setTimeout(() => setParticles([]), 1000);
@@ -500,15 +530,82 @@ export const FloatingOrb: React.FC<FloatingOrbProps> = ({
     }
   };
 
+  const createBreakParticles = () => {
+    // Create 8-12 particles that will break apart
+    const particleCount = Math.floor(Math.random() * 5) + 8;
+    const colors = [
+      '#FF69B4', // pink
+      '#DA70D6', // orchid
+      '#9370DB', // purple
+      '#ff4081', // bright pink
+    ];
+    
+    const newParticles = Array.from({ length: particleCount }, (_, i) => ({
+      id: Date.now() + i,
+      x: (Math.random() - 0.5) * 200, // Spread particles further
+      y: (Math.random() - 0.5) * 200,
+      rotate: Math.random() * 360,
+      scale: Math.random() * 0.5 + 0.5,
+      color: colors[Math.floor(Math.random() * colors.length)]
+    }));
+    
+    setParticles(newParticles);
+  };
+
+  const handleMouseDown = () => {
+    const startTime = Date.now();
+    const animationDuration = 5000;
+    
+    pressAnimationRef.current = setInterval(() => {
+      const elapsed = Date.now() - startTime;
+      const progress = Math.min(elapsed / animationDuration, 1);
+      setPressProgress(progress);
+      
+      if (progress >= 1) {
+        if (pressAnimationRef.current) {
+          clearInterval(pressAnimationRef.current);
+        }
+        setIsLongPressing(true);
+        
+        // Create break particles and animate them
+        createBreakParticles();
+        
+        setTimeout(() => {
+          controls.start({
+            scale: 0,
+            rotate: [0, 45],
+            transition: { duration: 0.3 }
+          }).then(() => {
+            setIsHidden(true);
+          });
+        }, 100);
+      }
+    }, 16);
+  };
+
+  const handleMouseUp = () => {
+    if (pressAnimationRef.current) {
+      clearInterval(pressAnimationRef.current);
+      pressAnimationRef.current = null;
+    }
+    setPressProgress(0);
+    setIsLongPressing(false);
+  };
+
+  useEffect(() => {
+    return () => {
+      if (pressAnimationRef.current) {
+        clearInterval(pressAnimationRef.current);
+      }
+    };
+  }, []);
+
   return (
     <OrbContainer
       id="floating-orb"
       style={{
         x,
-        y: useSpring(y.get() + floatY.get(), {
-          stiffness: 100,
-          damping: 10,
-        }),
+        y: combinedY,
       }}
       drag
       dragMomentum={false}
@@ -520,6 +617,9 @@ export const FloatingOrb: React.FC<FloatingOrbProps> = ({
       }}
       onDragStart={handleDragStart}
       onDragEnd={() => setIsDragging(false)}
+      onMouseDown={handleMouseDown}
+      onMouseUp={handleMouseUp}
+      onMouseLeave={handleMouseUp}
     >
       <AnimatePresence>
         {isIdle && sleepingZ.map((z, index) => (
@@ -617,13 +717,15 @@ export const FloatingOrb: React.FC<FloatingOrbProps> = ({
 
         <GlowingOrb
           $isIdle={isIdle}
+          $isLongPressing={isLongPressing}
+          $pressProgress={pressProgress}
           style={{
             rotate: roll,
             borderRadius: isHeart ? "50% 50% 45% 45%" : "50%",
             transform: isHeart ? "scaleY(1.1)" : "none",
           }}
           animate={
-            !isIdle
+            !isIdle && !isLongPressing
               ? {
                   scale: [1, 1.02, 1],
                   transition: {
@@ -705,17 +807,35 @@ export const FloatingOrb: React.FC<FloatingOrbProps> = ({
 
           <AnimatePresence>
             {particles.map((particle) => (
-              <ParticleEffect
+              <motion.div
                 key={particle.id}
-                initial={{ x: 0, y: 0, opacity: 1 }}
+                style={{
+                  position: 'absolute',
+                  width: '8px',
+                  height: '8px',
+                  borderRadius: '50%',
+                  background: particle.color,
+                  boxShadow: `0 0 8px ${particle.color}`,
+                }}
+                initial={{ 
+                  x: 0, 
+                  y: 0, 
+                  scale: 1, 
+                  rotate: 0,
+                  opacity: 1 
+                }}
                 animate={{
                   x: particle.x,
                   y: particle.y,
-                  opacity: 0,
-                  scale: 0,
+                  scale: particle.scale,
+                  rotate: particle.rotate,
+                  opacity: 0
                 }}
                 exit={{ opacity: 0 }}
-                transition={{ duration: 0.8, ease: "easeOut" }}
+                transition={{
+                  duration: 0.8,
+                  ease: [0.2, 0.65, 0.3, 0.9],
+                }}
               />
             ))}
             {hearts.map((heart) => (
