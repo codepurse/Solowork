@@ -18,7 +18,6 @@ import { useStore } from "../../store/store";
 export default function Notes() {
   const { useStoreNotes, useStoreUser } = useStore();
   const { hideSideNotes, selectedNotes } = useStoreNotes();
-  const { user } = useStoreUser();
   const router = useRouter();
   const { notes } = router.query;
   const [notesList, setNotesList] = useState<any[]>([]);

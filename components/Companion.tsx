@@ -52,8 +52,8 @@ interface GlowingOrbProps {
 }
 
 const GlowingOrb = styled(motion.div)<GlowingOrbProps>`
-  width: 60px;
-  height: 60px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
   background: ${(props) =>
     props.$isIdle
@@ -61,8 +61,8 @@ const GlowingOrb = styled(motion.div)<GlowingOrbProps>`
       : "radial-gradient(circle at 30% 30%, #FF69B4 0%, #DA70D6 45%, #9370DB 100%)"};
   box-shadow: ${(props) =>
     props.$isIdle
-      ? "0 0 10px rgba(100, 100, 100, 0.3)"
-      : "0 0 20px rgba(255, 105, 180, 0.5), 0 0 40px rgba(218, 112, 214, 0.3), 0 0 60px rgba(147, 112, 219, 0.2)"};
+      ? "0 0 8px rgba(100, 100, 100, 0.3)"
+      : "0 0 16px rgba(255, 105, 180, 0.5), 0 0 32px rgba(218, 112, 214, 0.3), 0 0 48px rgba(147, 112, 219, 0.2)"};
   position: relative;
   display: flex;
   justify-content: center;
@@ -71,8 +71,8 @@ const GlowingOrb = styled(motion.div)<GlowingOrbProps>`
 `;
 
 const InnerCore = styled(motion.div)<GlowingOrbProps>`
-  width: 40px;
-  height: 40px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   background: ${(props) =>
     props.$isIdle
@@ -140,8 +140,8 @@ const WaterEffect = styled(motion.div)`
 
 const Eye = styled(motion.div)`
   position: absolute;
-  width: 12px;
-  height: 12px;
+  width: 10px;
+  height: 10px;
   background: white;
   border-radius: 50%;
   display: flex;
@@ -150,11 +150,30 @@ const Eye = styled(motion.div)`
 `;
 
 const Pupil = styled(motion.div)`
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
   background: #da70d6;
   border-radius: 50%;
   position: relative;
+`;
+
+const SleepingZ = styled(motion.div)`
+  position: absolute;
+  font-size: 13px;
+  color: #808080;
+  font-weight: bold;
+  pointer-events: none;
+  text-shadow: 0 0 4px rgba(128, 128, 128, 0.3);
+`;
+
+// Add this new styled component for the eyelid
+const Eyelid = styled(motion.div)`
+  position: absolute;
+  width: 100%;
+  height: 50%;
+  background: ${props => props.$isIdle ? '#808080' : '#fff'};
+  border-radius: 6px 6px 0 0;
+  top: 0;
 `;
 
 interface FloatingOrbProps {
@@ -200,6 +219,7 @@ export const FloatingOrb: React.FC<FloatingOrbProps> = ({
   const [isFollowingMouse, setIsFollowingMouse] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [dragMessage, setDragMessage] = useState("Drag me anywhere! ✨");
+  const [sleepingZ, setSleepingZ] = useState<{ id: number; scale: number }[]>([]);
 
   const x = useMotionValue(initialX);
   const y = useMotionValue(initialY);
@@ -385,6 +405,33 @@ export const FloatingOrb: React.FC<FloatingOrbProps> = ({
     return () => clearInterval(blinkInterval);
   }, [isIdle]);
 
+  // Add this new effect for sleeping animation
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+
+    if (isIdle) {
+      interval = setInterval(() => {
+        setSleepingZ((prev) => {
+          // Create a new Z with random scale
+          const newZ = {
+            id: Date.now(),
+            scale: Math.random() * 0.5 + 0.8, // Random scale between 0.8 and 1.3
+          };
+          
+          // Keep only the last 3 Z's
+          const updatedZ = [...prev, newZ].slice(-3);
+          return updatedZ;
+        });
+      }, 2000); // Create new Z every 2 seconds
+    } else {
+      setSleepingZ([]); // Clear Z's when not idle
+    }
+
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [isIdle]);
+
   const createParticles = () => {
     if (isIdle) return; // No particles when idle
     const newParticles = Array.from({ length: 8 }, (_, i) => ({
@@ -463,12 +510,39 @@ export const FloatingOrb: React.FC<FloatingOrbProps> = ({
       dragConstraints={{
         top: 0,
         left: 0,
-        right: window.innerWidth - 60, // orb width
-        bottom: window.innerHeight - 60 // orb height
+        right: window.innerWidth - 48,
+        bottom: window.innerHeight - 48
       }}
       onDragStart={handleDragStart}
       onDragEnd={() => setIsDragging(false)}
     >
+      <AnimatePresence>
+        {isIdle && sleepingZ.map((z, index) => (
+          <SleepingZ
+            key={z.id}
+            initial={{ 
+              x: 24 + (index * 8), 
+              y: -16, 
+              opacity: 1, 
+              scale: z.scale,
+              rotate: Math.random() * 20 - 10 
+            }}
+            animate={{ 
+              x: 32 + (index * 12),
+              y: -48,
+              opacity: 0,
+              scale: z.scale * 1.2
+            }}
+            exit={{ opacity: 0 }}
+            transition={{ 
+              duration: 2,
+              ease: "easeOut"
+            }}
+          >
+            Z
+          </SleepingZ>
+        ))}
+      </AnimatePresence>
       {isDragging && (
         <Tooltip
           initial={{ opacity: 0, y: 10 }}
@@ -575,16 +649,19 @@ export const FloatingOrb: React.FC<FloatingOrbProps> = ({
             <>
               <Eye
                 style={{
-                  left: "15px",
-                  top: "22px",
-                  scaleY: isBlinking ? 0.1 : 1,
+                  left: "12px",
+                  top: "18px",
+                  scaleY: isBlinking ? 0.1 : isIdle ? 0.5 : 1,
+                  overflow: "hidden"
                 }}
-                transition={{ duration: 0.1 }}
+                transition={{ duration: isBlinking ? 0.1 : 0.3 }}
               >
+                {isIdle && <Eyelid $isIdle={isIdle} />}
                 <Pupil
                   animate={{
                     x: isFollowingMouse ? mousePosition.left?.x : eyePosition.x,
                     y: isFollowingMouse ? mousePosition.left?.y : eyePosition.y,
+                    scale: isIdle ? 0.8 : 1,
                   }}
                   transition={{
                     type: "spring",
@@ -596,20 +673,19 @@ export const FloatingOrb: React.FC<FloatingOrbProps> = ({
               </Eye>
               <Eye
                 style={{
-                  right: "15px",
-                  top: "22px",
-                  scaleY: isBlinking ? 0.1 : 1,
+                  right: "12px",
+                  top: "18px",
+                  scaleY: isBlinking ? 0.1 : isIdle ? 0.5 : 1,
+                  overflow: "hidden"
                 }}
-                transition={{ duration: 0.1 }}
+                transition={{ duration: isBlinking ? 0.1 : 0.3 }}
               >
+                {isIdle && <Eyelid $isIdle={isIdle} />}
                 <Pupil
                   animate={{
-                    x: isFollowingMouse
-                      ? mousePosition.right?.x
-                      : eyePosition.x,
-                    y: isFollowingMouse
-                      ? mousePosition.right?.y
-                      : eyePosition.y,
+                    x: isFollowingMouse ? mousePosition.right?.x : eyePosition.x,
+                    y: isFollowingMouse ? mousePosition.right?.y : eyePosition.y,
+                    scale: isIdle ? 0.8 : 1,
                   }}
                   transition={{
                     type: "spring",

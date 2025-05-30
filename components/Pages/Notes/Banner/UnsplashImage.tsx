@@ -25,6 +25,7 @@ export default function UnsplashImage({ onSelect }: any) {
           src={img.urls.regular}
           alt={img.alt_description || "Landscape"}
           className="cover-image-container-color"
+          onClick={() => onSelect(img.urls.regular)}
         />
       ))}
     </div>

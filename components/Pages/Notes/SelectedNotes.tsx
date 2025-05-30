@@ -146,7 +146,7 @@ export default function SelectedNotes({
         handleSave();
         setHasChanges(false);
       }
-    }, 1000); // save every 5 seconds only if changes
+    }, 500);
 
     return () => clearInterval(interval);
   }, [

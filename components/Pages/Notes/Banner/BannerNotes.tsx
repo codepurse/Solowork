@@ -19,7 +19,9 @@ export default function BannerNotes({ selectedNote }: any) {
   const { selectedNotes } = useStoreNotes();
   const [showModal, setShowModal] = useState(false);
   const [showIcons, setShowIcons] = useState(false);
-  const [banner, setBanner] = useState<any>(null);
+  const [banner, setBanner] = useState<any>(
+    "linear-gradient( -20deg, #ddd6f3 0%, #faaca8 100%, #faaca8 100%)"
+  );
   const router = useRouter();
   const { notes } = router.query;
 
@@ -52,12 +54,22 @@ export default function BannerNotes({ selectedNote }: any) {
     }
   }, [selectedNote]);
 
+  const isImageUrl = (value: string) => value?.includes("http");
+  const isGradient = (value: string) => value?.includes("linear-gradient");
+
   return (
     <>
       <div
         className="cover-image-container animate__animated animate__slideInDown"
         style={{
-          backgroundImage: banner,
+          backgroundImage: isImageUrl(banner)
+            ? `url(${banner})`
+            : isGradient(banner)
+            ? banner
+            : "none",
+          backgroundSize: isImageUrl(banner) ? "cover" : "auto",
+          backgroundPosition: isImageUrl(banner) ? "center" : "initial",
+          backgroundRepeat: isImageUrl(banner) ? "no-repeat" : "initial",
         }}
         onMouseEnter={() => setShowIcons(true)}
         onMouseLeave={() => setShowIcons(false)}
