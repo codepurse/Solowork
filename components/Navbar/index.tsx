@@ -3,7 +3,6 @@ import { useRouter } from "next/router";
 import { useState } from "react";
 import { account } from "../../constant/appwrite";
 import { useStore } from "../../store/store";
-import Text from "../Elements/Text";
 import HamburgerMenu from "../HamburgerMenu";
 import Space from "../space";
 
@@ -33,13 +32,13 @@ export default function Navbar() {
 
   return (
     <div className="navbar-container" style={style}>
-      <Space align="evenly" fill>
+      <Space align="evenly" fill style = {{height: "50px"}}>
         <div style={{ display: "flex", alignItems: "center" }}>
           <HamburgerMenu
             showSidebar={showSidebar}
             setShowSidebar={setShowSidebar}
           />
-          <Text className="input-type" as="search" variant="md" />
+        {/*   <Text className="input-type" as="search" variant="md" /> */}
         </div>
         <div
           style={{ cursor: "pointer", position: "relative" }}

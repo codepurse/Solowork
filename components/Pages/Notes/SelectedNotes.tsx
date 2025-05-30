@@ -18,6 +18,7 @@ import Space from "../../space";
 import BannerNotes from "./Banner/BannerNotes";
 import EmojiNotes from "./EmojiNotes";
 import LexicalEditor from "./LexicalEditor";
+import { StarButton } from "./StarNotes";
 import TagsNotes from "./TagsNotes";
 interface SelectedNotesProps {
   selectedNote: any;
@@ -29,6 +30,7 @@ interface Note {
   content: string;
   tags: string[];
   emoji: string;
+  isStarred: boolean;
 }
 
 export default function SelectedNotes({
@@ -46,6 +48,8 @@ export default function SelectedNotes({
   const [showTagsNotes, setShowTagsNotes] = useState<boolean>(false);
   const [expandNotes, setExpandNotes] = useState<boolean>(false);
   const [hasChanges, setHasChanges] = useState<boolean>(false);
+  const [isStarred, setIsStarred] = useState<boolean>(false);
+  const [isSaving, setIsSaving] = useState<boolean>(false);
 
   const color = [
     {
@@ -62,10 +66,6 @@ export default function SelectedNotes({
     },
   ];
 
-  const getColorByIndex = (index: number) => {
-    return color[index % color.length];
-  };
-
   useEffect(() => {
     if (selectedNotes) {
       const note = selectedNotes as unknown as Note;
@@ -75,6 +75,7 @@ export default function SelectedNotes({
       } else {
         setEmoji("❔");
       }
+      setIsStarred(note?.isStarred);
 
       if (content !== note.content) {
         try {
@@ -96,7 +97,10 @@ export default function SelectedNotes({
   }, [selectedNotes]);
 
   const handleSave = async () => {
-    console.log("trigger");
+    setIsSaving(true);
+    if (isSaving) {
+      return;
+    }
     if (editMode) {
       try {
         await databases.updateDocument(
@@ -112,10 +116,13 @@ export default function SelectedNotes({
             emoji: emoji,
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
+            isStarred: isStarred,
           }
         );
       } catch (error) {
         console.log(error);
+      } finally {
+        setIsSaving(false);
       }
     } else {
       try {
@@ -132,10 +139,13 @@ export default function SelectedNotes({
             tags: tags,
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
+            isStarred: false,
           }
         );
       } catch (error) {
         console.log(error);
+      } finally {
+        setIsSaving(false);
       }
     }
   };
@@ -158,6 +168,7 @@ export default function SelectedNotes({
     selectedNote,
     content,
     user.$id,
+    isSaving,
   ]);
 
   return (
@@ -188,33 +199,45 @@ export default function SelectedNotes({
               </div>
             </Space>
             <BannerNotes selectedNote={selectedNotes} />
-            <Space gap={5} style={{ position: "relative" }}>
-              <div
-                className="selected-notes-title-icon"
-                onClick={() => setShowEmojiNotes((e) => !e)}
-              >
-                {emoji}
-              </div>
-              {showEmojiNotes && (
-                <EmojiNotes
-                  onClose={() => setShowEmojiNotes(false)}
-                  onSelect={(emoji) => {
-                    setEmoji(emoji);
+            <Space gap={5} style={{ position: "relative" }} align="evenly">
+              <Space gap={7}>
+                <div
+                  className="selected-notes-title-icon"
+                  onClick={() => setShowEmojiNotes((e) => !e)}
+                >
+                  {emoji}
+                </div>
+                {showEmojiNotes && (
+                  <EmojiNotes
+                    onClose={() => setShowEmojiNotes(false)}
+                    onSelect={(emoji) => {
+                      setEmoji(emoji);
+                      setHasChanges(true);
+                      setShowEmojiNotes(false);
+                    }}
+                  />
+                )}
+                <input
+                  type="text"
+                  placeholder="New post title here..."
+                  className="selected-notes-title"
+                  value={title}
+                  onChange={(e) => {
+                    setTitle(e.target.value);
                     setHasChanges(true);
-                    setShowEmojiNotes(false);
                   }}
                 />
-              )}
-              <input
-                type="text"
-                placeholder="New post title here..."
-                className="selected-notes-title"
-                value={title}
-                onChange={(e) => {
-                  setTitle(e.target.value);
-                  setHasChanges(true);
-                }}
-              />
+              </Space>
+              <div>
+                <StarButton
+                  isStarred={isStarred}
+                  onToggle={() => {
+                    setIsStarred(!isStarred);
+                    setHasChanges(true);
+                  }}
+                  size={24}
+                />
+              </div>
             </Space>
             <Space gap={5} className="mt-3 ml-1">
               {tags.map((tag, index) => (
