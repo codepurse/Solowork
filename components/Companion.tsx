@@ -166,8 +166,13 @@ const SleepingZ = styled(motion.div)`
   text-shadow: 0 0 4px rgba(128, 128, 128, 0.3);
 `;
 
-// Add this new styled component for the eyelid
-const Eyelid = styled(motion.div)`
+// Add this interface above the Eyelid styled component
+interface EyelidProps {
+  $isIdle: boolean;
+}
+
+// Update the Eyelid component definition
+const Eyelid = styled(motion.div)<EyelidProps>`
   position: absolute;
   width: 100%;
   height: 50%;
