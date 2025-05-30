@@ -15,7 +15,7 @@ import {
 import { useStore } from "../../../store/store";
 import Badge from "../../Elements/Badge";
 import Space from "../../space";
-import BannerNotes from "./BannerNotes";
+import BannerNotes from "./Banner/BannerNotes";
 import EmojiNotes from "./EmojiNotes";
 import LexicalEditor from "./LexicalEditor";
 import TagsNotes from "./TagsNotes";
