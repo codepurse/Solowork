@@ -1,5 +1,6 @@
 import dayjs from "dayjs";
-import { Calendar, EllipsisVertical } from "lucide-react";
+import { Calendar } from "lucide-react";
+import React from "react";
 import { useStore } from "../../../store/store";
 import Badge from "../../Elements/Badge";
 import Space from "../../space";
@@ -13,12 +14,32 @@ interface NotesListProps {
     createdAt: string;
     updatedAt: string;
     tags: string[];
+    emoji: string;
   }>;
 }
 
 export default function NotesList({ notesList }: Readonly<NotesListProps>) {
   const { useStoreNotes } = useStore();
   const { setSelectedNotes, setEditMode } = useStoreNotes();
+
+  // Add a ref to keep track of previous notes length
+  const prevNotesLength = React.useRef(notesList.length);
+  // Add a ref to track initial load
+  const isInitialLoad = React.useRef(true);
+
+  // Determine if a note is new based on its index
+  const isNewNote = (index: number) => {
+    if (isInitialLoad.current) return false;
+    return index === 0 && notesList.length > prevNotesLength.current;
+  };
+
+  // Update the ref after render
+  React.useEffect(() => {
+    if (isInitialLoad.current && notesList.length > 0) {
+      isInitialLoad.current = false;
+    }
+    prevNotesLength.current = notesList.length;
+  }, [notesList.length]);
 
   const handleClick = (note: any) => {
     setSelectedNotes(note);
@@ -33,48 +54,59 @@ export default function NotesList({ notesList }: Readonly<NotesListProps>) {
 
   return (
     <div className="notes-list">
-      {notesList.map((note) => (
+      {notesList.map((note, index) => (
         <div
           key={note.$id}
-          className="note"
-          onClick={() => {
-            handleClick(note);
-          }}
+          className={
+            isNewNote(index)
+              ? "animate__animated animate__slideInLeft animate__faster"
+              : ""
+          }
         >
-          <Space gap={5} align="evenly">
-            <h3 className="note-title">{note.title}</h3>
-            <i style={{ cursor: "pointer", marginTop: "-5px" }}>
-              <EllipsisVertical size={16} color="#888" />
-            </i>
-          </Space>
-          <div className="note-content">
-            <LexicalEditor
-              value={note.content}
-              editable={false}
-              hideToolbar
-              onChange={() => {}}
-              spellCheck={false}
-              hidePlaceholder={true}
-            />
-          </div>
-          <Space gap={5} align="evenly" className="mt-2">
-            <Space gap={5}>
-              <i style={{ marginTop: "-3px" }}>
-                <Calendar size={14} color="#BDBDBD" />
-              </i>
-              <span className="note-date">
-                {dayjs(note.createdAt).format("DD-MM-YYYY")}
-              </span>
+          <div
+            className="note"
+            onClick={() => {
+              handleClick(note);
+            }}
+          >
+            <Space gap={5} className="mb-2">
+              {note.emoji && (
+                <span className="note-emoji" style={{ fontSize: "14px" }}>
+                  {note.emoji}
+                </span>
+              )}
+              <h3 className="note-title mb-0">{note.title}</h3>
             </Space>
-            <div className="note-tags">
-              {note.tags.length > 0 && (
-                <Badge className={randomTagClass()}>{note.tags[0]}</Badge>
-              )}
-              {note.tags.length > 1 && (
-                <Badge className="badge-blue">+{note.tags.length - 1}</Badge>
-              )}
+            <div className="note-content">
+              <LexicalEditor
+                value={note.content}
+                editable={false}
+                hideToolbar
+                onChange={() => {}}
+                spellCheck={false}
+                hidePlaceholder={true}
+                hideFloatingToolbar={true}
+              />
             </div>
-          </Space>
+            <Space gap={5} align="evenly" className="mt-3">
+              <Space gap={5}>
+                <i style={{ marginTop: "-3px" }}>
+                  <Calendar size={14} color="#BDBDBD" />
+                </i>
+                <span className="note-date">
+                  {dayjs(note.createdAt).format("DD-MM-YYYY")}
+                </span>
+              </Space>
+              <div className="note-tags">
+                {note.tags.length > 0 && (
+                  <Badge className={randomTagClass()}>{note.tags[0]}</Badge>
+                )}
+                {note.tags.length > 1 && (
+                  <Badge className="badge-blue">+{note.tags.length - 1}</Badge>
+                )}
+              </div>
+            </Space>
+          </div>
         </div>
       ))}
     </div>

@@ -19,9 +19,7 @@ export default function BannerNotes({ selectedNote }: any) {
   const { selectedNotes } = useStoreNotes();
   const [showModal, setShowModal] = useState(false);
   const [showIcons, setShowIcons] = useState(false);
-  const [banner, setBanner] = useState<any>(
-    "linear-gradient( -20deg, #ddd6f3 0%, #faaca8 100%, #faaca8 100%)"
-  );
+  const [banner, setBanner] = useState<any>("");
   const router = useRouter();
   const { notes } = router.query;
 
@@ -59,41 +57,43 @@ export default function BannerNotes({ selectedNote }: any) {
 
   return (
     <>
-      <div
-        className="cover-image-container animate__animated animate__slideInDown"
-        style={{
-          backgroundImage: isImageUrl(banner)
-            ? `url(${banner})`
-            : isGradient(banner)
-            ? banner
-            : "none",
-          backgroundSize: isImageUrl(banner) ? "cover" : "auto",
-          backgroundPosition: isImageUrl(banner) ? "center" : "initial",
-          backgroundRepeat: isImageUrl(banner) ? "no-repeat" : "initial",
-        }}
-        onMouseEnter={() => setShowIcons(true)}
-        onMouseLeave={() => setShowIcons(false)}
-      >
-        {showIcons && (
-          <div className="cover-image-container-actions animate__animated animate__fadeIn">
-            <Space gap={8}>
-              <i>
-                <Pencil
-                  size={15}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    e.preventDefault();
-                    setShowModal(true);
-                  }}
-                />
-              </i>
-              <i>
-                <Trash size={15} />
-              </i>
-            </Space>
-          </div>
-        )}
-      </div>
+      {banner && (
+        <div
+          className="cover-image-container animate__animated animate__slideInDown"
+          style={{
+            backgroundImage: isImageUrl(banner)
+              ? `url(${banner})`
+              : isGradient(banner)
+              ? banner
+              : "none",
+            backgroundSize: isImageUrl(banner) ? "cover" : "auto",
+            backgroundPosition: isImageUrl(banner) ? "center" : "initial",
+            backgroundRepeat: isImageUrl(banner) ? "no-repeat" : "initial",
+          }}
+          onMouseEnter={() => setShowIcons(true)}
+          onMouseLeave={() => setShowIcons(false)}
+        >
+          {showIcons && (
+            <div className="cover-image-container-actions animate__animated animate__fadeIn">
+              <Space gap={8}>
+                <i>
+                  <Pencil
+                    size={15}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      e.preventDefault();
+                      setShowModal(true);
+                    }}
+                  />
+                </i>
+                <i>
+                  <Trash size={15} />
+                </i>
+              </Space>
+            </div>
+          )}
+        </div>
+      )}
       <Modal
         className="modal-container"
         show={showModal}

@@ -497,15 +497,38 @@ main {
     max-height: calc(100vh - 100px);
     overflow-y: auto;
     .note {
-      padding: 10px;
-      border-radius: 10px;
       background-color: #110d28;
       border: 1px solid #252525;
-      margin-bottom: 10px;
+      box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.1),
+        1px 1px 3px rgba(0, 0, 0, 0.2);
+      position: relative;
+      width: 100%;
+      padding: 15px 15px;
+      margin-top: 10px;
+      margin-bottom: 25px;
       cursor: pointer;
       transition: all 0.2s ease;
+      &::before,
+      &::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: #261f55;
+        border: 1px solid #252525;
+        box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.1),
+          1px 1px 3px rgba(0, 0, 0, 0.2);
+        transform: rotateZ(2.5deg);
+        z-index: -1;
+      }
+
+      &::after {
+        transform: rotateZ(-2.5deg);
+      }
       &:hover {
-        background-color: #232323;
+        background-color: #1c1740;
       }
       .note-title {
         font-size: 15px;
@@ -525,6 +548,7 @@ main {
         text-overflow: ellipsis;
         line-height: 1.6;
         letter-spacing: 0.02em;
+        pointer-events: none;
       }
     }
     .note-content {
@@ -573,6 +597,7 @@ main {
       max-width: 900px;
       margin: 0 auto;
       padding-top: 60px;
+
       .emoji-notes {
         position: absolute;
         top: 50px;

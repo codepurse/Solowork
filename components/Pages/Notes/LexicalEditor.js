@@ -79,6 +79,7 @@ export default function LexicalEditor({
   editable = true,
   hideToolbar = false,
   hidePlaceholder = false,
+  hideFloatingToolbar = false,
 }) {
   const initialConfig = {
     namespace: "MyEditor",
@@ -117,7 +118,7 @@ export default function LexicalEditor({
         <HistoryPlugin />
         <AutoFocusPlugin />
         <ListPlugin />
-        <FloatingToolbar />
+        {!hideFloatingToolbar && <FloatingToolbar />}
         <EditorUpdatePlugin editorState={value} />
         {onChange && (
           <OnChangePlugin

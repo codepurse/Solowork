@@ -1,8 +1,8 @@
 import { create } from "zustand";
 
 interface NotesStore {
-  selectedNotes: string | number;
-  setSelectedNotes: (notes: string) => void;
+  selectedNotes: any;
+  setSelectedNotes: (notes: any) => void;
   hideSideNotes: boolean;
   setHideSideNotes: (hide: boolean) => void;
   editMode: boolean;
@@ -55,7 +55,7 @@ interface ToastStore {
 
 const useStoreNotes = create<NotesStore>((set) => ({
   selectedNotes: null,
-  setSelectedNotes: (notes: string) => set({ selectedNotes: notes }),
+  setSelectedNotes: (notes: any) => set({ selectedNotes: notes }),
   hideSideNotes: false,
   setHideSideNotes: (hide: boolean) => set({ hideSideNotes: hide }),
   editMode: false,

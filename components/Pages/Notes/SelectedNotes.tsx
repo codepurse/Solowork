@@ -1,4 +1,3 @@
-import { ID } from "appwrite";
 import {
   ChevronsLeftRight,
   ChevronsRightLeft,
@@ -46,25 +45,9 @@ export default function SelectedNotes({
   const [showEmojiNotes, setShowEmojiNotes] = useState<boolean>(false);
   const [emoji, setEmoji] = useState<string>("❔");
   const [showTagsNotes, setShowTagsNotes] = useState<boolean>(false);
-  const [expandNotes, setExpandNotes] = useState<boolean>(false);
   const [hasChanges, setHasChanges] = useState<boolean>(false);
   const [isStarred, setIsStarred] = useState<boolean>(false);
   const [isSaving, setIsSaving] = useState<boolean>(false);
-
-  const color = [
-    {
-      backgroundColor: "#101914",
-      color: "#3DAF6C",
-    },
-    {
-      backgroundColor: "#0F1419",
-      color: "#32649C",
-    },
-    {
-      backgroundColor: "#1A170F",
-      color: "#B88F31",
-    },
-  ];
 
   useEffect(() => {
     if (selectedNotes) {
@@ -79,7 +62,7 @@ export default function SelectedNotes({
 
       if (content !== note.content) {
         try {
-          if (typeof note.content === "string") {
+          if (typeof note.content === "string" && note.content !== "") {
             const parsedContent = JSON.parse(note.content);
             setContent(parsedContent);
           } else {
@@ -117,29 +100,6 @@ export default function SelectedNotes({
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
             isStarred: isStarred,
-          }
-        );
-      } catch (error) {
-        console.log(error);
-      } finally {
-        setIsSaving(false);
-      }
-    } else {
-      try {
-        await databases.createDocument(
-          DATABASE_ID,
-          NOTES_COLLECTION_ID,
-          ID.unique(),
-          {
-            userId: user.$id,
-            folderId: selectedNote,
-            title: title,
-            emoji: emoji,
-            content: JSON.stringify(content),
-            tags: tags,
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-            isStarred: false,
           }
         );
       } catch (error) {
@@ -186,7 +146,7 @@ export default function SelectedNotes({
                     className="settings-icon"
                     onClick={() => setHideSideNotes(!hideSideNotes)}
                   >
-                    {expandNotes ? (
+                    {hideSideNotes ? (
                       <ChevronsLeftRight size={20} />
                     ) : (
                       <ChevronsRightLeft size={20} />

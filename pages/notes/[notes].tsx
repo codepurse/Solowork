@@ -1,5 +1,5 @@
 import { Query } from "appwrite";
-import { PenLine, Search } from "lucide-react";
+import { PenLine } from "lucide-react";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { Col, Container, Row } from "react-bootstrap";
@@ -17,19 +17,18 @@ import {
 import { useStore } from "../../store/store";
 
 export default function Notes() {
-  const { useStoreNotes, useStoreUser } = useStore();
+  const { useStoreNotes } = useStore();
   const { hideSideNotes, selectedNotes } = useStoreNotes();
   const router = useRouter();
   const { notes } = router.query;
   const [notesList, setNotesList] = useState<any[]>([]);
-  const [search, setSearch] = useState<string>("");
 
   const fetchSelectedNote = async (noteId: string) => {
     try {
       const res = await databases.listDocuments(
         DATABASE_ID,
         NOTES_COLLECTION_ID,
-        [Query.equal("folderId", noteId)]
+        [Query.equal("folderId", noteId), Query.orderDesc("$createdAt")]
       );
       return res.documents;
     } catch (error) {
@@ -59,31 +58,10 @@ export default function Notes() {
               </i>
             </Space>
           </div>
-          <SelectedNotesHeader />
-          <div className="search-notes d-none">
-            <Space gap={10}>
-              <i>
-                <Search size={17} color="#888" />
-              </i>
-              <input
-                type="text"
-                placeholder="Search all notes"
-                className="search-notes-input"
-                value={search}
-                onChange={(e) => {
-                  setSearch(e.target.value);
-                  setNotesList(
-                    data.filter((note) => {
-                      return note.title
-                        .toLowerCase()
-                        .includes(e.target.value.toLowerCase());
-                    })
-                  );
-                }}
-              />
-            </Space>
-          </div>
-
+          <SelectedNotesHeader
+            setNotesList={setNotesList}
+            notesId={notes as string}
+          />
           <NotesList notesList={notesList} />
         </Col>
         <Col className="p-0">
