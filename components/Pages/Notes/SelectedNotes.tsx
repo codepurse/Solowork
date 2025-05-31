@@ -17,6 +17,7 @@ import Space from "../../space";
 import BannerNotes from "./Banner/BannerNotes";
 import EmojiNotes from "./EmojiNotes";
 import LexicalEditor from "./LexicalEditor";
+import NoteSettings from "./NoteSettings";
 import { StarButton } from "./StarNotes";
 import TagsNotes from "./TagsNotes";
 interface SelectedNotesProps {
@@ -48,6 +49,7 @@ export default function SelectedNotes({
   const [hasChanges, setHasChanges] = useState<boolean>(false);
   const [isStarred, setIsStarred] = useState<boolean>(false);
   const [isSaving, setIsSaving] = useState<boolean>(false);
+  const [showSettings, setShowSettings] = useState<boolean>(false);
 
   useEffect(() => {
     if (selectedNotes) {
@@ -134,29 +136,26 @@ export default function SelectedNotes({
   return (
     <Container className="selected-notes">
       <Row>
-        <Col>
+        <Col style={{ height: "100vh" }}>
           <div className="selected-notes-title-container">
+            {showSettings && <NoteSettings />}
             <Space gap={5} align="evenly" className="mb-3">
-              <p className="selected-notes-folder-name">
-                Parent Folder / Child Folder / Sub Child Folder
-              </p>
-              <div>
-                <Space gap={10}>
-                  <i
-                    className="settings-icon"
-                    onClick={() => setHideSideNotes(!hideSideNotes)}
-                  >
-                    {hideSideNotes ? (
-                      <ChevronsLeftRight size={20} />
-                    ) : (
-                      <ChevronsRightLeft size={20} />
-                    )}
-                  </i>
-                  <i className="settings-icon">
-                    <Settings size={20} />
-                  </i>
-                </Space>
-              </div>
+              <i
+                className="settings-icon"
+                onClick={() => setHideSideNotes(!hideSideNotes)}
+              >
+                {hideSideNotes ? (
+                  <ChevronsLeftRight size={20} />
+                ) : (
+                  <ChevronsRightLeft size={20} />
+                )}
+              </i>
+              <i
+                className="settings-icon"
+                onClick={() => setShowSettings(!showSettings)}
+              >
+                <Settings size={20} />
+              </i>
             </Space>
             <BannerNotes selectedNote={selectedNotes} />
             <Space gap={5} style={{ position: "relative" }} align="evenly">
@@ -195,7 +194,7 @@ export default function SelectedNotes({
                     setIsStarred(!isStarred);
                     setHasChanges(true);
                   }}
-                  size={24}
+                  size={20}
                 />
               </div>
             </Space>

@@ -53,6 +53,17 @@ interface ToastStore {
   setToastTitle: (title: string) => void;
 }
 
+interface NoteSettingsStore {
+  showBanner: boolean;
+  setShowBanner: (show: boolean) => void;
+  spellCheck: boolean;
+  setSpellCheck: (spellCheck: boolean) => void;
+  focusMode: boolean;
+  setFocusMode: (focusMode: boolean) => void;
+  showFooter: boolean;
+  setShowFooter: (showFooter: boolean) => void;
+}
+
 const useStoreNotes = create<NotesStore>((set) => ({
   selectedNotes: null,
   setSelectedNotes: (notes: any) => set({ selectedNotes: notes }),
@@ -107,6 +118,17 @@ const useStoreToast = create<ToastStore>((set) => ({
   setToastMessage: (message: string) => set({ toastMessage: message }),
 }));
 
+const useNoteSettings = create<NoteSettingsStore>((set) => ({
+  showBanner: false,
+  setShowBanner: (show: boolean) => set({ showBanner: show }),
+  spellCheck: false,
+  setSpellCheck: (spellCheck: boolean) => set({ spellCheck: spellCheck }),
+  focusMode: false,
+  setFocusMode: (focusMode: boolean) => set({ focusMode: focusMode }),
+  showFooter: false,
+  setShowFooter: (showFooter: boolean) => set({ showFooter: showFooter }),
+}));
+
 export function useStore() {
   return {
     useStoreNotes,
@@ -116,5 +138,6 @@ export function useStore() {
     useStoreTasks,
     useStoreSidebar,
     useStoreToast,
+    useNoteSettings,
   };
 }
