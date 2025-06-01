@@ -12,6 +12,21 @@ const PixelSpirit = dynamic(() => import("../components/Companion"), {
   ssr: false,
 });
 
+const CompanionBird = dynamic(() => import("../components/CompanionBird"), {
+  ssr: false,
+});
+
+const CompanionIceCube = dynamic(
+  () => import("../components/CompanionIceCube"),
+  {
+    ssr: false,
+  }
+);
+
+const CompanionGhost = dynamic(() => import("../components/CompanionGhost"), {
+  ssr: false,
+});
+
 export default function MyApp({ Component, pageProps }: AppProps) {
   const { useStoreUser } = useStore();
   const { user } = useStoreUser();
@@ -20,7 +35,7 @@ export default function MyApp({ Component, pageProps }: AppProps) {
   useEffect(() => {
     setPosition({
       x: window.innerWidth - 80,
-      y: window.innerHeight - 80
+      y: window.innerHeight - 80,
     });
   }, []);
 
@@ -36,10 +51,9 @@ export default function MyApp({ Component, pageProps }: AppProps) {
 
   return (
     <AuthLayout>
-      <PixelSpirit
-        initialX={position.x}
-        initialY={position.y}
-      />
+    {/*   <PixelSpirit initialX={position.x} initialY={position.y} /> */}
+      {/*   <CompanionIceCube /> */}
+      <CompanionGhost />
       <Layout>
         <PageLayout>
           <Component {...pageProps} />

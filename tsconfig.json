@@ -21,8 +21,12 @@
   "include": [
     "next-env.d.ts",
     "**/*.ts",
-    "**/*.tsx"
-, "components/Pages/Dashboard/LineChart.js", "components/Pages/Notes/LexicalEditor.js", "components/Companion.js"  ],
+    "**/*.tsx",
+    "components/Pages/Dashboard/LineChart.js",
+    "components/Pages/Notes/LexicalEditor.js",
+    "components/Companion.tsx",
+    "components/CompanionIceCube.tsx"
+  ],
   "exclude": [
     "node_modules"
   ]

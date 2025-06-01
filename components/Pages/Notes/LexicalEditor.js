@@ -54,6 +54,45 @@ function EditorUpdatePlugin({ editorState }) {
   return null;
 }
 
+function EditablePlugin({ editable }) {
+  const [editor] = useLexicalComposerContext();
+
+  useEffect(() => {
+    editor.setEditable(editable);
+  }, [editor, editable]);
+
+  return null;
+}
+
+function SpellCheckPlugin({ spellCheck }) {
+  const [editor] = useLexicalComposerContext();
+
+  useEffect(() => {
+    // Get all contenteditable elements within the editor
+    const rootElement = editor.getRootElement();
+    if (rootElement) {
+      // Set spellcheck on the root element
+      rootElement.spellcheck = spellCheck;
+      
+      // Find and set spellcheck on the ContentEditable element
+      const contentEditableElement = rootElement.querySelector('[contenteditable="true"]');
+      if (contentEditableElement) {
+        contentEditableElement.spellcheck = spellCheck;
+      }
+
+      // Force a re-render of the contenteditable to apply spellcheck
+      const selection = window.getSelection();
+      const range = document.createRange();
+      range.selectNodeContents(rootElement);
+      selection.removeAllRanges();
+      selection.addRange(range);
+      selection.removeAllRanges();
+    }
+  }, [editor, spellCheck]);
+
+  return null;
+}
+
 const theme = {
   ltr: "ltr",
   rtl: "rtl",
@@ -85,8 +124,8 @@ export default function LexicalEditor({
     namespace: "MyEditor",
     theme,
     onError,
-    editable: editable ?? true,
-    spellCheck: spellCheck ?? true,
+    editable: true,
+    spellCheck: true,
     nodes: [
       HeadingNode,
       ListNode,
@@ -120,6 +159,8 @@ export default function LexicalEditor({
         <ListPlugin />
         {!hideFloatingToolbar && <FloatingToolbar />}
         <EditorUpdatePlugin editorState={value} />
+        <EditablePlugin editable={editable} />
+        <SpellCheckPlugin spellCheck={spellCheck ?? true} />
         {onChange && (
           <OnChangePlugin
             onChange={(editorState) => {

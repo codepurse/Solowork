@@ -4,7 +4,7 @@ import {
   Plus,
   Settings,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Col, Container, Row } from "react-bootstrap";
 import {
   DATABASE_ID,
@@ -36,7 +36,8 @@ interface Note {
 export default function SelectedNotes({
   selectedNote,
 }: Readonly<SelectedNotesProps>) {
-  const { useStoreNotes, useStoreUser } = useStore();
+  const parentRef = useRef<HTMLDivElement>(null);
+  const { useStoreNotes, useStoreUser, useNoteSettings } = useStore();
   const { hideSideNotes, setHideSideNotes, selectedNotes, editMode } =
     useStoreNotes();
   const { user } = useStoreUser();
@@ -50,6 +51,27 @@ export default function SelectedNotes({
   const [isStarred, setIsStarred] = useState<boolean>(false);
   const [isSaving, setIsSaving] = useState<boolean>(false);
   const [showSettings, setShowSettings] = useState<boolean>(false);
+  const { noteSettings, setNoteSettings } = useNoteSettings();
+  const [parentWidth, setParentWidth] = useState<number>(0);
+  const [metrics, setMetrics] = useState({
+    wordCount: 0,
+    charCount: 0,
+    lineCount: 0,
+    readingTime: 0,
+  });
+
+  useEffect(() => {
+    if (selectedNotes) {
+      setNoteSettings({
+        hideBanner: selectedNotes.hideNotesBanner,
+        spellCheck: selectedNotes.spellCheck,
+        autoSave: selectedNotes.autoSave,
+        focusMode: selectedNotes.focusMode,
+        showFooter: selectedNotes.showFooter,
+        readOnly: selectedNotes.readOnly,
+      });
+    }
+  }, [selectedNotes]);
 
   useEffect(() => {
     if (selectedNotes) {
@@ -133,12 +155,81 @@ export default function SelectedNotes({
     isSaving,
   ]);
 
+  useEffect(() => {
+    console.log(noteSettings, "noteSettings");
+  }, [noteSettings]);
+
+  useEffect(() => {
+    if (!parentRef.current) return;
+
+    const resizeObserver = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        setParentWidth(entry.contentRect.width + 30);
+      }
+    });
+
+    resizeObserver.observe(parentRef.current);
+
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, []);
+
+  const calculateMetrics = (editorContent: any) => {
+    if (!editorContent || !editorContent.root || !editorContent.root.children) {
+      return {
+        wordCount: 0,
+        charCount: 0,
+        lineCount: 0,
+        readingTime: 0,
+      };
+    }
+
+    let text = "";
+    // Extract text from all paragraphs
+    editorContent.root.children.forEach((node: any) => {
+      if (node.children) {
+        node.children.forEach((child: any) => {
+          if (child.text) {
+            text += child.text + " ";
+          }
+        });
+        text += "\n";
+      }
+    });
+
+    // Calculate metrics
+    const words = text
+      .trim()
+      .split(/\s+/)
+      .filter((word) => word.length > 0);
+    const chars = text.replace(/\s/g, "").length;
+    const lines = editorContent.root.children.length;
+
+    // Average reading speed is about 200-250 words per minute
+    // We'll use 200 for a conservative estimate
+    const readingTimeMinutes = Math.ceil(words.length / 200);
+
+    return {
+      wordCount: words.length,
+      charCount: chars,
+      lineCount: lines,
+      readingTime: readingTimeMinutes,
+    };
+  };
+
   return (
     <Container className="selected-notes">
       <Row>
-        <Col style={{ height: "100vh" }}>
+        <Col ref={parentRef} style={{ height: "100vh", position: "relative" }}>
           <div className="selected-notes-title-container">
-            {showSettings && <NoteSettings />}
+            {showSettings && (
+              <NoteSettings
+                noteId={selectedNotes.$id}
+                setShowSettings={setShowSettings}
+                selectedNote={selectedNotes}
+              />
+            )}
             <Space gap={5} align="evenly" className="mb-3">
               <i
                 className="settings-icon"
@@ -157,7 +248,9 @@ export default function SelectedNotes({
                 <Settings size={20} />
               </i>
             </Space>
-            <BannerNotes selectedNote={selectedNotes} />
+            {!noteSettings.hideBanner && (
+              <BannerNotes selectedNote={selectedNotes} />
+            )}
             <Space gap={5} style={{ position: "relative" }} align="evenly">
               <Space gap={7}>
                 <div
@@ -236,13 +329,46 @@ export default function SelectedNotes({
                 onChange={(e) => {
                   setContent(e);
                   setHasChanges(true);
+                  setMetrics(calculateMetrics(e));
                 }}
                 hideToolbar={true}
-                editable={true}
-                spellCheck={false}
+                editable={!noteSettings.readOnly}
+                spellCheck={noteSettings.spellCheck}
               />
             </div>
           </div>
+          {noteSettings.showFooter && (
+            <div
+              className="selected-notes-footer animate__animated animate__slideInUp"
+              style={{
+                width: parentWidth,
+              }}
+            >
+              <Space gap={10} align="evenly">
+                <Space gap={10}>
+                  <p className="selected-notes-footer-text">
+                    Words count: {metrics.wordCount}
+                  </p>
+                  <span className="selected-notes-footer-text-separator">
+                    &#183;
+                  </span>
+                  <p className="selected-notes-footer-text">
+                    Characters count: {metrics.charCount}
+                  </p>
+                  <span className="selected-notes-footer-text-separator">
+                    &#183;
+                  </span>
+                  <p className="selected-notes-footer-text">
+                    Lines count: {metrics.lineCount}
+                  </p>
+                </Space>
+                <p className="selected-notes-footer-text">
+                  Reading time: {metrics.readingTime}{" "}
+                  {metrics.readingTime === 1 ? "minute" : "minutes"}
+                </p>
+              </Space>
+            </div>
+          )}
         </Col>
       </Row>
     </Container>

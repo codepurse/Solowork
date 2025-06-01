@@ -3062,7 +3062,7 @@ main {
   top: 100px;
   right: 30px;
   border-radius: 8px;
-  padding: 15px 5px;
+  padding: 10px 5px;
   max-width: 250px;
   width: 250px;
   z-index: 1000;
@@ -3078,9 +3078,44 @@ main {
       padding: 5px 8px;
       border-radius: 5px;
       margin-bottom: 2px;
+      i {
+        margin-top: -3px;
+      }
       &:hover {
         background-color: #1c1739;
       }
     }
+  }
+}
+.ice-cube-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1000;
+}
+.selected-notes-footer {
+  position: fixed;
+  bottom: 0px;
+  right: 0px;
+  padding: 10px;
+  background-color: #040019;
+  border-top: 1px solid #252525;
+  z-index: 1000;
+  animation-duration: 0.2s;
+  .selected-notes-footer-text {
+    font-size: 12px;
+    font-weight: 300;
+    color: $color-gray-light;
+    margin-bottom: 0px;
+  }
+  .selected-notes-footer-text-separator {
+    margin-left: 5px;
+    font-size: 12px;
+    margin-right: 5px;
+    color: $color-gray-light;
   }
 }

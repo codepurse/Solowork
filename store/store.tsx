@@ -54,14 +54,8 @@ interface ToastStore {
 }
 
 interface NoteSettingsStore {
-  showBanner: boolean;
-  setShowBanner: (show: boolean) => void;
-  spellCheck: boolean;
-  setSpellCheck: (spellCheck: boolean) => void;
-  focusMode: boolean;
-  setFocusMode: (focusMode: boolean) => void;
-  showFooter: boolean;
-  setShowFooter: (showFooter: boolean) => void;
+  noteSettings: any;
+  setNoteSettings: (noteSettings: any) => void;
 }
 
 const useStoreNotes = create<NotesStore>((set) => ({
@@ -119,14 +113,15 @@ const useStoreToast = create<ToastStore>((set) => ({
 }));
 
 const useNoteSettings = create<NoteSettingsStore>((set) => ({
-  showBanner: false,
-  setShowBanner: (show: boolean) => set({ showBanner: show }),
-  spellCheck: false,
-  setSpellCheck: (spellCheck: boolean) => set({ spellCheck: spellCheck }),
-  focusMode: false,
-  setFocusMode: (focusMode: boolean) => set({ focusMode: focusMode }),
-  showFooter: false,
-  setShowFooter: (showFooter: boolean) => set({ showFooter: showFooter }),
+  noteSettings: {
+    hideBanner: false,
+    spellCheck: false,
+    autoSave: false,
+    focusMode: false,
+    showFooter: false,
+    readOnly: false,
+  },
+  setNoteSettings: (noteSettings: any) => set({ noteSettings: noteSettings }),
 }));
 
 export function useStore() {

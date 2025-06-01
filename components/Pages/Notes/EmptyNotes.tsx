@@ -5,8 +5,8 @@ const EmptyNotes: React.FC = () => {
     <div className="empty-notes-container">
       <div className="empty-notes-animation">
         <svg
-          width="200"
-          height="200"
+          width="170"
+          height="170"
           viewBox="0 0 200 200"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"

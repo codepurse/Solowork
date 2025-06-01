@@ -9,19 +9,100 @@ import {
   Save,
   ScanEye,
   SpellCheck,
-  Trash
+  Trash,
 } from "lucide-react";
-import { useState } from "react";
+import { useRouter } from "next/router";
+import { useCallback, useEffect, useState } from "react";
+import { mutate } from "swr";
+import {
+  DATABASE_ID,
+  databases,
+  NOTES_COLLECTION_ID,
+} from "../../../constant/appwrite";
+import { useStore } from "../../../store/store";
 import Switch from "../../Elements/Switch";
 import Space from "../../space";
 
-export default function NoteSettings() {
-  const [hideNotesBanner, setHideNotesBanner] = useState(false);
-  const [spellCheck, setSpellCheck] = useState(false);
-  const [autoSave, setAutoSave] = useState(false);
-  const [focusMode, setFocusMode] = useState(false);
-  const [showFooter, setShowFooter] = useState(false);
-  const [readOnly, setReadOnly] = useState(false);
+type NoteSettingsProps = {
+  noteId: string;
+  setShowSettings: (showSettings: boolean) => void;
+  selectedNote: any;
+};
+
+export default function NoteSettings({
+  noteId,
+  setShowSettings,
+  selectedNote,
+}: Readonly<NoteSettingsProps>) {
+  const router = useRouter();
+  const { notes } = router.query;
+  const { useStoreToast, useStoreNotes, useNoteSettings } = useStore();
+  const { setShowToast, setToastTitle, setToastMessage } = useStoreToast();
+  const { setSelectedNotes } = useStoreNotes();
+
+  // Use the global store instead of local state
+  const { noteSettings, setNoteSettings } = useNoteSettings();
+
+  // Track if settings have changed
+  const [hasChanges, setHasChanges] = useState(false);
+
+  // Debounced update function
+  useEffect(() => {
+    if (!hasChanges) return;
+    const updateTimer = setTimeout(async () => {
+      try {
+        await databases.updateDocument(
+          DATABASE_ID,
+          NOTES_COLLECTION_ID,
+          noteId,
+          {
+            hideNotesBanner: noteSettings.hideBanner,
+            spellCheck: noteSettings.spellCheck,
+            autoSave: noteSettings.autoSave,
+            focusMode: noteSettings.focusMode,
+            showFooter: noteSettings.showFooter,
+            readOnly: noteSettings.readOnly,
+          }
+        );
+        console.log("Note settings updated");
+        setHasChanges(false);
+      } catch (error) {
+        console.error("Failed to update note settings:", error);
+      }
+    }, 1000);
+
+    return () => clearTimeout(updateTimer);
+  }, [noteSettings, hasChanges, noteId]);
+
+  // Generic handler for all switches
+  const handleSwitchChange = useCallback(
+    (key: keyof typeof noteSettings) => {
+      setNoteSettings({
+        ...noteSettings,
+        [key]: !noteSettings[key],
+      });
+      setHasChanges(true);
+    },
+    [noteSettings, setNoteSettings]
+  );
+
+  const handleDeleteNote = async () => {
+    try {
+      await databases.deleteDocument(DATABASE_ID, NOTES_COLLECTION_ID, noteId);
+      setShowToast(true);
+      setToastTitle("Delete Note");
+      setToastMessage("Your note has been successfully deleted");
+      setShowSettings(false);
+      setSelectedNotes(null);
+      mutate(`notes/${notes}`);
+    } catch (e) {
+      setShowSettings(false);
+      setShowToast(true);
+      setToastTitle("Cannot process");
+      setToastMessage("Something went wrong, please try again later");
+      mutate(`notes/${notes}`);
+    }
+  };
 
   return (
     <div className="note-settings">
@@ -34,8 +115,8 @@ export default function NoteSettings() {
             <p className="note-settings-content-title">Hide banner</p>
           </Space>
           <Switch
-            checked={hideNotesBanner}
-            onChange={() => setHideNotesBanner(!hideNotesBanner)}
+            checked={noteSettings.hideBanner}
+            onChange={() => handleSwitchChange("hideBanner")}
             size="small"
           />
         </Space>
@@ -47,8 +128,8 @@ export default function NoteSettings() {
             <p className="note-settings-content-title">Focus mode</p>
           </Space>
           <Switch
-            checked={focusMode}
-            onChange={() => setFocusMode(!focusMode)}
+            checked={noteSettings.focusMode}
+            onChange={() => handleSwitchChange("focusMode")}
             size="small"
           />
         </Space>
@@ -60,12 +141,12 @@ export default function NoteSettings() {
             <p className="note-settings-content-title">Show footer</p>
           </Space>
           <Switch
-            checked={showFooter}
-            onChange={() => setShowFooter(!showFooter)}
+            checked={noteSettings.showFooter}
+            onChange={() => handleSwitchChange("showFooter")}
             size="small"
           />
         </Space>
-        <hr className="not-faded-line" />
+        <hr className="not-faded-line" style={{ margin: "7px 0" }} />
 
         <Space gap={5} align="evenly" className="note-settings-content-item">
           <Space gap={8}>
@@ -75,8 +156,8 @@ export default function NoteSettings() {
             <p className="note-settings-content-title">Spell check</p>
           </Space>
           <Switch
-            checked={spellCheck}
-            onChange={() => setSpellCheck(!spellCheck)}
+            checked={noteSettings.spellCheck}
+            onChange={() => handleSwitchChange("spellCheck")}
             size="small"
           />
         </Space>
@@ -88,8 +169,8 @@ export default function NoteSettings() {
             <p className="note-settings-content-title">Auto save</p>
           </Space>
           <Switch
-            checked={autoSave}
-            onChange={() => setAutoSave(!autoSave)}
+            checked={noteSettings.autoSave}
+            onChange={() => handleSwitchChange("autoSave")}
             size="small"
           />
         </Space>
@@ -102,12 +183,12 @@ export default function NoteSettings() {
             <p className="note-settings-content-title">Read only</p>
           </Space>
           <Switch
-            checked={readOnly}
-            onChange={() => setReadOnly(!readOnly)}
+            checked={noteSettings.readOnly}
+            onChange={() => handleSwitchChange("readOnly")}
             size="small"
           />
         </Space>
-        <hr className="not-faded-line" />
+        <hr className="not-faded-line" style={{ margin: "7px 0" }} />
         <div>
           <Space gap={8} className="note-settings-content-item">
             <i>
@@ -133,11 +214,21 @@ export default function NoteSettings() {
             </i>
             <p className="note-settings-content-title">Print note</p>
           </Space>
-          <Space gap={8} className="note-settings-content-item">
+          <hr className="not-faded-line" style={{ margin: "7px 0" }} />
+          <Space
+            gap={8}
+            className="note-settings-content-item"
+            onClick={handleDeleteNote}
+          >
             <i>
-              <Trash color="#fff" size={16} />
+              <Trash color="#FF0000" size={16} />
             </i>
-            <p className="note-settings-content-title">Delete note</p>
+            <p
+              className="note-settings-content-title"
+              style={{ color: "#FF0000" }}
+            >
+              Delete note
+            </p>
           </Space>
         </div>
       </div>

@@ -56,7 +56,7 @@ export default function BannerPremium({
     setStars(newStars);
   }, []);
 
-  const style = { width: showSidebar ? "100%" : "40px" };
+  const style = { width: showSidebar ? "95%" : "40px" };
 
   return (
     <div className="banner-premium-container" style={style}>
