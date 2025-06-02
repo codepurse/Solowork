@@ -3119,3 +3119,50 @@ main {
     color: $color-gray-light;
   }
 }
+
+.copy-move-notes-folders {
+  padding-top: 15px;
+
+  .table-wrapper {
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid #212121;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  thead {
+    tr {
+      border-bottom: 1px solid #212121;
+      background-color: #110d28;
+      th {
+        padding: 10px 0px;
+        font-size: 14px;
+        font-weight: 300;
+        color: $color-gray-light;
+        margin-bottom: 0px;
+      }
+    }
+  }
+  tbody {
+    tr {
+      cursor: pointer;
+      padding: 0px 10px;
+      border-bottom: 1px solid #212121;
+      &:hover {
+        background-color: #1c1739;
+      }
+      td {
+        padding: 10px 0px 5px 0px;
+        .copy-move-notes-folder-name {
+          font-size: 14px;
+          font-weight: 300;
+          color: $color-gray-light;
+          margin-bottom: 3px;
+        }
+      }
+    }
+  }
+}

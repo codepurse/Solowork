@@ -7,6 +7,8 @@ interface NotesStore {
   setHideSideNotes: (hide: boolean) => void;
   editMode: boolean;
   setEditMode: (edit: boolean) => void;
+  notesFolders: any[];
+  setNotesFolders: (folders: any[]) => void;
 }
 
 interface KanbanStore {
@@ -65,6 +67,8 @@ const useStoreNotes = create<NotesStore>((set) => ({
   setHideSideNotes: (hide: boolean) => set({ hideSideNotes: hide }),
   editMode: false,
   setEditMode: (edit: boolean) => set({ editMode: edit }),
+  notesFolders: [],
+  setNotesFolders: (folders: any[]) => set({ notesFolders: folders }),
 }));
 
 const useStoreKanban = create<KanbanStore>((set) => ({

@@ -17,7 +17,7 @@ import Space from "../../space";
 import BannerNotes from "./Banner/BannerNotes";
 import EmojiNotes from "./EmojiNotes";
 import LexicalEditor from "./LexicalEditor";
-import NoteSettings from "./NoteSettings";
+import NoteSettings from "./NotesSettings";
 import { StarButton } from "./StarNotes";
 import TagsNotes from "./TagsNotes";
 interface SelectedNotesProps {
@@ -69,6 +69,7 @@ export default function SelectedNotes({
         focusMode: selectedNotes.focusMode,
         showFooter: selectedNotes.showFooter,
         readOnly: selectedNotes.readOnly,
+        pinned: selectedNotes.pinned,
       });
     }
   }, [selectedNotes]);

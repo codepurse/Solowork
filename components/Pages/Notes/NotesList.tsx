@@ -1,5 +1,5 @@
 import dayjs from "dayjs";
-import { Calendar } from "lucide-react";
+import { Calendar, Pin } from "lucide-react";
 import React from "react";
 import { useStore } from "../../../store/store";
 import Badge from "../../Elements/Badge";
@@ -15,6 +15,7 @@ interface NotesListProps {
     updatedAt: string;
     tags: string[];
     emoji: string;
+    pinned: boolean;
   }>;
 }
 
@@ -75,7 +76,14 @@ export default function NotesList({ notesList }: Readonly<NotesListProps>) {
                   {note.emoji}
                 </span>
               )}
-              <h3 className="note-title mb-0">{note.title}</h3>
+              <Space gap={5} align="evenly" fill>
+                <h3 className="note-title mb-0">{note.title}</h3>
+                {note.pinned && (
+                  <i>
+                    <Pin size={17} color="#EC407A" />
+                  </i>
+                )}
+              </Space>
             </Space>
             <div className="note-content">
               <LexicalEditor

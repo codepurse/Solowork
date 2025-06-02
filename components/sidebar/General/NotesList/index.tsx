@@ -1,6 +1,7 @@
 import { Query } from "appwrite";
 import { Folders } from "lucide-react";
 import { useRouter } from "next/router";
+import { useEffect } from "react";
 import useSWR from "swr";
 import {
   DATABASE_ID,
@@ -11,9 +12,10 @@ import { useStore } from "../../../../store/store";
 import Space from "../../../space";
 
 export default function NotesList() {
-  const { useStoreUser } = useStore();
+  const { useStoreUser, useStoreNotes } = useStore();
   const router = useRouter();
   const { user } = useStoreUser();
+  const { setNotesFolders, setSelectedNotes } = useStoreNotes();
   const fetchNotes = async () => {
     const res = await databases.listDocuments(DATABASE_ID, NOTES_FOLDER_ID, [
       Query.equal("userId", user.$id),
@@ -25,7 +27,14 @@ export default function NotesList() {
 
   const handleNoteClick = (noteId: string) => {
     router.push(`/notes/${noteId}`);
+    setSelectedNotes(null);
   };
+
+  useEffect(() => {
+    if (data) {
+      setNotesFolders(data);
+    }
+  }, [data]);
 
   return (
     <div
