@@ -12,7 +12,7 @@ import {
   Trash,
 } from "lucide-react";
 import { useRouter } from "next/router";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Modal } from "react-bootstrap";
 import { mutate } from "swr";
 import {
@@ -43,6 +43,7 @@ export default function NoteSettings({
   const [showModal, setShowModal] = useState(false);
   const { setSelectedNotes } = useStoreNotes();
   const [modalLabel, setModalLabel] = useState("Move notes");
+  const settingsRef = useRef<HTMLDivElement>(null);
 
   // Use the global store instead of local state
   const { noteSettings, setNoteSettings } = useNoteSettings();
@@ -69,7 +70,7 @@ export default function NoteSettings({
             pinned: noteSettings.pinned,
           }
         );
-        console.log("Note settings updated");
+        mutate(`notes/${notes}`);
         setHasChanges(false);
       } catch (error) {
         console.error("Failed to update note settings:", error);
@@ -109,9 +110,31 @@ export default function NoteSettings({
     }
   };
 
+  // Add click outside handler
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      // Ignore clicks on the settings icon
+      if ((event.target as Element).closest('.settings-icon')) {
+        return;
+      }
+      
+      if (settingsRef.current && !settingsRef.current.contains(event.target as Node)) {
+        setShowSettings(false);
+      }
+    }
+
+    // Attach the event listener
+    document.addEventListener('mousedown', handleClickOutside);
+    
+    // Clean up the event listener
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [setShowSettings]);
+
   return (
     <>
-      <div className="note-settings">
+      <div className="note-settings" ref={settingsRef}>
         <div className="note-settings-content">
           <Space gap={5} align="evenly" className="note-settings-content-item">
             <Space gap={8}>
