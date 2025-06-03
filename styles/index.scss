@@ -811,6 +811,40 @@ main {
         color: #7a3dff;
       }
     }
+    .sort-list {
+      position: absolute;
+      top: 90px;
+      right: 40px;
+      z-index: 1000;
+      width: 150px;
+      border-radius: 8px;
+      background-color: #110d28;
+      border: 1px solid #252525;
+      padding: 5px 10px;
+      .header {
+        p {
+          font-size: 13px;
+          font-weight: 400;
+          color: #fbfbfb;
+          margin-bottom: 0px;
+        }
+        i {
+          color: #888;
+        }
+      }
+      .sort-list-items {
+        cursor: pointer;
+        p {
+          font-size: 13px;
+          font-weight: 400;
+          color: #fbfbfb;
+          margin-bottom: 0px;
+        }
+        i {
+          color: #00e676;
+        }
+      }
+    }
   }
 }
 

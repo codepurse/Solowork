@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { Col, Container, Row } from "react-bootstrap";
 import useSWR from "swr";
 import EmptyNotes from "../../components/Pages/Notes/EmptyNotes";
-import NotesList from "../../components/Pages/Notes/NotesList";
+import NotesList from "../../components/Pages/Notes/NotesList/NotesList";
 import SelectedNotes from "../../components/Pages/Notes/SelectedNotes";
 import SelectedNotesHeader from "../../components/Pages/Notes/SelectedNotesHeader";
 import Space from "../../components/space";
@@ -18,10 +18,14 @@ import { useStore } from "../../store/store";
 
 export default function Notes() {
   const { useStoreNotes } = useStore();
-  const { hideSideNotes, selectedNotes } = useStoreNotes();
+  const { hideSideNotes, selectedNotes, sortBy, setSortBy } = useStoreNotes();
   const router = useRouter();
   const { notes } = router.query;
   const [notesList, setNotesList] = useState<any[]>([]);
+
+  // ... existing code ...
+
+  // ... existing code ...
 
   const fetchSelectedNote = async (noteId: string) => {
     try {
@@ -32,11 +36,32 @@ export default function Notes() {
       );
 
       const sortedDocuments = res.documents.toSorted((a, b) => {
+        // First, handle pinned items priority
         if (a.pinned && !b.pinned) return -1;
         if (!a.pinned && b.pinned) return 1;
-        return (
-          new Date(b.$createdAt).getTime() - new Date(a.$createdAt).getTime()
-        );
+
+        // If both items are pinned or both unpinned, proceed with selected sort
+        switch (sortBy) {
+          case "newest":
+            return (
+              new Date(b.$createdAt).getTime() -
+              new Date(a.$createdAt).getTime()
+            );
+          case "oldest":
+            return (
+              new Date(a.$createdAt).getTime() -
+              new Date(b.$createdAt).getTime()
+            );
+          case "a-z":
+            return a.title.toLowerCase().localeCompare(b.title.toLowerCase());
+          case "z-a":
+            return b.title.toLowerCase().localeCompare(a.title.toLowerCase());
+          default:
+            return (
+              new Date(b.$createdAt).getTime() -
+              new Date(a.$createdAt).getTime()
+            );
+        }
       });
 
       return sortedDocuments;
@@ -45,7 +70,9 @@ export default function Notes() {
     }
   };
 
-  const { data } = useSWR(`notes/${notes}`, () =>
+  // ... existing code ...
+  // Modify the useSWR call to include sortBy in the cache key
+  const { data } = useSWR(`notes/${notes}/${sortBy}`, () =>
     fetchSelectedNote(notes as string)
   );
 
@@ -55,6 +82,10 @@ export default function Notes() {
       setNotesList(data);
     }
   }, [data]);
+
+  useEffect(() => {
+    console.log("sortBy", sortBy);
+  }, [sortBy]);
 
   return (
     <Container fluid className="notes-container">

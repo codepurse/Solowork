@@ -1,10 +1,10 @@
 import dayjs from "dayjs";
 import { Calendar, Pin } from "lucide-react";
 import React from "react";
-import { useStore } from "../../../store/store";
-import Badge from "../../Elements/Badge";
-import Space from "../../space";
-import LexicalEditor from "./LexicalEditor";
+import { useStore } from "../../../../store/store";
+import Badge from "../../../Elements/Badge";
+import Space from "../../../space";
+import LexicalEditor from "../LexicalEditor";
 
 interface NotesListProps {
   notesList: Array<{
@@ -72,7 +72,11 @@ export default function NotesList({ notesList }: Readonly<NotesListProps>) {
         >
           <div
             className="note"
-            id={selectedNotes && note.$id === selectedNotes.$id ? "selectedNote" : ""}
+            id={
+              selectedNotes && note.$id === selectedNotes.$id
+                ? "selectedNote"
+                : ""
+            }
             onClick={() => {
               handleClick(note);
             }}

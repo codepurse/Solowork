@@ -113,8 +113,11 @@ export default function NoteSettings({
   // Add click outside handler
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      // Ignore clicks on the settings icon
-      if ((event.target as Element).closest('.settings-icon')) {
+      // Ignore clicks on the settings icon and modal content
+      if (
+        (event.target as Element).closest('.settings-icon') ||
+        (event.target as Element).closest('.modal-container')
+      ) {
         return;
       }
       

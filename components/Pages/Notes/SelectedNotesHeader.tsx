@@ -10,6 +10,7 @@ import {
 } from "../../../constant/appwrite";
 import { useStore } from "../../../store/store";
 import Space from "../../space";
+import SortList from "./NotesList/SortList";
 type SelectedNotesHeaderProps = {
   setNotesList: (notes: any[]) => void;
   notesId: string;
@@ -23,10 +24,13 @@ export default function SelectedNotesHeader({
 }: Readonly<SelectedNotesHeaderProps>) {
   const [isSearch, setIsSearch] = useState<boolean>(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
+  const sortListRef = useRef<HTMLDivElement>(null);
+  const sortListContentRef = useRef<HTMLDivElement>(null);
   const { useStoreUser, useStoreNotes } = useStore();
   const { user } = useStoreUser();
   const { setSelectedNotes, setEditMode } = useStoreNotes();
   const [search, setSearch] = useState<string>("");
+  const [showSortList, setShowSortList] = useState<boolean>(false);
 
   const router = useRouter();
   const folderId =
@@ -38,8 +42,25 @@ export default function SelectedNotesHeader({
     }
   }, [isSearch]);
 
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        sortListContentRef.current &&
+        !sortListContentRef.current.contains(event.target as Node) &&
+        sortListRef.current &&
+        !sortListRef.current.contains(event.target as Node)
+      ) {
+        setShowSortList(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   const handleAddNote = async () => {
-    console.log(folderId);
     try {
       await databases.createDocument(
         DATABASE_ID,
@@ -94,7 +115,9 @@ export default function SelectedNotesHeader({
                 console.log(notesList, "notesList");
                 setNotesList(
                   notesList.filter((note) =>
-                    note.title.toLowerCase().includes(e.target.value.toLowerCase())
+                    note.title
+                      .toLowerCase()
+                      .includes(e.target.value.toLowerCase())
                   )
                 );
               }}
@@ -121,15 +144,22 @@ export default function SelectedNotesHeader({
               <i onClick={() => setIsSearch(true)}>
                 <Search size={18} />
               </i>
-              <i>
-                <ListFilter size={18} />
-              </i>
+              <div ref={sortListRef}>
+                <i onClick={() => setShowSortList(!showSortList)}>
+                  <ListFilter size={18} />
+                </i>
+              </div>
               <i onClick={handleAddNote}>
                 <Plus size={18} />
               </i>
             </Space>
           </div>
         </Space>
+      )}
+      {showSortList && (
+        <div ref={sortListContentRef}>
+          <SortList onClose={() => setShowSortList(false)} />
+        </div>
       )}
     </div>
   );

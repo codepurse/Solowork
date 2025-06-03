@@ -9,6 +9,8 @@ interface NotesStore {
   setEditMode: (edit: boolean) => void;
   notesFolders: any[];
   setNotesFolders: (folders: any[]) => void;
+  sortBy: string;
+  setSortBy: (sortBy: string) => void;
 }
 
 interface KanbanStore {
@@ -74,7 +76,8 @@ const useStoreNotes = create<NotesStore>((set) => ({
   setEditMode: (edit: boolean) => set({ editMode: edit }),
   notesFolders: [],
   setNotesFolders: (folders: any[]) => set({ notesFolders: folders }),
-
+  sortBy: "oldest",
+  setSortBy: (sortBy: string) => set({ sortBy: sortBy }),
 }));
 
 const useStoreKanban = create<KanbanStore>((set) => ({

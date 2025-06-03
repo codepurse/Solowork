@@ -93,7 +93,7 @@ export default function CopyMoveNotes({
   };
 
   return (
-    <div className="copy-move-notes">
+    <div className="copy-move-notes" onClick={(e) => e.stopPropagation()}>
       <Space align="evenly">
         <p className="modal-title">{modalLabel}</p>
         <i className="modal-close-icon" onClick={onHide}>
