@@ -13,17 +13,20 @@ import Space from "../../space";
 type SelectedNotesHeaderProps = {
   setNotesList: (notes: any[]) => void;
   notesId: string;
+  notesList: any[];
 };
 
 export default function SelectedNotesHeader({
   setNotesList,
   notesId,
+  notesList,
 }: Readonly<SelectedNotesHeaderProps>) {
   const [isSearch, setIsSearch] = useState<boolean>(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const { useStoreUser, useStoreNotes } = useStore();
   const { user } = useStoreUser();
   const { setSelectedNotes, setEditMode } = useStoreNotes();
+  const [search, setSearch] = useState<string>("");
 
   const router = useRouter();
   const folderId =
@@ -44,7 +47,7 @@ export default function SelectedNotesHeader({
         ID.unique(),
         {
           title: "New Note",
-          content: "",
+          content: null,
           tags: [],
           emoji: "❔",
           isStarred: false,
@@ -85,6 +88,16 @@ export default function SelectedNotesHeader({
               type="text"
               placeholder="Search all notes"
               className="search-notes-input"
+              value={search}
+              onChange={(e) => {
+                setSearch(e.target.value);
+                console.log(notesList, "notesList");
+                setNotesList(
+                  notesList.filter((note) =>
+                    note.title.toLowerCase().includes(e.target.value.toLowerCase())
+                  )
+                );
+              }}
             />
           </Space>
           <i

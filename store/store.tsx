@@ -60,8 +60,13 @@ interface NoteSettingsStore {
   setNoteSettings: (noteSettings: any) => void;
 }
 
+interface SidebarNotesStore {
+  sidebarSelected: string | null;
+  setSidebarSelected: (sidebarSelected: string) => void;
+}
+
 const useStoreNotes = create<NotesStore>((set) => ({
-  selectedNotes: null,
+  selectedNotes: "",
   setSelectedNotes: (notes: any) => set({ selectedNotes: notes }),
   hideSideNotes: false,
   setHideSideNotes: (hide: boolean) => set({ hideSideNotes: hide }),
@@ -69,6 +74,7 @@ const useStoreNotes = create<NotesStore>((set) => ({
   setEditMode: (edit: boolean) => set({ editMode: edit }),
   notesFolders: [],
   setNotesFolders: (folders: any[]) => set({ notesFolders: folders }),
+
 }));
 
 const useStoreKanban = create<KanbanStore>((set) => ({
@@ -128,6 +134,12 @@ const useNoteSettings = create<NoteSettingsStore>((set) => ({
   setNoteSettings: (noteSettings: any) => set({ noteSettings: noteSettings }),
 }));
 
+const useSidebar = create<SidebarNotesStore>((set) => ({
+  sidebarSelected: null,
+  setSidebarSelected: (sidebarSelected: string) =>
+    set({ sidebarSelected: sidebarSelected }),
+}));
+
 export function useStore() {
   return {
     useStoreNotes,
@@ -138,5 +150,6 @@ export function useStore() {
     useStoreSidebar,
     useStoreToast,
     useNoteSettings,
+    useSidebar,
   };
 }

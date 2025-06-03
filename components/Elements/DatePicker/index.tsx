@@ -35,10 +35,6 @@ function DatePickerComponent({ withTime, value, onChange, timeZone }) {
   useClickOutsideDate({ dateCmpRef });
   usePositionDropdown({ isOpen, calendarRef, dateCmpRef, setPosition });
 
-  useEffect(() => {
-    console.log(date,"Date");
-  }, [date]);
-
   // Handle external value changes
   useEffect(() => {
     if (!value || internalUpdate) return;
@@ -72,7 +68,7 @@ function DatePickerComponent({ withTime, value, onChange, timeZone }) {
     const newDate = dayjs(date);
 
     // Only trigger onChange if the dates are actually different
-    if (!currentValue || !currentValue.isSame(newDate, 'day')) {
+    if (!currentValue || !currentValue.isSame(newDate, "day")) {
       onChange(newDate);
     }
   }, [date]);
@@ -99,11 +95,14 @@ function DatePickerComponent({ withTime, value, onChange, timeZone }) {
             </Space>
           </div>
           <Weeks />
-          <Days date={date} setDate={(newDate) => {
-            setInternalUpdate(true);
-            setDate(newDate);
-            setInternalUpdate(false);
-          }} />
+          <Days
+            date={date}
+            setDate={(newDate) => {
+              setInternalUpdate(true);
+              setDate(newDate);
+              setInternalUpdate(false);
+            }}
+          />
           {withTime && (
             <div className="time-picker-container">
               <Space gap={10}>

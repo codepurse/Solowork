@@ -21,7 +21,7 @@ interface NotesListProps {
 
 export default function NotesList({ notesList }: Readonly<NotesListProps>) {
   const { useStoreNotes } = useStore();
-  const { setSelectedNotes, setEditMode } = useStoreNotes();
+  const { setSelectedNotes, setEditMode, selectedNotes } = useStoreNotes();
 
   // Add a ref to keep track of previous notes length
   const prevNotesLength = React.useRef(notesList.length);
@@ -49,8 +49,14 @@ export default function NotesList({ notesList }: Readonly<NotesListProps>) {
 
   const taggClasses = ["badge-blue", "badge-green", "badge-yellow"];
 
-  const randomTagClass = () => {
-    return taggClasses[Math.floor(Math.random() * taggClasses.length)];
+  const getColorClassForTag = (tag: string) => {
+    // Get a consistent number from the string
+    const hashCode = tag.split("").reduce((acc, char) => {
+      return char.charCodeAt(0) + ((acc << 5) - acc);
+    }, 0);
+
+    // Use the absolute value of hashCode to get index
+    return taggClasses[Math.abs(hashCode) % taggClasses.length];
   };
 
   return (
@@ -66,6 +72,7 @@ export default function NotesList({ notesList }: Readonly<NotesListProps>) {
         >
           <div
             className="note"
+            id={selectedNotes && note.$id === selectedNotes.$id ? "selectedNote" : ""}
             onClick={() => {
               handleClick(note);
             }}
@@ -107,7 +114,9 @@ export default function NotesList({ notesList }: Readonly<NotesListProps>) {
               </Space>
               <div className="note-tags">
                 {note.tags.length > 0 && (
-                  <Badge className={randomTagClass()}>{note.tags[0]}</Badge>
+                  <Badge className={getColorClassForTag(note.tags[0])}>
+                    {note.tags[0]}
+                  </Badge>
                 )}
                 {note.tags.length > 1 && (
                   <Badge className="badge-blue">+{note.tags.length - 1}</Badge>

@@ -21,6 +21,7 @@ type SpaceProps = {
   children: React.ReactNode;
   className?: string;
   onClick?: () => void;
+  id?: string;
 };
 
 const spaceAlign = (value: Align) => {
@@ -53,6 +54,7 @@ export default function Space({
   className,
   overlap,
   onClick,
+  id,
   ...props
 }: Readonly<SpaceProps>) {
   const propsStyle: React.CSSProperties = useMemo(
@@ -82,6 +84,7 @@ export default function Space({
       {...props}
       className={`${className}`}
       onClick={onClick}
+      id={id}
     >
       {React.Children.map(children, (child: React.ReactNode) => (
         <Fragment>

@@ -2,6 +2,7 @@ import { ChevronDown, Plus } from "lucide-react";
 import { useState } from "react";
 import { Collapse } from "react-bootstrap";
 import Modal from "react-bootstrap/Modal";
+import { useStore } from "../../../store/store";
 import Space from "../../space";
 import KanbanList from "./KanbanList";
 import AddKanbanModal from "./KanbanList/AddKanbanModal";
@@ -28,6 +29,9 @@ export default function GeneralList({
   const [show, setShow] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState<ModalType | null>(null);
+  const { useSidebar } = useStore();
+  const { setSidebarSelected, sidebarSelected } = useSidebar();
+  useSidebar();
 
   const handleClick = async (e: React.MouseEvent) => {
     e.stopPropagation(); // Prevent triggering the parent onClick
@@ -47,9 +51,18 @@ export default function GeneralList({
         setModalType(item.name as ModalType);
       }}
     >
-      <div className="sidebar-menu-item" style={style}>
+      <div
+        className="sidebar-menu-item"
+        style={style}
+        id={item.name === sidebarSelected ? "selectedGeneral" : ""}
+      >
         <Space key={item.id} gap={10} align="evenly" fill>
-          <div onClick={item.onClick}>
+          <div
+            onClick={() => {
+              item.onClick();
+              setSidebarSelected(item.name);
+            }}
+          >
             <Space gap={10} fill>
               <i style={{ marginTop: "-3px" }}>{item.icon}</i>
               {showSidebar && (

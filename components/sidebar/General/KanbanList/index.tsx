@@ -11,9 +11,11 @@ import { useStore } from "../../../../store/store";
 import Space from "../../../space";
 
 export default function KanbanList() {
-  const { useStoreUser } = useStore();
+  const { useStoreUser, useSidebar } = useStore();
   const router = useRouter();
   const { user } = useStoreUser();
+  const { setSidebarSelected, sidebarSelected } = useSidebar();
+
   const fetchKanban = async () => {
     const res = await databases.listDocuments(DATABASE_ID, KANBAN_FOLDER_ID, [
       Query.equal("userId", user.$id),
@@ -48,16 +50,16 @@ export default function KanbanList() {
             key={kanban.$id}
             className="sidebar-menu-item-container-notes-item"
             fill
+            id={kanban.$id === sidebarSelected ? "selectedNote" : ""}
+            onClick={() => {
+              handleKanbanClick(kanban.$id, kanban.name);
+              setSidebarSelected(kanban.$id);
+            }}
           >
             <i>
               <Folders size={15} color="#888" />
             </i>
-            <label
-              className="sidebar-dropdown-item"
-              onClick={() => handleKanbanClick(kanban.$id, kanban.name)}
-            >
-              {kanban.name}
-            </label>
+            <label className="sidebar-dropdown-item">{kanban.name}</label>
           </Space>
         ))}
       </Space>

@@ -28,9 +28,18 @@ export default function Notes() {
       const res = await databases.listDocuments(
         DATABASE_ID,
         NOTES_COLLECTION_ID,
-        [Query.equal("folderId", noteId), Query.orderDesc("$createdAt")]
+        [Query.equal("folderId", noteId)]
       );
-      return res.documents;
+
+      const sortedDocuments = res.documents.toSorted((a, b) => {
+        if (a.pinned && !b.pinned) return -1;
+        if (!a.pinned && b.pinned) return 1;
+        return (
+          new Date(b.$createdAt).getTime() - new Date(a.$createdAt).getTime()
+        );
+      });
+
+      return sortedDocuments;
     } catch (error) {
       console.log(error);
     }
@@ -42,6 +51,7 @@ export default function Notes() {
 
   useEffect(() => {
     if (data) {
+      console.log("data", data);
       setNotesList(data);
     }
   }, [data]);
@@ -61,6 +71,7 @@ export default function Notes() {
           <SelectedNotesHeader
             setNotesList={setNotesList}
             notesId={notes as string}
+            notesList={notesList}
           />
           <NotesList notesList={notesList} />
         </Col>

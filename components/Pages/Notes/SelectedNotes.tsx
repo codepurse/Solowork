@@ -6,6 +6,7 @@ import {
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Col, Container, Row } from "react-bootstrap";
+import { mutate } from "swr";
 import {
   DATABASE_ID,
   databases,
@@ -76,6 +77,7 @@ export default function SelectedNotes({
 
   useEffect(() => {
     if (selectedNotes) {
+      console.log(selectedNotes, "selectedNotes");
       const note = selectedNotes as unknown as Note;
       setTitle(note?.title);
       if (note?.emoji) {
@@ -87,78 +89,90 @@ export default function SelectedNotes({
 
       if (content !== note.content) {
         try {
-          if (typeof note.content === "string" && note.content !== "") {
+          if (
+            typeof note.content === "string" &&
+            note.content !== "" &&
+            note.content !== null
+          ) {
             const parsedContent = JSON.parse(note.content);
             setContent(parsedContent);
           } else {
-            setContent(note.content);
+            if (note.content === null) {
+              console.log("null");
+              setContent(null);
+            } else {
+              console.log("not null");
+              setContent(note.content);
+            }
           }
         } catch (e) {
           console.error("Failed to parse note content:", e);
           setContent(note.content);
         }
       }
-
       if (JSON.stringify(tags) !== JSON.stringify(note.tags))
         setTags(note.tags || []);
     }
   }, [selectedNotes]);
 
   const handleSave = async () => {
-    setIsSaving(true);
-    if (isSaving) {
-      return;
-    }
-    if (editMode) {
-      try {
-        await databases.updateDocument(
-          DATABASE_ID,
-          NOTES_COLLECTION_ID,
-          (selectedNotes as any).$id,
-          {
-            userId: user.$id,
-            folderId: selectedNote,
-            title: title,
-            content: JSON.stringify(content),
-            tags: tags,
-            emoji: emoji,
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-            isStarred: isStarred,
-          }
-        );
-      } catch (error) {
-        console.log(error);
-      } finally {
-        setIsSaving(false);
-      }
+    if (!editMode) return;
+
+    try {
+      await databases.updateDocument(
+        DATABASE_ID,
+        NOTES_COLLECTION_ID,
+        (selectedNotes as any).$id,
+        {
+          userId: user.$id,
+          folderId: selectedNote,
+          title: title,
+          content: JSON.stringify(content),
+          tags: tags,
+          emoji: emoji,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          isStarred: isStarred,
+        }
+      );
+      mutate(`notes/${selectedNote}`);
+    } catch (error) {
+      console.error("Failed to save note:", error);
     }
   };
 
+  // Remove both existing useEffects for auto-saving and replace with this single useEffect
   useEffect(() => {
-    const interval = setInterval(() => {
-      if (hasChanges) {
-        handleSave();
+    let saveTimeoutId: NodeJS.Timeout | null = null;
+
+    const performSave = async () => {
+      if (!hasChanges || isSaving || !editMode) return;
+
+      try {
+        setIsSaving(true);
+        await handleSave();
         setHasChanges(false);
+      } finally {
+        setIsSaving(false);
       }
-    }, 500);
+    };
 
-    return () => clearInterval(interval);
-  }, [
-    title,
-    hasChanges,
-    editMode,
-    emoji,
-    tags,
-    selectedNote,
-    content,
-    user.$id,
-    isSaving,
-  ]);
+    if (hasChanges) {
+      // Clear any existing timeout to prevent multiple saves
+      if (saveTimeoutId) {
+        clearTimeout(saveTimeoutId);
+      }
+      // Set a new timeout for debounced saving
+      saveTimeoutId = setTimeout(performSave, 500);
+    }
 
-  useEffect(() => {
-    console.log(noteSettings, "noteSettings");
-  }, [noteSettings]);
+    // Cleanup function
+    return () => {
+      if (saveTimeoutId) {
+        clearTimeout(saveTimeoutId);
+      }
+    };
+  }, [hasChanges, isSaving, editMode, title, content, tags, emoji, isStarred]); // Include all relevant dependencies
 
   useEffect(() => {
     if (!parentRef.current) return;
@@ -244,7 +258,9 @@ export default function SelectedNotes({
               </i>
               <i
                 className="settings-icon"
-                onClick={() => setShowSettings(!showSettings)}
+                onClick={() => {
+                  setShowSettings(!showSettings);
+                }}
               >
                 <Settings size={20} />
               </i>
@@ -277,6 +293,7 @@ export default function SelectedNotes({
                   value={title}
                   onChange={(e) => {
                     setTitle(e.target.value);
+                    console.log("title", title);
                     setHasChanges(true);
                   }}
                 />

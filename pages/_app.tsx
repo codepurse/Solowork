@@ -27,6 +27,10 @@ const CompanionGhost = dynamic(() => import("../components/CompanionGhost"), {
   ssr: false,
 });
 
+const CompanionPanda = dynamic(() => import("../components/CompanionPanda"), {
+  ssr: false,
+});
+
 export default function MyApp({ Component, pageProps }: AppProps) {
   const { useStoreUser } = useStore();
   const { user } = useStoreUser();
@@ -53,7 +57,8 @@ export default function MyApp({ Component, pageProps }: AppProps) {
     <AuthLayout>
       {/*   <PixelSpirit initialX={position.x} initialY={position.y} /> */}
       {/*   <CompanionIceCube /> */}
-  {/*     <CompanionGhost /> */}
+      {/*     <CompanionGhost /> */}
+      {/* <CompanionPanda /> */}
       <Layout>
         <PageLayout>
           <Component {...pageProps} />

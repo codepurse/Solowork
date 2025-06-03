@@ -12,6 +12,7 @@ import { OnChangePlugin } from "@lexical/react/LexicalOnChangePlugin";
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
 import { HeadingNode, QuoteNode } from "@lexical/rich-text";
 import { TableCellNode, TableNode, TableRowNode } from "@lexical/table";
+import { $getRoot } from 'lexical';
 import { useEffect } from "react";
 import FloatingToolbar from "./FloatingToolbar";
 import Toolbar from "./Toolbar";
@@ -20,10 +21,16 @@ function EditorUpdatePlugin({ editorState }) {
   const [editor] = useLexicalComposerContext();
 
   useEffect(() => {
-    // Only update if there's valid editor state and editor is not already focused
-    if (!editorState) return;
-
     const updateEditor = () => {
+      // If editorState is null/undefined, clear the editor
+      if (editorState === null || editorState === undefined) {
+        editor.update(() => {
+          const root = $getRoot();
+          root.clear();
+        });
+        return;
+      }
+
       try {
         let parsedState;
 
@@ -47,7 +54,7 @@ function EditorUpdatePlugin({ editorState }) {
       }
     };
 
-    // Only run this once when the component mounts or when editorState changes
+    // Run when editorState changes
     updateEditor();
   }, [editor, editorState]);
 

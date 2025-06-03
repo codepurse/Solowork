@@ -12,10 +12,13 @@ import { useStore } from "../../../../store/store";
 import Space from "../../../space";
 
 export default function NotesList() {
-  const { useStoreUser, useStoreNotes } = useStore();
+  const { useStoreUser, useStoreNotes, useSidebar } = useStore();
   const router = useRouter();
   const { user } = useStoreUser();
   const { setNotesFolders, setSelectedNotes } = useStoreNotes();
+  const { sidebarSelected, setSidebarSelected } = useSidebar();
+  useSidebar();
+
   const fetchNotes = async () => {
     const res = await databases.listDocuments(DATABASE_ID, NOTES_FOLDER_ID, [
       Query.equal("userId", user.$id),
@@ -55,17 +58,17 @@ export default function NotesList() {
           <Space
             gap={10}
             key={note.$id}
+            id={note.$id === sidebarSelected ? "selectedNote" : ""}
             className="sidebar-menu-item-container-notes-item"
+            onClick={() => {
+              handleNoteClick(note.$id);
+              setSidebarSelected(note.$id);
+            }}
           >
             <i>
               <Folders size={15} color="#888" />
             </i>
-            <label
-              className="sidebar-dropdown-item"
-              onClick={() => handleNoteClick(note.$id)}
-            >
-              {note.name}
-            </label>
+            <label className="sidebar-dropdown-item">{note.name}</label>
           </Space>
         ))}
       </Space>

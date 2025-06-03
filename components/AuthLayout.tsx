@@ -80,7 +80,6 @@ export default function AuthLayout({
       } catch (error) {
         if (error?.code === 401 || error?.code === 403) {
           setUser(null);
-          console.log("error", error?.message);
           setError(error.message);
           if (router.pathname !== "/login" && router.pathname !== "/create") {
             router.replace("/login");
