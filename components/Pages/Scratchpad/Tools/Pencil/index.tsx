@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { Line } from "react-konva";
 
 interface PencilProps {
@@ -8,6 +8,14 @@ interface PencilProps {
   onUpdateLines?: (newLines: any) => void;
   getRelativePointerPosition?: (node: any) => { x: number; y: number };
 }
+
+const COLORS = {
+  white: "#ffffff",
+  red: "#ff4444",
+  blue: "#4444ff",
+  green: "#44ff44",
+  yellow: "#ffff44",
+};
 
 export default function PencilTool({ lines }: PencilProps) {
   return (
@@ -36,6 +44,7 @@ export const usePencilHandlers = (
   getRelativePointerPosition: (node: any) => { x: number; y: number }
 ) => {
   const isDrawing = useRef(false);
+  const [selectedColor, setSelectedColor] = useState(COLORS.white);
 
   const handleStart = (e: any) => {
     if (tool !== "pencil") return;
@@ -48,7 +57,7 @@ export const usePencilHandlers = (
       {
         tool: "pencil",
         points: [pos.x, pos.y],
-        color: "#ffffff",
+        color: selectedColor,
         strokeWidth: 2 / scale,
       },
     ]);
@@ -75,14 +84,47 @@ export const usePencilHandlers = (
     isDrawing.current = false;
   };
 
+  // Color selector component
+  const ColorSelector = () => (
+    <>
+      {tool === "pencil" && (
+        <div className="color-selector animate__animated animate__slideInUp">
+          {Object.entries(COLORS).map(([colorName, colorValue]) => (
+            <button
+              key={colorName}
+              onClick={() => setSelectedColor(colorValue)}
+              style={{
+                width: "20px",
+                height: "20px",
+                borderRadius: "50%",
+                backgroundColor: colorValue,
+                border:
+                  selectedColor === colorValue
+                    ? "2px solid #fff"
+                    : "2px solid transparent",
+                cursor: "pointer",
+                padding: 0,
+              }}
+              aria-label={`Select ${colorName} color`}
+            />
+          ))}
+        </div>
+      )}
+    </>
+  );
+
   return {
-    onMouseDown: handleStart,
-    onTouchStart: handleStart,
-    onMouseMove: handleMove,
-    onTouchMove: handleMove,
-    onMouseUp: handleEnd,
-    onTouchEnd: handleEnd,
-    onMouseLeave: handleEnd,
-    onTouchCancel: handleEnd,
+    handlers: {
+      onMouseDown: handleStart,
+      onTouchStart: handleStart,
+      onMouseMove: handleMove,
+      onTouchMove: handleMove,
+      onMouseUp: handleEnd,
+      onTouchEnd: handleEnd,
+      onMouseLeave: handleEnd,
+      onTouchCancel: handleEnd,
+    },
+    ColorSelector,
+    selectedColor,
   };
 };

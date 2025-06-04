@@ -35,7 +35,11 @@ export default function Scratchpad() {
   };
 
   // Get pencil event handlers
-  const pencilEventHandlers = usePencilHandlers(
+  const {
+    handlers,
+    ColorSelector,
+    selectedColor
+  } = usePencilHandlers(
     tool,
     lines,
     scale,
@@ -75,23 +79,26 @@ export default function Scratchpad() {
       <div className="zoom-indicator">{Math.round(scale * 100)}%</div>
 
       {/* Canvas */}
-      <Stage
-        ref={stageRef}
-        width={window.innerWidth}
-        height={window.innerHeight}
-        {...pencilEventHandlers}
-        onWheel={(e) =>
-          handleWheel(e, stageRef, scale, setScale, position, setPosition)
-        }
-        scaleX={scale}
-        scaleY={scale}
-        x={position.x}
-        y={position.y}
-      >
-        <Layer>
-          <PencilTool lines={lines} />
-        </Layer>
-      </Stage>
+      <div style={{ position: 'relative' }}>
+        <Stage
+          ref={stageRef}
+          width={window.innerWidth}
+          height={window.innerHeight}
+          {...handlers}
+          onWheel={(e) =>
+            handleWheel(e, stageRef, scale, setScale, position, setPosition)
+          }
+          scaleX={scale}
+          scaleY={scale}
+          x={position.x}
+          y={position.y}
+        >
+          <Layer>
+            <PencilTool lines={lines} />
+          </Layer>
+        </Stage>
+        <ColorSelector />
+      </div>
     </div>
   );
 }
