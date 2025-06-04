@@ -11,7 +11,7 @@ interface PencilProps {
 
 export default function PencilTool({ lines }: PencilProps) {
   return (
-    <div>
+    <div style={{ position: "relative" }}>
       {lines.map((line, i) => (
         <Line
           key={i}
@@ -37,46 +37,52 @@ export const usePencilHandlers = (
 ) => {
   const isDrawing = useRef(false);
 
+  const handleStart = (e: any) => {
+    if (tool !== "pencil") return;
+
+    isDrawing.current = true;
+    const pos = getRelativePointerPosition(e.target.getStage());
+
+    onUpdateLines([
+      ...lines,
+      {
+        tool: "pencil",
+        points: [pos.x, pos.y],
+        color: "#ffffff",
+        strokeWidth: 2 / scale,
+      },
+    ]);
+  };
+
+  const handleMove = (e: any) => {
+    if (!isDrawing.current || tool !== "pencil") return;
+
+    const lastLine = lines[lines.length - 1];
+    if (!lastLine) return;
+
+    const pos = getRelativePointerPosition(e.target.getStage());
+
+    const newLines = [...lines];
+    newLines[newLines.length - 1] = {
+      ...lastLine,
+      points: [...lastLine.points, pos.x, pos.y],
+    };
+
+    onUpdateLines(newLines);
+  };
+
+  const handleEnd = () => {
+    isDrawing.current = false;
+  };
+
   return {
-    onMouseDown: (e: any) => {
-      if (tool !== "pencil") return;
-
-      isDrawing.current = true;
-      const pos = getRelativePointerPosition(e.target.getStage());
-
-      onUpdateLines([
-        ...lines,
-        {
-          tool: "pencil",
-          points: [pos.x, pos.y],
-          color: "#ffffff",
-          strokeWidth: 2 / scale,
-        },
-      ]);
-    },
-    onMouseMove: (e: any) => {
-      if (!isDrawing.current || tool !== "pencil") return;
-
-      const lastLine = lines[lines.length - 1];
-      if (!lastLine) return;
-
-      const pos = getRelativePointerPosition(e.target.getStage());
-
-      // Create a new array with all lines except the last one
-      const newLines = [...lines];
-      // Update the last line with new points
-      newLines[newLines.length - 1] = {
-        ...lastLine,
-        points: [...lastLine.points, pos.x, pos.y],
-      };
-
-      onUpdateLines(newLines);
-    },
-    onMouseUp: () => {
-      isDrawing.current = false;
-    },
-    onMouseLeave: () => {
-      isDrawing.current = false;
-    },
+    onMouseDown: handleStart,
+    onTouchStart: handleStart,
+    onMouseMove: handleMove,
+    onTouchMove: handleMove,
+    onMouseUp: handleEnd,
+    onTouchEnd: handleEnd,
+    onMouseLeave: handleEnd,
+    onTouchCancel: handleEnd,
   };
 };

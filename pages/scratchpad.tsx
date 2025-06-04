@@ -9,17 +9,9 @@ import { handleWheel } from "../components/Pages/Scratchpad/helper";
 import useHandleResize from "../components/Pages/Scratchpad/hooks/useHandleResize";
 import useKeyDownZoom from "../components/Pages/Scratchpad/hooks/useKeyDownZoom";
 
-// Export the interface
-export interface DrawLine {
-  tool: string;
-  points: number[];
-  color: string;
-  strokeWidth: number;
-}
-
 export default function Scratchpad() {
   const [tool, setTool] = useState<string>("");
-  const [lines, setLines] = useState<DrawLine[]>([]);
+  const [lines, setLines] = useState<any>([]);
   const [scale, setScale] = useState<number>(1);
   const [position, setPosition] = useState<{ x: number; y: number }>({
     x: 0,
