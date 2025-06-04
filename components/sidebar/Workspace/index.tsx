@@ -1,4 +1,4 @@
-import { ChevronDown, File } from "lucide-react";
+import { ChevronDown, File, LoaderPinwheel } from "lucide-react";
 import { useRouter } from "next/router";
 import { useStore } from "../../../store/store";
 import Space from "../../space";
@@ -15,6 +15,13 @@ export default function Workspace({ showSidebar }: { showSidebar: boolean }) {
       icon: <File size={17} color="gray" />,
       collapsed: true,
       onClick: () => router.push("/files"),
+    },
+    {
+      id: 2,
+      name: "Focus Mode",
+      icon: <LoaderPinwheel size={17} color="gray" />,
+      collapsed: false,
+      onClick: () => router.push("/focus"),
     },
   ];
   return (
