@@ -1,4 +1,4 @@
-import { ChevronDown, File, LoaderPinwheel } from "lucide-react";
+import { ChevronDown, File, LoaderPinwheel, Pencil } from "lucide-react";
 import { useRouter } from "next/router";
 import { useStore } from "../../../store/store";
 import Space from "../../space";
@@ -22,6 +22,13 @@ export default function Workspace({ showSidebar }: { showSidebar: boolean }) {
       icon: <LoaderPinwheel size={17} color="gray" />,
       collapsed: false,
       onClick: () => router.push("/focus"),
+    },
+    {
+      id: 3,
+      name: "Scratchpad",
+      icon: <Pencil size={17} color="gray" />,
+      collapsed: false,
+      onClick: () => router.push("/scratchpad"),
     },
   ];
   return (

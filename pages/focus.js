@@ -13,10 +13,10 @@ export default function Focus() {
             <Music size={20} />
           </i>
           <i>
-            <Image  size={20} />
+            <Image size={20} />
           </i>
           <i>
-            <Minimize  size={20} />
+            <Minimize size={20} />
           </i>
         </Space>
       </div>
