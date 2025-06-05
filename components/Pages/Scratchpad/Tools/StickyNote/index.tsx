@@ -10,6 +10,7 @@ interface StickyNoteProps {
   height: number;
   id: string;
   isSelected: boolean;
+  backgroundColor: string;
   onTextChange: (id: string, newText: string) => void;
   onClick: (e: KonvaEventObject<MouseEvent>) => void;
 }
@@ -22,6 +23,7 @@ export default function StickyNote({
   height = 200,
   id,
   isSelected,
+  backgroundColor,
   onTextChange,
   onClick,
 }: StickyNoteProps) {
@@ -33,7 +35,7 @@ export default function StickyNote({
         y={y}
         width={width}
         height={height}
-        fill="#fff9c4"
+        fill={backgroundColor}
         shadowColor="black"
         shadowBlur={5}
         shadowOpacity={0.3}
@@ -118,6 +120,15 @@ export function TextEditor({
   );
 }
 
+// Add a STICKY_NOTE_COLORS constant
+export const STICKY_NOTE_COLORS = {
+  yellow: "#fff9c4",
+  blue: "#bbdefb",
+  green: "#c8e6c9",
+  pink: "#f8bbd0",
+  purple: "#e1bee7",
+};
+
 // Custom hook for handling sticky notes
 export const useStickyNoteHandlers = (
   tool: string,
@@ -128,6 +139,7 @@ export const useStickyNoteHandlers = (
 ) => {
   const [selectedNote, setSelectedNote] = useState<string | null>(null);
   const [editingNote, setEditingNote] = useState<string | null>(null);
+  const [selectedColor, setSelectedColor] = useState(STICKY_NOTE_COLORS.yellow);
 
   const handleStickyNoteClick = (e: any) => {
     if (tool !== "stickynote") return;
@@ -142,6 +154,7 @@ export const useStickyNoteHandlers = (
       text: "Type here...",
       width: 200,
       height: 200,
+      backgroundColor: selectedColor,
     };
 
     setStickyNotes([...stickyNotes, newNote]);
@@ -158,6 +171,31 @@ export const useStickyNoteHandlers = (
     );
   };
 
+  // Add ColorSelector component
+  const ColorSelector = () => (
+    <>
+      {Object.entries(STICKY_NOTE_COLORS).map(([colorName, colorValue]) => (
+        <button
+          key={colorName}
+          onClick={() => setSelectedColor(colorValue)}
+          style={{
+            width: "20px",
+            height: "20px",
+            borderRadius: "50%",
+            backgroundColor: colorValue,
+            border: selectedColor === colorValue
+              ? "2px solid #fff"
+              : "2px solid transparent",
+            cursor: "pointer",
+            padding: 0,
+            margin: "0 5px",
+          }}
+          aria-label={`Select ${colorName} sticky note`}
+        />
+      ))}
+    </>
+  );
+
   return {
     handleStickyNoteClick,
     updateNoteText,
@@ -165,5 +203,7 @@ export const useStickyNoteHandlers = (
     setSelectedNote,
     editingNote,
     setEditingNote,
+    ColorSelector,
+    selectedColor,
   };
 };

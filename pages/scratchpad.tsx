@@ -5,13 +5,13 @@ import { handleWheel } from "../components/Pages/Scratchpad/helper";
 import useHandleResize from "../components/Pages/Scratchpad/hooks/useHandleResize";
 import useKeyDownZoom from "../components/Pages/Scratchpad/hooks/useKeyDownZoom";
 import {
-    default as PencilTool,
-    usePencilHandlers,
+  default as PencilTool,
+  usePencilHandlers,
 } from "../components/Pages/Scratchpad/Tools/Pencil";
 import {
-    default as StickyNoteTool,
-    TextEditor,
-    useStickyNoteHandlers,
+  default as StickyNoteTool,
+  TextEditor,
+  useStickyNoteHandlers,
 } from "../components/Pages/Scratchpad/Tools/StickyNote";
 
 export default function Scratchpad() {
@@ -57,6 +57,7 @@ export default function Scratchpad() {
     setSelectedNote,
     editingNote,
     setEditingNote,
+    ColorSelector: StickyNoteColorSelector,
   } = useStickyNoteHandlers(
     tool,
     stickyNotes,
@@ -85,7 +86,7 @@ export default function Scratchpad() {
   const stageToScreenCoordinates = (x: number, y: number) => {
     const stage = stageRef.current;
     if (!stage) return { x: 0, y: 0 };
-    
+
     const transform = stage.getAbsoluteTransform();
     const point = transform.point({ x, y });
     return {
@@ -157,7 +158,16 @@ export default function Scratchpad() {
 
         {/* Text Editor Overlay */}
         {editingNote && (
-          <div style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, pointerEvents: "none" }}>
+          <div
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              pointerEvents: "none",
+            }}
+          >
             {stickyNotes.map((note) => {
               if (note.id !== editingNote) return null;
               const screenPos = stageToScreenCoordinates(note.x, note.y);
@@ -180,6 +190,12 @@ export default function Scratchpad() {
         {tool === "pencil" && (
           <div className="color-selector animate__animated animate__slideInUp">
             <ColorSelector />
+          </div>
+        )}
+
+        {tool === "stickynote" && (
+          <div className="color-selector animate__animated animate__slideInUp">
+            <StickyNoteColorSelector />
           </div>
         )}
       </div>

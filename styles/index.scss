@@ -3447,3 +3447,20 @@ main {
   border-radius: 8px;
   animation-duration: 0.2s;
 }
+
+.sticky-note-colors {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 10px;
+  border-radius: 8px;
+  z-index: 1000;
+  .color-palette-item {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    cursor: pointer;
+  }
+}
