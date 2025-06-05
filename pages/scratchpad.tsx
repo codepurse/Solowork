@@ -1,14 +1,17 @@
-import { Canvas, IText, PencilBrush } from "fabric";
-
-import { Minus, Pencil, StickyNote, Type } from "lucide-react";
+import { Canvas, PencilBrush } from "fabric";
+import { Box, Minus, Pencil, StickyNote, Type } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import Draw from "../components/Pages/Scratchpad/Draw";
+import ShapeSettings from "../components/Pages/Scratchpad/ShapeSettings";
+import useCreateText from "../components/Pages/Scratchpad/useCreateText";
 
 export default function Scratchpad() {
   const [tool, setTool] = useState<string>("");
   const canvasRef = useRef<Canvas | null>(null);
   const [color, setColor] = useState<string>("#fff");
   const [thickness, setThickness] = useState<number>(2);
+  const [selectedShape, setSelectedShape] = useState<string>("box");
+  const [shapeColor, setShapeColor] = useState<string>("#FF5252"); // Initialize with a default color
 
   useEffect(() => {
     // Initialize Fabric.js canvas
@@ -28,42 +31,8 @@ export default function Scratchpad() {
     };
   }, []); // Empty dependency array since this should only run once
 
-  // Separate useEffect for handling text tool
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    const handleMouseDown = (opt: any) => {
-      if (tool !== "text") return;
-
-      const pointer = canvas.getPointer(opt.e);
-      const text = new IText("This is a text", {
-        left: pointer.x,
-        top: pointer.y,
-        fill: color,
-        fontSize: 20,
-        editable: true,
-      });
-
-      canvas.add(text);
-      canvas.setActiveObject(text);
-      canvas.renderAll();
-
-      // Immediately enter editing mode
-      text.enterEditing();
-      text.selectAll();
-
-      // Deactivate text tool after adding text
-      setTool("");
-    };
-
-    canvas.on("mouse:down", handleMouseDown);
-
-    // Cleanup event listener
-    return () => {
-      canvas.off("mouse:down", handleMouseDown);
-    };
-  }, [tool, color]);
+  // Separate useEffect for handling text too
+  useCreateText(canvasRef, tool, color, setTool);
 
   const handleToolClick = (selectedTool: string, selectedColor?: string) => {
     setTool(selectedTool);
@@ -96,6 +65,12 @@ export default function Scratchpad() {
             <StickyNote size={18} />
           </i>
           <i
+            className={tool === "shape" ? "active" : ""}
+            onClick={() => handleToolClick("shape", color)}
+          >
+            <Box size={18} />
+          </i>
+          <i
             onClick={() => handleToolClick("text", color)}
             className={tool === "text" ? "active" : ""}
           >
@@ -118,6 +93,18 @@ export default function Scratchpad() {
           setColor={setColor}
           setThickness={setThickness}
           canvasRef={canvasRef}
+        />
+      )}
+      {tool === "shape" && (
+        <ShapeSettings
+          selectedShape={selectedShape}
+          setSelectedShape={setSelectedShape}
+          shapeColor={shapeColor}
+          setShapeColor={setShapeColor}
+          canvasRef={canvasRef}
+          tool={tool}
+          thickness={thickness}
+          setTool={setTool}
         />
       )}
     </div>

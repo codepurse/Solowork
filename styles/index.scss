@@ -3505,3 +3505,46 @@ main {
     }
   }
 }
+
+.shape-settings {
+  position: fixed;
+  top: 38%;
+  right: 10px;
+  transform: translateY(-38%);
+  z-index: 1000;
+  background-color: rgba(26, 17, 64, 0.8);
+  border: 1px solid #311b92;
+  padding: 8px 12px;
+  flex-direction: column;
+  border-radius: 10px;
+  animation-duration: 0.3s;
+  .shape-title {
+    font-size: 13px;
+    font-weight: 400;
+    color: $color-gray-light;
+    margin-bottom: 0px;
+    text-transform: uppercase;
+  }
+  #active {
+    color: $primary-color !important;
+  }
+  .shape-settings-item {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    i {
+      cursor: pointer;
+      color: #eee;
+      transition: all 0.2s ease-in-out;
+      &:hover {
+        color: $primary-color;
+      }
+    }
+    .shape-settings-color {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+  }
+}

@@ -1,0 +1,279 @@
+import * as fabric from "fabric";
+import { Canvas } from "fabric";
+import {
+    Circle,
+    Diamond,
+    Hexagon,
+    Minus,
+    Octagon,
+    Pentagon,
+    RectangleHorizontal,
+    Square,
+    Triangle,
+} from "lucide-react";
+import { useEffect } from "react";
+
+const fillColors = [
+  "#FF5252",
+  "#EA80FC",
+  "#B388FF",
+  "#8C9EFF",
+  "#84FFFF",
+  "#A7FFEB",
+  "#CCFF90",
+  "#F4FF81",
+  "#FFE57F",
+];
+
+type ShapeSettingsProps = {
+  selectedShape: string;
+  setSelectedShape: (shape: string) => void;
+  shapeColor: string;
+  setShapeColor: (color: string) => void;
+  canvasRef: React.RefObject<Canvas>;
+  tool: string;
+  thickness: number;
+  setTool: (tool: string) => void;
+};
+
+export default function ShapeSettings({
+  selectedShape,
+  setSelectedShape,
+  shapeColor,
+  setShapeColor,
+  canvasRef,
+  tool,
+  thickness,
+  setTool,
+}: Readonly<ShapeSettingsProps>) {
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const handleMouseDown = (event: any) => {
+      if (tool !== "shape") return;
+
+      const pointer = canvas.getPointer(event.e);
+
+      let shape;
+
+      switch (selectedShape) {
+        case "box":
+          shape = new fabric.Rect({
+            left: pointer.x,
+            top: pointer.y,
+            fill: shapeColor,
+            width: 60,
+            height: 60,
+            stroke: shapeColor,
+            strokeWidth: thickness,
+          });
+          break;
+        case "circle":
+          shape = new fabric.Circle({
+            left: pointer.x,
+            top: pointer.y,
+            radius: 30,
+            fill: shapeColor,
+            stroke: shapeColor,
+            strokeWidth: thickness,
+            originX: "center",
+            originY: "center",
+          });
+          break;
+        case "triangle":
+          shape = new fabric.Triangle({
+            left: pointer.x,
+            top: pointer.y,
+            width: 60,
+            height: 60,
+            fill: shapeColor,
+            stroke: shapeColor,
+            strokeWidth: thickness,
+          });
+          break;
+        case "rectangle":
+          shape = new fabric.Rect({
+            left: pointer.x,
+            top: pointer.y,
+            fill: shapeColor,
+            width: 100,
+            height: 60,
+            stroke: shapeColor,
+            strokeWidth: thickness,
+          });
+          break;
+        case "pentagon":
+          const pentagonPoints = [
+            { x: 30, y: 0 },
+            { x: 60, y: 20 },
+            { x: 48, y: 55 },
+            { x: 12, y: 55 },
+            { x: 0, y: 20 },
+          ];
+          shape = new fabric.Polygon(pentagonPoints, {
+            left: pointer.x,
+            top: pointer.y,
+            fill: shapeColor,
+            stroke: shapeColor,
+            strokeWidth: thickness,
+            scaleX: 1,
+            scaleY: 1,
+          });
+          break;
+        case "hexagon":
+          const hexagonPoints = [
+            { x: 30, y: 0 },
+            { x: 60, y: 15 },
+            { x: 60, y: 45 },
+            { x: 30, y: 60 },
+            { x: 0, y: 45 },
+            { x: 0, y: 15 },
+          ];
+          shape = new fabric.Polygon(hexagonPoints, {
+            left: pointer.x,
+            top: pointer.y,
+            fill: shapeColor,
+            stroke: shapeColor,
+            strokeWidth: thickness,
+            scaleX: 1,
+            scaleY: 1,
+          });
+          break;
+        case "diamond":
+          const diamondPoints = [
+            { x: 30, y: 0 },
+            { x: 60, y: 30 },
+            { x: 30, y: 60 },
+            { x: 0, y: 30 },
+          ];
+          shape = new fabric.Polygon(diamondPoints, {
+            left: pointer.x,
+            top: pointer.y,
+            fill: shapeColor,
+            stroke: shapeColor,
+            strokeWidth: thickness,
+            scaleX: 1,
+            scaleY: 1,
+          });
+          break;
+        case "octagon":
+          const radius = 40;
+          const octagonPoints = Array.from({ length: 8 }, (_, i) => {
+            const angle = (Math.PI / 4) * i;
+            return {
+              x: radius * Math.cos(angle),
+              y: radius * Math.sin(angle),
+            };
+          });
+
+          shape = new fabric.Polygon(octagonPoints, {
+            left: pointer.x,
+            top: pointer.y,
+            fill: shapeColor,
+            stroke: shapeColor,
+            strokeWidth: thickness,
+            originX: "center",
+            originY: "center",
+          });
+          break;
+        case "line":
+          shape = new fabric.Line(
+            [pointer.x, pointer.y, pointer.x + 100, pointer.y],
+            {
+              stroke: shapeColor,
+              strokeWidth: thickness,
+              selectable: true,
+            }
+          );
+          break;
+        default:
+          return;
+      }
+
+      canvas.add(shape);
+      canvas.setActiveObject(shape);
+      canvas.requestRenderAll();
+
+      // Deactivate shape tool after adding shape
+      setTool("");
+    };
+
+    canvas.on("mouse:down", handleMouseDown);
+
+    return () => {
+      canvas.off("mouse:down", handleMouseDown);
+    };
+  }, [tool, selectedShape, shapeColor, thickness]);
+
+  const shapes = [
+    {
+      name: "box",
+      icon: <Square size={22} />,
+    },
+    {
+      name: "circle",
+      icon: <Circle size={22} />,
+    },
+    {
+      name: "triangle",
+      icon: <Triangle size={22} />,
+    },
+    {
+      name: "rectangle",
+      icon: <RectangleHorizontal size={22} />,
+    },
+    {
+      name: "pentagon",
+      icon: <Pentagon size={22} />,
+    },
+    {
+      name: "diamond",
+      icon: <Diamond size={22} />,
+    },
+    {
+      name: "hexagon",
+      icon: <Hexagon size={22} />,
+    },
+    {
+      name: "octagon",
+      icon: <Octagon size={22} />,
+    },
+    {
+      name: "line",
+      icon: <Minus size={22} />,
+    },
+  ];
+  return (
+    <div className="shape-settings">
+      <p className="shape-title mb-1">Shapes</p>
+      <div className="shape-settings-item">
+        {shapes.map((shape) => (
+          <div
+            key={shape.name}
+            className={`shape-settings-item-icon ${
+              selectedShape === shape.name ? "active" : ""
+            }`}
+            onClick={() => setSelectedShape(shape.name)}
+          >
+            <i id={selectedShape === shape.name ? "active" : ""}>
+              {shape.icon}
+            </i>
+          </div>
+        ))}
+      </div>
+      <p className="shape-title mb-2 mt-3">Fill Color</p>
+      <div className="shape-settings-item">
+        {fillColors.map((color) => (
+          <div
+            key={color}
+            className="shape-settings-color"
+            style={{ backgroundColor: color }}
+            onClick={() => setShapeColor(color)}
+            id={shapeColor === color ? "active" : ""}
+          ></div>
+        ))}
+      </div>
+    </div>
+  );
+}
