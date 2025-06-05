@@ -3374,19 +3374,14 @@ main {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    left: 0px;
+    left: 10px;
     z-index: 1000;
     padding: 7px;
     background-color: #1a1140 !important;
-    border-top: 1px solid #311b92;
-    border-right: 1px solid #311b92;
-    border-bottom: 1px solid #311b92;
-    border-top-right-radius: 10px;
-    border-bottom-right-radius: 10px;
-    .konvajs-content {
-      position: absolute !important;
-      top: 0;
-      left: 0;
+    border: 1px solid #311b92;
+    border-radius: 10px;
+    .active {
+      color: $primary-color !important;
     }
     .scratchpad-tools-container-item {
       border-radius: 50%;
@@ -3408,79 +3403,105 @@ main {
       }
     }
   }
-
-  .zoom-indicator {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    background-color: rgba(26, 17, 64, 0.8);
-    color: white;
-    padding: 8px 12px;
-    border-radius: 6px;
-    font-size: 14px;
-    z-index: 1000;
-    border: 1px solid #311b92;
-  }
-}
-
-// Add these styles to your existing .scratchpad-tools-container-item styles
-.scratchpad-tools-container-item {
-  i {
-    &.active {
-      color: #7c4dff !important; // Use your primary color
-      background-color: rgba(124, 77, 255, 0.1);
-      border-radius: 50%;
-    }
-  }
-}
-
-.color-selector {
-  background-color: rgba(26, 17, 64, 0.8);
-  border: 1px solid #311b92;
-  padding: 8px 12px;
-  position: fixed;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  gap: 10px;
-  border-radius: 8px;
-  animation-duration: 0.2s;
-}
-
-.sticky-note-colors {
-  position: fixed;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  gap: 10px;
-  border-radius: 8px;
-  z-index: 1000;
-  .color-palette-item {
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    cursor: pointer;
-  }
 }
 
 .color-settings {
   position: fixed;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  gap: 10px;
-  border-radius: 8px;
+  top: 38%;
+  right: 10px;
+  transform: translateY(-38%);
   z-index: 1000;
   background-color: rgba(26, 17, 64, 0.8);
   border: 1px solid #311b92;
   padding: 8px 12px;
+  flex-direction: column;
+  border-radius: 10px;
+  animation-duration: 0.3s;
+  .draw-title {
+    font-size: 13px;
+    font-weight: 400;
+    color: $color-gray-light;
+    margin-bottom: 0px;
+    text-transform: uppercase;
+  }
+  #activeColor {
+    border: 1px solid $primary-color;
+  }
+  .color-settings-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding: 2px 4px;
+    width: 100%;
+    height: 25px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+
+  .color-settings-colors {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 5px;
+  }
+
   .color-settings-item-color {
-    width: 20px;
-    height: 20px;
+    width: 18px;
+    height: 18px;
     border-radius: 50%;
     cursor: pointer;
+  }
+  .draw-sizes {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 5px;
+    #activeThickness {
+      border: 1px solid $primary-color;
+    }
+    .draw-size-thin {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 25px;
+      cursor: pointer;
+      padding: 2px 4px;
+      width: 100%;
+      border-radius: 5px;
+      .draw-size-thin-inner {
+        width: 15px;
+        height: 1px;
+        background-color: white;
+      }
+    }
+    .draw-size-medium {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 25px;
+      cursor: pointer;
+      padding: 2px 4px;
+      width: 100%;
+      border-radius: 5px;
+      .draw-size-medium-inner {
+        width: 15px;
+        height: 2px;
+        background-color: white;
+      }
+    }
+    .draw-size-thick {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 25px;
+      cursor: pointer;
+      padding: 2px 4px;
+      width: 100%;
+      border-radius: 5px;
+      .draw-size-thick-inner {
+        width: 15px;
+        height: 3px;
+        background-color: white;
+      }
+    }
   }
 }

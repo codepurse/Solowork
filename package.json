@@ -45,6 +45,7 @@
     "react-grid-layout": "^1.5.1",
     "react-konva": "^19.0.4",
     "react-select": "^5.10.1",
+    "roughjs": "^4.6.6",
     "sass": "^1.86.3",
     "styled-components": "^6.1.18",
     "swr": "^2.3.3",
@@ -53,6 +54,7 @@
   },
   "devDependencies": {
     "@tauri-apps/cli": "^2.5.0",
+    "@types/fabric": "^5.3.10",
     "@types/lodash": "^4.17.17",
     "@types/node": "22.14.1",
     "@types/react": "19.1.2",
