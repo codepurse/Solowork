@@ -3561,11 +3561,35 @@ main {
   flex-direction: column;
   border-radius: 10px;
   animation-duration: 0.3s;
+  min-width: 250px;
+  .draw-title {
+    font-size: 14px;
+    font-weight: 400;
+    color: $color-gray-light;
+  }
+  .text-settings-item-container {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 10px;
+    .text-settings-item {
+      cursor: pointer;
+      color: #eee;
+      transition: all 0.2s ease-in-out;
+      border: 1px solid $color-gray;
+      border-radius: 5px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 3px 5px;
+      &:hover {
+        color: $primary-color;
+        border-color: $primary-color;
+      }
+    }
+  }
   .text-settings-item {
     display: flex;
     align-items: center;
-    justify-content: center;
-    flex-direction: column;
     gap: 10px;
     cursor: pointer;
     i {

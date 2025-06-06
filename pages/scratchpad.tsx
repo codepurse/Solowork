@@ -1,19 +1,22 @@
-import { Canvas, PencilBrush } from "fabric";
+import { Canvas } from "fabric";
 import {
   Box,
+  Eraser,
   Image,
   MousePointer,
   Pencil,
   StickyNote,
   Type,
 } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import Draw from "../components/Pages/Scratchpad/Draw";
 import ShapeSettings from "../components/Pages/Scratchpad/ShapeSettings";
 import TextSettings from "../components/Pages/Scratchpad/TextSettings";
+import useCanvas from "../components/Pages/Scratchpad/useCanvas";
 import useCanvasMove from "../components/Pages/Scratchpad/useCanvasMove";
 import useCanvasZoom from "../components/Pages/Scratchpad/useCanvasZoom";
 import useCreateText from "../components/Pages/Scratchpad/useCreateText";
+import useEraser from "../components/Pages/Scratchpad/useEraser";
 import { useImageUpload } from "../components/Pages/Scratchpad/useImageUpload";
 
 export default function Scratchpad() {
@@ -23,62 +26,42 @@ export default function Scratchpad() {
   const [color, setColor] = useState<string>("#fff");
   const [thickness, setThickness] = useState<number>(2);
   const [selectedShape, setSelectedShape] = useState<string>("box");
-  const [shapeColor, setShapeColor] = useState<string>("#FF5252"); // Initialize with a default color
+  const [shapeColor, setShapeColor] = useState<string>("#FF5252");
   const [isBold, setIsBold] = useState(false);
   const [isItalic, setIsItalic] = useState(false);
   const [isUnderline, setIsUnderline] = useState(false);
   const [isCreateText, setIsCreateText] = useState(false);
+  const [textFontSize, setTextFontSize] = useState(16);
+  const [textFontWeight, setTextFontWeight] = useState("normal");
+  const [textFontStyle, setTextFontStyle] = useState("normal");
 
   const { handleImageUpload } = useImageUpload({ canvasRef, setTool });
 
-  useEffect(() => {
-    // Initialize Fabric.js canvas
-    const canvas = new Canvas("drawing-canvas", {
-      isDrawingMode: false,
-      width: window.innerWidth,
-      height: window.innerHeight - 60, // Adjust based on your toolbar height
-    });
-
-    // Initialize the brush
-    canvas.freeDrawingBrush = new PencilBrush(canvas);
-    canvasRef.current = canvas;
-
-    // Handle keyboard events for delete
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Delete" || e.key === "Backspace") {
-        const activeObjects = canvas.getActiveObjects();
-        if (activeObjects.length > 0) {
-          activeObjects.forEach((obj) => canvas.remove(obj));
-          canvas.discardActiveObject();
-          canvas.renderAll();
-        }
-      }
-    };
-
-    // Add keyboard event listener
-    window.addEventListener("keydown", handleKeyDown);
-
-    // Cleanup on unmount
-    return () => {
-      canvas.dispose();
-      window.removeEventListener("keydown", handleKeyDown);
-    };
-  }, []); // Empty dependency array since this should only run once
-
+  useCanvas({ canvasRef });
+  useEraser(canvasRef, tool);
   useCanvasZoom(canvasRef);
   useCanvasMove(canvasRef);
 
-  // Separate useEffect for handling text too
+  // Text creation/styling logic (unchanged)
   useCreateText(
     canvasRef,
     tool,
     color,
     setTool,
     isBold,
+    setIsBold,
     isItalic,
+    setIsItalic,
     isUnderline,
+    setIsUnderline,
     isCreateText,
-    setIsCreateText
+    setIsCreateText,
+    textFontSize,
+    setTextFontSize,
+    textFontWeight,
+    setTextFontWeight,
+    textFontStyle,
+    setTextFontStyle
   );
 
   const handleToolClick = (selectedTool: string, selectedColor?: string) => {
@@ -86,12 +69,16 @@ export default function Scratchpad() {
 
     if (!canvasRef.current) return;
 
+    // toggle drawing mode when pencil is selected
     if (selectedTool === "pencil") {
       canvasRef.current.isDrawingMode = true;
       canvasRef.current.freeDrawingBrush.width = thickness;
       canvasRef.current.freeDrawingBrush.color = selectedColor || color;
     } else if (selectedTool === "image") {
       fileInputRef.current?.click();
+    } else if (selectedTool === "eraser") {
+      canvasRef.current.defaultCursor = "url('/image/eraser.png') 4 12, auto";
+      canvasRef.current.isDrawingMode = false;
     } else {
       canvasRef.current.isDrawingMode = false;
     }
@@ -147,6 +134,12 @@ export default function Scratchpad() {
           >
             <Image size={18} />
           </i>
+          <i
+            className={tool === "eraser" ? "active" : ""}
+            onClick={() => handleToolClick("eraser", color)}
+          >
+            <Eraser size={18} />
+          </i>
         </div>
       </div>
 
@@ -154,6 +147,7 @@ export default function Scratchpad() {
       <div className="canvas-container">
         <canvas id="drawing-canvas" />
       </div>
+
       {tool === "pencil" && (
         <Draw
           color={color}
@@ -184,6 +178,12 @@ export default function Scratchpad() {
           setIsItalic={setIsItalic}
           isUnderline={isUnderline}
           setIsUnderline={setIsUnderline}
+          textFontSize={textFontSize}
+          setTextFontSize={setTextFontSize}
+          textFontWeight={textFontWeight}
+          setTextFontWeight={setTextFontWeight}
+          textFontStyle={textFontStyle}
+          setTextFontStyle={setTextFontStyle}
         />
       )}
     </div>

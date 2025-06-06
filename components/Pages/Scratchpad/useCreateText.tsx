@@ -1,18 +1,25 @@
 import { Canvas, IText } from "fabric";
 import { useEffect } from "react";
 
-
-
 export default function useCreateText(
   canvasRef: React.RefObject<Canvas>,
   tool: string,
   color: string,
   setTool: (tool: string) => void,
   isBold: boolean,
+  setIsBold: (isBold: boolean) => void,
   isItalic: boolean,
+  setIsItalic: (isItalic: boolean) => void,
   isUnderline: boolean,
+  setIsUnderline: (isUnderline: boolean) => void,
   isCreateText: boolean,
-  setIsCreateText: (isCreateText: boolean) => void
+  setIsCreateText: (isCreateText: boolean) => void,
+  textFontSize: number,
+  setTextFontSize: (textFontSize: number) => void,
+  textFontWeight: string,
+  setTextFontWeight: (textFontWeight: string) => void,
+  textFontStyle: string,
+  setTextFontStyle: (textFontStyle: string) => void
 ) {
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -26,12 +33,12 @@ export default function useCreateText(
         left: pointer.x,
         top: pointer.y,
         fill: color,
-        fontSize: 20,
+        fontSize: textFontSize,
         editable: true,
-        fontFamily: "Poppins",
-        fontWeight: isBold ? "bold" : "normal",
+        fontFamily: textFontStyle || "Poppins",
+        fontWeight: textFontWeight || "400",
         fontStyle: isItalic ? "italic" : "normal",
-        underline: isUnderline
+        underline: isUnderline,
       });
 
       canvas.add(text);
@@ -52,6 +59,22 @@ export default function useCreateText(
       if (selectedObject instanceof IText) {
         setTool("text"); // Show text settings when text is selected
         setIsCreateText(false);
+        // Update text properties in state when text is selected
+        setTextFontSize(typeof selectedObject.fontSize === 'number' ? selectedObject.fontSize : 16);
+        
+        // Handle font weight
+        let weight = selectedObject.fontWeight?.toString() || "400";
+        // Convert legacy bold/normal to numeric values
+        if (weight === "bold") weight = "700";
+        if (weight === "normal") weight = "400";
+        setTextFontWeight(weight);
+        
+        setTextFontStyle(selectedObject.fontFamily?.toString() || "Poppins");
+
+        // Update style states
+        setIsBold(weight === "700");
+        setIsItalic(selectedObject.fontStyle === "italic");
+        setIsUnderline(selectedObject.underline || false);
       } else if (e.deselected) {
         setTool(""); // Hide text settings when text is deselected
       }
@@ -64,7 +87,7 @@ export default function useCreateText(
         // Force the text object to recalculate its dimensions
         modifiedObject.set({
           width: modifiedObject.calcTextWidth(),
-          height: modifiedObject.calcTextHeight()
+          height: modifiedObject.calcTextHeight(),
         });
         canvas.renderAll();
       }
@@ -87,5 +110,5 @@ export default function useCreateText(
       canvas.off("text:changed", handleTextModification);
       canvas.off("object:modified", handleTextModification);
     };
-  }, [tool, color, isBold, isItalic, isUnderline]); // Added style dependencies
+  }, [tool, color, isBold, isItalic, isUnderline, textFontSize, textFontWeight, textFontStyle]); // Added style dependencies
 }
