@@ -34,6 +34,11 @@ export default function Scratchpad() {
   const [textFontSize, setTextFontSize] = useState(16);
   const [textFontWeight, setTextFontWeight] = useState("normal");
   const [textFontStyle, setTextFontStyle] = useState("normal");
+  const [isCaseSensitive, setIsCaseSensitive] = useState(false);
+  const [isCaseUpper, setIsCaseUpper] = useState(false);
+  const [isCaseLower, setIsCaseLower] = useState(false);
+  const [text, setText] = useState("This is a text");
+  const [textColor, setTextColor] = useState("#ffffff");
 
   const { handleImageUpload } = useImageUpload({ canvasRef, setTool });
 
@@ -61,7 +66,17 @@ export default function Scratchpad() {
     textFontWeight,
     setTextFontWeight,
     textFontStyle,
-    setTextFontStyle
+    setTextFontStyle,
+    isCaseSensitive,
+    setIsCaseSensitive,
+    isCaseUpper,
+    setIsCaseUpper,
+    isCaseLower,
+    setIsCaseLower,
+    text,
+    setText,
+    textColor,
+    setTextColor
   );
 
   const handleToolClick = (selectedTool: string, selectedColor?: string) => {
@@ -184,6 +199,16 @@ export default function Scratchpad() {
           setTextFontWeight={setTextFontWeight}
           textFontStyle={textFontStyle}
           setTextFontStyle={setTextFontStyle}
+          isCaseSensitive={isCaseSensitive}
+          setIsCaseSensitive={setIsCaseSensitive}
+          isCaseUpper={isCaseUpper}
+          setIsCaseUpper={setIsCaseUpper}
+          isCaseLower={isCaseLower}
+          setIsCaseLower={setIsCaseLower}
+          text={text}
+          setText={setText}
+          textColor={textColor}
+          setTextColor={setTextColor}
         />
       )}
     </div>

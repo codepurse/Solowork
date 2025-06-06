@@ -3508,9 +3508,9 @@ main {
 
 .shape-settings {
   position: fixed;
-  top: 38%;
+  top: 50%;
   right: 10px;
-  transform: translateY(-38%);
+  transform: translateY(-50%);
   z-index: 1000;
   background-color: rgba(26, 17, 64, 0.8);
   border: 1px solid #311b92;
@@ -3518,6 +3518,7 @@ main {
   flex-direction: column;
   border-radius: 10px;
   animation-duration: 0.3s;
+  animation-name: animateSlideInRight;
   .shape-title {
     font-size: 13px;
     font-weight: 400;
@@ -3526,11 +3527,25 @@ main {
     text-transform: uppercase;
   }
   #active {
-    color: $primary-color !important;
+    color: #9b74ff !important;
+    border: 1px solid #9b74ff !important;
+    i {
+      color: #9b74ff !important;
+    }
+  }
+  .shape-settings-item-container {
+    padding: 3px 5px;
+    width: 100%;
+    height: 30px;
+    border: 1px solid #313131;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
   .shape-settings-item {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(6, 1fr);
     gap: 10px;
     i {
       cursor: pointer;
@@ -3549,23 +3564,42 @@ main {
   }
 }
 
+@keyframes animateSlideInRight {
+  from {
+    transform: translate(100%, -50%);
+  }
+  to {
+    transform: translate(0, -50%);
+  }
+}
+
 .text-settings {
   position: fixed;
-  top: 38%;
+  top: 50%;
   right: 10px;
-  transform: translateY(-38%);
+  transform: translateY(-50%);
   z-index: 1000;
   background-color: rgba(26, 17, 64, 0.8);
   border: 1px solid #311b92;
   padding: 8px 12px;
   flex-direction: column;
   border-radius: 10px;
-  animation-duration: 0.3s;
   min-width: 250px;
+  animation-duration: 0.3s;
+  animation-name: animateSlideInRight;
   .draw-title {
     font-size: 14px;
     font-weight: 400;
     color: $color-gray-light;
+  }
+  .color-preview {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+  }
+  #activeStyle {
+    color: #9b74ff !important;
+    border: 1px solid #9b74ff !important;
   }
   .text-settings-item-container {
     display: grid;
@@ -3575,12 +3609,15 @@ main {
       cursor: pointer;
       color: #eee;
       transition: all 0.2s ease-in-out;
-      border: 1px solid $color-gray;
+      border: 1px solid #313131;
       border-radius: 5px;
       display: flex;
       align-items: center;
       justify-content: center;
       padding: 3px 5px;
+      width: 100%;
+      height: 30px;
+      background-color: transparent;
       &:hover {
         color: $primary-color;
         border-color: $primary-color;

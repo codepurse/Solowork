@@ -4,9 +4,10 @@ interface DropdownProps {
   options: any[];
   onChange: (value: any) => void;
   value: any;
+  withBorder?: boolean;
 }
 
-export const customStyles = {
+export const customStyles = (withBorder: boolean) => ({
   control: (base, state) => ({
     ...base,
     background: "#171031",
@@ -24,7 +25,7 @@ export const customStyles = {
     boxShadow: "none",
     border: state.menuIsOpen
       ? "1px solid #6c63ff !important"
-      : "1px solid transparent !important",
+      : `1px solid ${withBorder ? "#313131" : "transparent"} !important`,
   }),
   menuPortal: (base) => ({
     ...base,
@@ -72,19 +73,20 @@ export const customStyles = {
       color: "#fff",
     },
   }),
-};
+});
 
 export default function Dropdown({
   options,
   onChange,
   value,
+  withBorder = false,
 }: Readonly<DropdownProps>) {
   return (
     <Select
       options={options}
       onChange={onChange}
       value={value}
-      styles={customStyles}
+      styles={customStyles(withBorder)}
     />
   );
 }

@@ -2,7 +2,9 @@ import * as fabric from "fabric";
 import { Canvas } from "fabric";
 import {
   Circle,
+  Cylinder,
   Diamond,
+  Heart,
   Hexagon,
   Minus,
   MoveRight,
@@ -10,6 +12,8 @@ import {
   Pentagon,
   RectangleHorizontal,
   Square,
+  Squircle,
+  Star,
   Triangle,
 } from "lucide-react";
 import { useEffect } from "react";
@@ -264,6 +268,90 @@ export default function ShapeSettings({
           });
           break;
         }
+        case "squircle":
+          shape = new fabric.Rect({
+            left: pointer.x,
+            top: pointer.y,
+            width: 100,
+            height: 100,
+            fill: shapeColor,
+            stroke: shapeColor,
+            strokeWidth: thickness,
+            rx: 20,
+            ry: 20,
+          });
+          break;
+        case "heart":
+          shape = new fabric.Path(
+            "M 75 40 \
+               C 75 37, 70 25, 50 25 \
+               C 20 25, 20 62.5, 20 62.5 \
+               C 20 80, 40 102, 75 120 \
+               C 110 102, 130 80, 130 62.5 \
+               C 130 62.5, 130 25, 100 25 \
+               C 85 25, 75 37, 75 40 Z",
+            {
+              left: pointer.x,
+              top: pointer.y,
+              scaleX: 0.5, // adjust scale if too large
+              scaleY: 0.5,
+              fill: shapeColor,
+              stroke: shapeColor,
+              strokeWidth: thickness,
+              originX: "center",
+              originY: "center",
+            }
+          );
+          break;
+        case "star":
+          const starPoints = [
+            { x: 50, y: 0 },
+            { x: 61, y: 35 },
+            { x: 98, y: 35 },
+            { x: 68, y: 57 },
+            { x: 79, y: 91 },
+            { x: 50, y: 70 },
+            { x: 21, y: 91 },
+            { x: 32, y: 57 },
+            { x: 2, y: 35 },
+            { x: 39, y: 35 },
+          ];
+
+          shape = new fabric.Polygon(starPoints, {
+            left: pointer.x,
+            top: pointer.y,
+            fill: shapeColor,
+            stroke: shapeColor,
+            strokeWidth: thickness,
+            originX: "center",
+            originY: "center",
+            scaleX: 0.8,
+            scaleY: 0.8,
+          });
+          break;
+        case "cylinder":
+          shape = new fabric.Path(
+            // A vertical cylinder with top and bottom ellipses and side lines
+            "M 50 20 \
+               A 40 10 0 0 1 130 20 \
+               L 130 100 \
+               A 40 10 0 0 1 50 100 \
+               Z \
+               M 50 20 \
+               A 40 10 0 0 0 130 20",
+            {
+              left: pointer.x,
+              top: pointer.y,
+              fill: shapeColor,
+              stroke: shapeColor,
+              strokeWidth: thickness,
+              originX: "center",
+              originY: "center",
+              scaleX: 0.5,
+              scaleY: 0.5,
+            }
+          );
+          break;
 
         default:
           return;
@@ -288,6 +376,18 @@ export default function ShapeSettings({
     {
       name: "box",
       icon: <Square size={22} />,
+    },
+    {
+      name: "heart",
+      icon: <Heart size={22} />,
+    },
+    {
+      name: "star",
+      icon: <Star size={22} />,
+    },
+    {
+      name: "squircle",
+      icon: <Squircle size={22} />,
     },
     {
       name: "circle",
@@ -318,6 +418,10 @@ export default function ShapeSettings({
       icon: <Octagon size={22} />,
     },
     {
+      name: "cylinder",
+      icon: <Cylinder size={22} />,
+    },
+    {
       name: "lineArrow",
       icon: <MoveRight size={22} />,
     },
@@ -328,23 +432,36 @@ export default function ShapeSettings({
   ];
   return (
     <div className="shape-settings">
-      <p className="shape-title mb-1">Shapes</p>
+      <p className="shape-title mb-2">Shapes</p>
       <div className="shape-settings-item">
         {shapes.map((shape) => (
           <div
             key={shape.name}
-            className={`shape-settings-item-icon ${
-              selectedShape === shape.name ? "active" : ""
-            }`}
-            onClick={() => setSelectedShape(shape.name)}
+            className={`shape-settings-item-container`}
+            id={selectedShape === shape.name ? "active" : ""}
           >
-            <i id={selectedShape === shape.name ? "active" : ""}>
-              {shape.icon}
-            </i>
+            <div
+              className={`shape-settings-item-icon`}
+              onClick={() => setSelectedShape(shape.name)}
+            >
+              <i>{shape.icon}</i>
+            </div>
           </div>
         ))}
       </div>
       <p className="shape-title mb-2 mt-3">Fill Color</p>
+      <div className="shape-settings-item">
+        {fillColors.map((color) => (
+          <div
+            key={color}
+            className="shape-settings-color"
+            style={{ backgroundColor: color }}
+            onClick={() => setShapeColor(color)}
+            id={shapeColor === color ? "active" : ""}
+          ></div>
+        ))}
+      </div>
+      <p className="shape-title mb-2 mt-3">Stroke Color</p>
       <div className="shape-settings-item">
         {fillColors.map((color) => (
           <div

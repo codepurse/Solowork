@@ -4,6 +4,7 @@ interface TextProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
   as?: "search" | "text" | "folder";
   variant?: "sm" | "md" | "lg";
   transparent?: boolean;
+  style?: React.CSSProperties;
 }
 
 export default function TextArea({
@@ -12,19 +13,21 @@ export default function TextArea({
   as,
   variant = "md",
   transparent,
+  style,
   ...props
 }: Readonly<TextProps>) {
-  const style = {
+  const styles = {
     backgroundColor: transparent ? "transparent" : "#171031",
+    ...style,
   };
-  
+
   return (
     <div className="input-container">
       <textarea
         placeholder={placeholder}
         className={className + " input-type"}
         {...props}
-        style={style}
+        style={styles}
       />
     </div>
   );
