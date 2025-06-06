@@ -3548,3 +3548,33 @@ main {
     }
   }
 }
+
+.text-settings {
+  position: fixed;
+  top: 38%;
+  right: 10px;
+  transform: translateY(-38%);
+  z-index: 1000;
+  background-color: rgba(26, 17, 64, 0.8);
+  border: 1px solid #311b92;
+  padding: 8px 12px;
+  flex-direction: column;
+  border-radius: 10px;
+  animation-duration: 0.3s;
+  .text-settings-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 10px;
+    cursor: pointer;
+    i {
+      cursor: pointer;
+      color: #eee;
+      transition: all 0.2s ease-in-out;
+      &:hover {
+        color: $primary-color;
+      }
+    }
+  }
+}

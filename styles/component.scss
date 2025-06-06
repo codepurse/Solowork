@@ -1611,11 +1611,11 @@ div.svg-wrap {
   position: relative;
   cursor: pointer;
   user-select: none;
-  
+
   &.disabled {
     opacity: 0.5;
     cursor: not-allowed;
-    
+
     .radio-label {
       cursor: not-allowed;
     }
@@ -1649,7 +1649,7 @@ div.svg-wrap {
     transition: all 0.2s ease;
 
     &::after {
-      content: '';
+      content: "";
       position: absolute;
       top: 50%;
       left: 50%;
@@ -1664,7 +1664,7 @@ div.svg-wrap {
 
   .radio-input:checked + .radio-label .radio-circle {
     border-color: $primary-color;
-    
+
     &::after {
       transform: translate(-50%, -50%) scale(1);
       animation: radioPopIn 0.2s ease-in-out;
@@ -1691,4 +1691,3 @@ div.svg-wrap {
     transform: translate(-50%, -50%) scale(1);
   }
 }
-

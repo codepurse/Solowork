@@ -1,15 +1,16 @@
 import * as fabric from "fabric";
 import { Canvas } from "fabric";
 import {
-    Circle,
-    Diamond,
-    Hexagon,
-    Minus,
-    Octagon,
-    Pentagon,
-    RectangleHorizontal,
-    Square,
-    Triangle,
+  Circle,
+  Diamond,
+  Hexagon,
+  Minus,
+  MoveRight,
+  Octagon,
+  Pentagon,
+  RectangleHorizontal,
+  Square,
+  Triangle,
 } from "lucide-react";
 import { useEffect } from "react";
 
@@ -187,6 +188,83 @@ export default function ShapeSettings({
             }
           );
           break;
+        case "blockArrow": {
+          const shaftLength = 120;
+          const shaftHeight = 20;
+          const headSize = 30;
+          const startX = pointer.x;
+          const startY = pointer.y;
+
+          // Shaft of the arrow (rounded ends)
+          const shaft = new fabric.Rect({
+            left: startX,
+            top: startY - shaftHeight / 2,
+            width: shaftLength,
+            height: shaftHeight,
+            rx: shaftHeight / 2, // round ends
+            ry: shaftHeight / 2,
+            fill: shapeColor,
+            selectable: false,
+          });
+
+          // Arrowhead (a triangle pointing right)
+          const head = new fabric.Triangle({
+            left: startX + shaftLength,
+            top: startY,
+            width: headSize,
+            height: shaftHeight * 2,
+            angle: 90,
+            originX: "center",
+            originY: "center",
+            fill: shapeColor,
+            selectable: false,
+          });
+
+          // Group them
+          shape = new fabric.Group([shaft, head], {
+            selectable: true,
+          });
+          break;
+        }
+        case "lineArrow": {
+          const shaftLength = 120;
+          const shaftHeight = 4; // thinner shaft
+          const headSize = 20; // smaller arrowhead
+          const startX = pointer.x;
+          const startY = pointer.y;
+
+          // Shaft of the arrow
+          const shaft = new fabric.Rect({
+            left: startX,
+            top: startY - shaftHeight / 2,
+            width: shaftLength,
+            height: shaftHeight,
+            rx: shaftHeight / 2, // rounded ends
+            ry: shaftHeight / 2,
+            fill: shapeColor,
+            selectable: false,
+          });
+
+          // Arrowhead (triangle)
+          const head = new fabric.Triangle({
+            left: startX + shaftLength,
+            top: startY,
+            width: headSize,
+            height: shaftHeight * 2,
+            angle: 90,
+            originX: "center",
+            originY: "center",
+            fill: shapeColor,
+            selectable: false,
+          });
+
+          // Group them together
+          shape = new fabric.Group([shaft, head], {
+            selectable: true,
+          });
+          break;
+        }
+
         default:
           return;
       }
@@ -238,6 +316,10 @@ export default function ShapeSettings({
     {
       name: "octagon",
       icon: <Octagon size={22} />,
+    },
+    {
+      name: "lineArrow",
+      icon: <MoveRight size={22} />,
     },
     {
       name: "line",
