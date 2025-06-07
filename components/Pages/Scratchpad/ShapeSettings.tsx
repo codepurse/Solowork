@@ -17,6 +17,7 @@ import {
   Triangle,
 } from "lucide-react";
 import { useEffect } from "react";
+import useWhiteBoardStore from "../../../store/whiteBoardStore";
 
 const fillColors = [
   "#FF5252",
@@ -28,29 +29,320 @@ const fillColors = [
   "#CCFF90",
   "#F4FF81",
   "#FFE57F",
+  "transparent  ",
 ];
 
 type ShapeSettingsProps = {
-  selectedShape: string;
-  setSelectedShape: (shape: string) => void;
-  shapeColor: string;
-  setShapeColor: (color: string) => void;
   canvasRef: React.RefObject<Canvas>;
-  tool: string;
-  thickness: number;
-  setTool: (tool: string) => void;
 };
 
 export default function ShapeSettings({
-  selectedShape,
-  setSelectedShape,
-  shapeColor,
-  setShapeColor,
   canvasRef,
-  tool,
-  thickness,
-  setTool,
 }: Readonly<ShapeSettingsProps>) {
+  const {
+    selectedShape,
+    setSelectedShape,
+    tool,
+    shapeFill,
+    shapeStroke,
+    thickness,
+    setTool,
+    setShapeFill,
+    setShapeStroke,
+  } = useWhiteBoardStore();
+  const transformSelectedShape = (newShapeType: string) => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const activeObject = canvas.getActiveObject();
+    if (!activeObject) return;
+
+    const { left, top, width, height, scaleX, scaleY } = activeObject;
+    let newShape;
+
+    const shapeProps = {
+      fill: shapeFill,
+      stroke: shapeStroke,
+      strokeWidth: thickness,
+    };
+
+    switch (newShapeType) {
+      case "box":
+        newShape = new fabric.Rect({
+          left,
+          top,
+          width: width || 60,
+          height: height || 60,
+          ...shapeProps,
+        });
+        break;
+      case "circle":
+        newShape = new fabric.Circle({
+          left,
+          top,
+          radius: (width || 60) / 2,
+          ...shapeProps,
+          originX: "center",
+          originY: "center",
+        });
+        break;
+      case "triangle":
+        newShape = new fabric.Triangle({
+          left,
+          top,
+          width: width || 60,
+          height: height || 60,
+          ...shapeProps,
+        });
+        break;
+      case "rectangle":
+        newShape = new fabric.Rect({
+          left,
+          top,
+          width: width || 100,
+          height: height || 60,
+          ...shapeProps,
+        });
+        break;
+      case "pentagon":
+        const pentagonPoints = [
+          { x: 30, y: 0 },
+          { x: 60, y: 20 },
+          { x: 48, y: 55 },
+          { x: 12, y: 55 },
+          { x: 0, y: 20 },
+        ];
+        newShape = new fabric.Polygon(pentagonPoints, {
+          left,
+          top,
+          ...shapeProps,
+          scaleX: scaleX || 1,
+          scaleY: scaleY || 1,
+        });
+        break;
+      case "hexagon":
+        const hexagonPoints = [
+          { x: 30, y: 0 },
+          { x: 60, y: 15 },
+          { x: 60, y: 45 },
+          { x: 30, y: 60 },
+          { x: 0, y: 45 },
+          { x: 0, y: 15 },
+        ];
+        newShape = new fabric.Polygon(hexagonPoints, {
+          left,
+          top,
+          ...shapeProps,
+          scaleX: scaleX || 1,
+          scaleY: scaleY || 1,
+        });
+        break;
+      case "diamond":
+        const diamondPoints = [
+          { x: 30, y: 0 },
+          { x: 60, y: 30 },
+          { x: 30, y: 60 },
+          { x: 0, y: 30 },
+        ];
+        newShape = new fabric.Polygon(diamondPoints, {
+          left,
+          top,
+          ...shapeProps,
+          scaleX: scaleX || 1,
+          scaleY: scaleY || 1,
+        });
+        break;
+      case "octagon":
+        const radius = 40;
+        const octagonPoints = Array.from({ length: 8 }, (_, i) => {
+          const angle = (Math.PI / 4) * i;
+          return {
+            x: radius * Math.cos(angle),
+            y: radius * Math.sin(angle),
+          };
+        });
+
+        newShape = new fabric.Polygon(octagonPoints, {
+          left,
+          top,
+          ...shapeProps,
+          originX: "center",
+          originY: "center",
+        });
+        break;
+      case "line":
+        newShape = new fabric.Line([left, top, left + 100, top], {
+          stroke: shapeStroke,
+          strokeWidth: thickness,
+          selectable: true,
+        });
+        break;
+      case "blockArrow": {
+        const shaftLength = 120;
+        const shaftHeight = 20;
+        const headSize = 30;
+        const startX = left;
+        const startY = top;
+
+        const shaft = new fabric.Rect({
+          left: startX,
+          top: startY - shaftHeight / 2,
+          width: shaftLength,
+          height: shaftHeight,
+          rx: shaftHeight / 2,
+          ry: shaftHeight / 2,
+          ...shapeProps,
+          selectable: false,
+        });
+
+        const head = new fabric.Triangle({
+          left: startX + shaftLength,
+          top: startY,
+          width: headSize,
+          height: shaftHeight * 2,
+          angle: 90,
+          originX: "center",
+          originY: "center",
+          ...shapeProps,
+          selectable: false,
+        });
+
+        newShape = new fabric.Group([shaft, head], {
+          selectable: true,
+        });
+        break;
+      }
+      case "lineArrow": {
+        const shaftLength = 120;
+        const shaftHeight = 4;
+        const headSize = 20;
+        const startX = left;
+        const startY = top;
+
+        const shaft = new fabric.Rect({
+          left: startX,
+          top: startY - shaftHeight / 2,
+          width: shaftLength,
+          height: shaftHeight,
+          rx: shaftHeight / 2,
+          ry: shaftHeight / 2,
+          ...shapeProps,
+          selectable: false,
+        });
+
+        const head = new fabric.Triangle({
+          left: startX + shaftLength,
+          top: startY,
+          width: headSize,
+          height: shaftHeight * 2,
+          angle: 90,
+          originX: "center",
+          originY: "center",
+          ...shapeProps,
+          selectable: false,
+        });
+
+        newShape = new fabric.Group([shaft, head], {
+          selectable: true,
+        });
+        break;
+      }
+      case "squircle":
+        newShape = new fabric.Rect({
+          left,
+          top,
+          width: 100,
+          height: 100,
+          ...shapeProps,
+          rx: 20,
+          ry: 20,
+        });
+        break;
+      case "heart":
+        newShape = new fabric.Path(
+          "M 75 40 \
+             C 75 37, 70 25, 50 25 \
+             C 20 25, 20 62.5, 20 62.5 \
+             C 20 80, 40 102, 75 120 \
+             C 110 102, 130 80, 130 62.5 \
+             C 130 62.5, 130 25, 100 25 \
+             C 85 25, 75 37, 75 40 Z",
+          {
+            left,
+            top,
+            scaleX: scaleX || 0.5,
+            scaleY: scaleY || 0.5,
+            ...shapeProps,
+            originX: "center",
+            originY: "center",
+          }
+        );
+        break;
+      case "star":
+        const starPoints = [
+          { x: 50, y: 0 },
+          { x: 61, y: 35 },
+          { x: 98, y: 35 },
+          { x: 68, y: 57 },
+          { x: 79, y: 91 },
+          { x: 50, y: 70 },
+          { x: 21, y: 91 },
+          { x: 32, y: 57 },
+          { x: 2, y: 35 },
+          { x: 39, y: 35 },
+        ];
+
+        newShape = new fabric.Polygon(starPoints, {
+          left,
+          top,
+          ...shapeProps,
+          originX: "center",
+          originY: "center",
+          scaleX: scaleX || 0.8,
+          scaleY: scaleY || 0.8,
+        });
+        break;
+      case "cylinder":
+        const cylinderPath = new fabric.Path(
+          "M 50 20 \
+             A 40 10 0 0 1 130 20 \
+             L 130 100 \
+             A 40 10 0 0 1 50 100 \
+             Z \
+             M 50 20 \
+             A 40 10 0 0 0 130 20",
+          {
+            left,
+            top,
+            ...shapeProps,
+            originX: "center",
+            originY: "center",
+            scaleX: scaleX || 0.5,
+            scaleY: scaleY || 0.5,
+          }
+        );
+        newShape = cylinderPath;
+        newShape.set("type", "cylinder");
+        break;
+
+      default:
+        return;
+    }
+
+    if (newShape) {
+      newShape.set({
+        angle: activeObject.angle,
+        scaleX: scaleX || activeObject.scaleX,
+        scaleY: scaleY || activeObject.scaleY,
+      });
+
+      canvas.remove(activeObject);
+      canvas.add(newShape);
+      canvas.setActiveObject(newShape);
+      canvas.requestRenderAll();
+    }
+  };
+
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -59,19 +351,22 @@ export default function ShapeSettings({
       if (tool !== "shape") return;
 
       const pointer = canvas.getPointer(event.e);
-
       let shape;
+
+      const shapeProps = {
+        fill: shapeFill,
+        stroke: shapeStroke,
+        strokeWidth: thickness,
+      };
 
       switch (selectedShape) {
         case "box":
           shape = new fabric.Rect({
             left: pointer.x,
             top: pointer.y,
-            fill: shapeColor,
             width: 60,
             height: 60,
-            stroke: shapeColor,
-            strokeWidth: thickness,
+            ...shapeProps,
           });
           break;
         case "circle":
@@ -79,9 +374,7 @@ export default function ShapeSettings({
             left: pointer.x,
             top: pointer.y,
             radius: 30,
-            fill: shapeColor,
-            stroke: shapeColor,
-            strokeWidth: thickness,
+            ...shapeProps,
             originX: "center",
             originY: "center",
           });
@@ -92,20 +385,16 @@ export default function ShapeSettings({
             top: pointer.y,
             width: 60,
             height: 60,
-            fill: shapeColor,
-            stroke: shapeColor,
-            strokeWidth: thickness,
+            ...shapeProps,
           });
           break;
         case "rectangle":
           shape = new fabric.Rect({
             left: pointer.x,
             top: pointer.y,
-            fill: shapeColor,
             width: 100,
             height: 60,
-            stroke: shapeColor,
-            strokeWidth: thickness,
+            ...shapeProps,
           });
           break;
         case "pentagon":
@@ -119,9 +408,7 @@ export default function ShapeSettings({
           shape = new fabric.Polygon(pentagonPoints, {
             left: pointer.x,
             top: pointer.y,
-            fill: shapeColor,
-            stroke: shapeColor,
-            strokeWidth: thickness,
+            ...shapeProps,
             scaleX: 1,
             scaleY: 1,
           });
@@ -138,9 +425,7 @@ export default function ShapeSettings({
           shape = new fabric.Polygon(hexagonPoints, {
             left: pointer.x,
             top: pointer.y,
-            fill: shapeColor,
-            stroke: shapeColor,
-            strokeWidth: thickness,
+            ...shapeProps,
             scaleX: 1,
             scaleY: 1,
           });
@@ -155,9 +440,7 @@ export default function ShapeSettings({
           shape = new fabric.Polygon(diamondPoints, {
             left: pointer.x,
             top: pointer.y,
-            fill: shapeColor,
-            stroke: shapeColor,
-            strokeWidth: thickness,
+            ...shapeProps,
             scaleX: 1,
             scaleY: 1,
           });
@@ -175,9 +458,7 @@ export default function ShapeSettings({
           shape = new fabric.Polygon(octagonPoints, {
             left: pointer.x,
             top: pointer.y,
-            fill: shapeColor,
-            stroke: shapeColor,
-            strokeWidth: thickness,
+            ...shapeProps,
             originX: "center",
             originY: "center",
           });
@@ -186,7 +467,7 @@ export default function ShapeSettings({
           shape = new fabric.Line(
             [pointer.x, pointer.y, pointer.x + 100, pointer.y],
             {
-              stroke: shapeColor,
+              stroke: shapeStroke,
               strokeWidth: thickness,
               selectable: true,
             }
@@ -199,19 +480,17 @@ export default function ShapeSettings({
           const startX = pointer.x;
           const startY = pointer.y;
 
-          // Shaft of the arrow (rounded ends)
           const shaft = new fabric.Rect({
             left: startX,
             top: startY - shaftHeight / 2,
             width: shaftLength,
             height: shaftHeight,
-            rx: shaftHeight / 2, // round ends
+            rx: shaftHeight / 2,
             ry: shaftHeight / 2,
-            fill: shapeColor,
+            ...shapeProps,
             selectable: false,
           });
 
-          // Arrowhead (a triangle pointing right)
           const head = new fabric.Triangle({
             left: startX + shaftLength,
             top: startY,
@@ -220,11 +499,10 @@ export default function ShapeSettings({
             angle: 90,
             originX: "center",
             originY: "center",
-            fill: shapeColor,
+            ...shapeProps,
             selectable: false,
           });
 
-          // Group them
           shape = new fabric.Group([shaft, head], {
             selectable: true,
           });
@@ -232,24 +510,22 @@ export default function ShapeSettings({
         }
         case "lineArrow": {
           const shaftLength = 120;
-          const shaftHeight = 4; // thinner shaft
-          const headSize = 20; // smaller arrowhead
+          const shaftHeight = 4;
+          const headSize = 20;
           const startX = pointer.x;
           const startY = pointer.y;
 
-          // Shaft of the arrow
           const shaft = new fabric.Rect({
             left: startX,
             top: startY - shaftHeight / 2,
             width: shaftLength,
             height: shaftHeight,
-            rx: shaftHeight / 2, // rounded ends
+            rx: shaftHeight / 2,
             ry: shaftHeight / 2,
-            fill: shapeColor,
+            ...shapeProps,
             selectable: false,
           });
 
-          // Arrowhead (triangle)
           const head = new fabric.Triangle({
             left: startX + shaftLength,
             top: startY,
@@ -258,11 +534,10 @@ export default function ShapeSettings({
             angle: 90,
             originX: "center",
             originY: "center",
-            fill: shapeColor,
+            ...shapeProps,
             selectable: false,
           });
 
-          // Group them together
           shape = new fabric.Group([shaft, head], {
             selectable: true,
           });
@@ -274,9 +549,7 @@ export default function ShapeSettings({
             top: pointer.y,
             width: 100,
             height: 100,
-            fill: shapeColor,
-            stroke: shapeColor,
-            strokeWidth: thickness,
+            ...shapeProps,
             rx: 20,
             ry: 20,
           });
@@ -293,11 +566,9 @@ export default function ShapeSettings({
             {
               left: pointer.x,
               top: pointer.y,
-              scaleX: 0.5, // adjust scale if too large
+              scaleX: 0.5,
               scaleY: 0.5,
-              fill: shapeColor,
-              stroke: shapeColor,
-              strokeWidth: thickness,
+              ...shapeProps,
               originX: "center",
               originY: "center",
             }
@@ -320,9 +591,7 @@ export default function ShapeSettings({
           shape = new fabric.Polygon(starPoints, {
             left: pointer.x,
             top: pointer.y,
-            fill: shapeColor,
-            stroke: shapeColor,
-            strokeWidth: thickness,
+            ...shapeProps,
             originX: "center",
             originY: "center",
             scaleX: 0.8,
@@ -330,8 +599,7 @@ export default function ShapeSettings({
           });
           break;
         case "cylinder":
-          shape = new fabric.Path(
-            // A vertical cylinder with top and bottom ellipses and side lines
+          const cylinderPath = new fabric.Path(
             "M 50 20 \
                A 40 10 0 0 1 130 20 \
                L 130 100 \
@@ -342,15 +610,15 @@ export default function ShapeSettings({
             {
               left: pointer.x,
               top: pointer.y,
-              fill: shapeColor,
-              stroke: shapeColor,
-              strokeWidth: thickness,
+              ...shapeProps,
               originX: "center",
               originY: "center",
               scaleX: 0.5,
               scaleY: 0.5,
             }
           );
+          shape = cylinderPath;
+          shape.set("type", "cylinder");
           break;
 
         default:
@@ -361,8 +629,8 @@ export default function ShapeSettings({
       canvas.setActiveObject(shape);
       canvas.requestRenderAll();
 
-      // Deactivate shape tool after adding shape
-      setTool("");
+
+      setSelectedShape("");
     };
 
     canvas.on("mouse:down", handleMouseDown);
@@ -370,7 +638,7 @@ export default function ShapeSettings({
     return () => {
       canvas.off("mouse:down", handleMouseDown);
     };
-  }, [tool, selectedShape, shapeColor, thickness]);
+  }, [tool, selectedShape, shapeFill, shapeStroke, thickness]);
 
   const shapes = [
     {
@@ -442,7 +710,14 @@ export default function ShapeSettings({
           >
             <div
               className={`shape-settings-item-icon`}
-              onClick={() => setSelectedShape(shape.name)}
+              onClick={() => {
+                if (tool === "shape" && canvasRef.current?.getActiveObject()) {
+                  transformSelectedShape(shape.name);
+                } else {
+                  setTool("shape");
+                  setSelectedShape(shape.name);
+                }
+              }}
             >
               <i>{shape.icon}</i>
             </div>
@@ -455,9 +730,30 @@ export default function ShapeSettings({
           <div
             key={color}
             className="shape-settings-color"
-            style={{ backgroundColor: color }}
-            onClick={() => setShapeColor(color)}
-            id={shapeColor === color ? "active" : ""}
+            style={{
+              backgroundColor: color,
+              border: "1px solid white",
+            }}
+            onClick={() => {
+              const canvas = canvasRef.current;
+              if (canvas && tool === "shape") {
+                const activeObject = canvas.getActiveObject();
+                if (activeObject) {
+                  if (activeObject.type === "group") {
+                    // For grouped objects (like arrows), update all objects in the group
+                    const group = activeObject as fabric.Group;
+                    group._objects.forEach((obj) => {
+                      obj.set("fill", color);
+                    });
+                  } else {
+                    activeObject.set("fill", color);
+                  }
+                  canvas.requestRenderAll();
+                }
+              }
+              setShapeFill(color);
+            }}
+            id={shapeFill === color ? "active" : ""}
           ></div>
         ))}
       </div>
@@ -468,8 +764,26 @@ export default function ShapeSettings({
             key={color}
             className="shape-settings-color"
             style={{ backgroundColor: color }}
-            onClick={() => setShapeColor(color)}
-            id={shapeColor === color ? "active" : ""}
+            onClick={() => {
+              const canvas = canvasRef.current;
+              if (canvas && tool === "shape") {
+                const activeObject = canvas.getActiveObject();
+                if (activeObject) {
+                  if (activeObject.type === "group") {
+                    // For grouped objects (like arrows), update all objects in the group
+                    const group = activeObject as fabric.Group;
+                    group._objects.forEach((obj) => {
+                      obj.set("stroke", color);
+                    });
+                  } else {
+                    activeObject.set("stroke", color);
+                  }
+                  canvas.requestRenderAll();
+                }
+              }
+              setShapeStroke(color);
+            }}
+            id={shapeStroke === color ? "active" : ""}
           ></div>
         ))}
       </div>

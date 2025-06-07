@@ -13,34 +13,13 @@ import {
   Italic,
   Underline,
 } from "lucide-react";
+import useWhiteBoardStore from "../../../store/whiteBoardStore";
 import Dropdown from "../../Elements/Dropdown";
 import TextArea from "../../Elements/TextArea";
 import Space from "../../space";
 
 type TextSettingsProps = {
   canvasRef: React.RefObject<Canvas>;
-  isBold: boolean;
-  setIsBold: (isBold: boolean) => void;
-  isItalic: boolean;
-  setIsItalic: (isItalic: boolean) => void;
-  isUnderline: boolean;
-  setIsUnderline: (isUnderline: boolean) => void;
-  setTextFontSize: (textFontSize: number) => void;
-  textFontSize: number;
-  textFontWeight: string;
-  setTextFontWeight: (textFontWeight: string) => void;
-  textFontStyle: string;
-  setTextFontStyle: (textFontStyle: string) => void;
-  isCaseSensitive: boolean;
-  setIsCaseSensitive: (isCaseSensitive: boolean) => void;
-  isCaseUpper: boolean;
-  setIsCaseUpper: (isCaseUpper: boolean) => void;
-  isCaseLower: boolean;
-  setIsCaseLower: (isCaseLower: boolean) => void;
-  text: string;
-  setText: (text: string) => void;
-  textColor: string;
-  setTextColor: (textColor: string) => void;
 };
 
 const fontOptions = [
@@ -82,31 +61,31 @@ const colorOptions = [
   { label: "#9b74ff", value: "#9b74ff" },
 ];
 
-const TextSettings = ({
-  canvasRef,
-  isBold,
-  setIsBold,
-  isItalic,
-  setIsItalic,
-  isUnderline,
-  setIsUnderline,
-  setTextFontSize,
-  textFontSize,
-  textFontWeight,
-  setTextFontWeight,
-  textFontStyle,
-  setTextFontStyle,
-  isCaseSensitive,
-  setIsCaseSensitive,
-  isCaseUpper,
-  setIsCaseUpper,
-  isCaseLower,
-  setIsCaseLower,
-  text,
-  setText,
-  textColor,
-  setTextColor,
-}: Readonly<TextSettingsProps>) => {
+const TextSettings = ({ canvasRef }: Readonly<TextSettingsProps>) => {
+  const {
+    isBold,
+    setIsBold,
+    isItalic,
+    setIsItalic,
+    isUnderline,
+    setIsUnderline,
+    textFontSize,
+    setTextFontSize,
+    textFontWeight,
+    setTextFontWeight,
+    textFontStyle,
+    setTextFontStyle,
+    isCaseSensitive,
+    setIsCaseSensitive,
+    isCaseUpper,
+    setIsCaseUpper,
+    isCaseLower,
+    setIsCaseLower,
+    text,
+    setText,
+    textColor,
+    setTextColor,
+  } = useWhiteBoardStore();
   const handleTextFormat = (format: string) => {
     const canvas = canvasRef.current;
     if (!canvas) return;

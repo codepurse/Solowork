@@ -47,4 +47,29 @@ export default function useEraser(
       canvas.off("mouse:move", handleMouseMove);
     };
   }, [tool]);
+
+  useEffect(() => {
+    console.log("tool", tool);
+    if (canvasRef.current && tool === "eraser") {
+      canvasRef.current.defaultCursor = "url('/image/eraser.png') 4 12, auto";
+
+      // Add mouse event listeners to maintain eraser cursor
+      const canvas = canvasRef.current;
+      const maintainEraserCursor = () => {
+        if (tool === "eraser") {
+          canvas.defaultCursor = "url('/image/eraser.png') 4 12, auto";
+        }
+      };
+
+      canvas.on("mouse:down", maintainEraserCursor);
+      canvas.on("mouse:up", maintainEraserCursor);
+      canvas.on("mouse:move", maintainEraserCursor);
+
+      return () => {
+        canvas.off("mouse:down", maintainEraserCursor);
+        canvas.off("mouse:up", maintainEraserCursor);
+        canvas.off("mouse:move", maintainEraserCursor);
+      };
+    }
+  }, [tool, canvasRef]);
 }

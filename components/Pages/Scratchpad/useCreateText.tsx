@@ -1,5 +1,6 @@
 import { Canvas, IText } from "fabric";
 import { useEffect } from "react";
+import useWhiteBoardStore from "../../../store/whiteBoardStore";
 
 function detectCase(text: string) {
   if (!text) return "empty";
@@ -18,36 +19,36 @@ function detectCase(text: string) {
   }
 }
 
-export default function useCreateText(
-  canvasRef: React.RefObject<Canvas>,
-  tool: string,
-  color: string,
-  setTool: (tool: string) => void,
-  isBold: boolean,
-  setIsBold: (isBold: boolean) => void,
-  isItalic: boolean,
-  setIsItalic: (isItalic: boolean) => void,
-  isUnderline: boolean,
-  setIsUnderline: (isUnderline: boolean) => void,
-  isCreateText: boolean,
-  setIsCreateText: (isCreateText: boolean) => void,
-  textFontSize: number,
-  setTextFontSize: (textFontSize: number) => void,
-  textFontWeight: string,
-  setTextFontWeight: (textFontWeight: string) => void,
-  textFontStyle: string,
-  setTextFontStyle: (textFontStyle: string) => void,
-  isCaseSensitive: boolean,
-  setIsCaseSensitive: (isCaseSensitive: boolean) => void,
-  isCaseUpper: boolean,
-  setIsCaseUpper: (isCaseUpper: boolean) => void,
-  isCaseLower: boolean,
-  setIsCaseLower: (isCaseLower: boolean) => void,
-  text: string,
-  setText: (text: string) => void,
-  textColor: any,
-  setTextColor: (textColor: any) => void
-) {
+export default function useCreateText(canvasRef: React.RefObject<Canvas>) {
+  const {
+    tool,
+    color,
+    setTool,
+    isCreateText,
+    setIsCreateText,
+    text,
+    setText,
+    textColor,
+    setTextColor,
+    textFontSize,
+    setTextFontSize,
+    textFontWeight,
+    setTextFontWeight,
+    textFontStyle,
+    setTextFontStyle,
+    isCaseSensitive,
+    setIsCaseSensitive,
+    isCaseUpper,
+    setIsCaseUpper,
+    isCaseLower,
+    setIsCaseLower,
+    isBold,
+    setIsBold,
+    isItalic,
+    setIsItalic,
+    isUnderline,
+    setIsUnderline,
+  } = useWhiteBoardStore();
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -88,7 +89,7 @@ export default function useCreateText(
       textObject.enterEditing();
       textObject.selectAll();
       setIsCreateText(false);
-      // Deactivate text tool after adding text
+
       setTool("");
     };
 
@@ -113,7 +114,7 @@ export default function useCreateText(
         setTextFontWeight(weight);
 
         setTextFontStyle(selectedObject.fontFamily?.toString() || "Poppins");
-        
+
         // Update style states
         setIsBold(weight === "700");
         setIsItalic(selectedObject.fontStyle === "italic");
@@ -123,13 +124,11 @@ export default function useCreateText(
         setText(selectedObject.text);
         // Update text color - ensure we have a valid color value
         setTextColor(selectedObject.fill?.toString() || "#000000");
-        
+
         // Update case transform states
         setIsCaseSensitive(detectCase(selectedObject.text) === "mixed");
         setIsCaseUpper(detectCase(selectedObject.text) === "uppercase");
         setIsCaseLower(detectCase(selectedObject.text) === "lowercase");
-      } else if (e.deselected) {
-        setTool(""); // Hide text settings when text is deselected
       }
     };
 

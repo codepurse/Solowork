@@ -6,22 +6,63 @@ export default function Draw({
   canvasRef,
 }) {
   const colors = [
-    "#fff",
-    "#000",
+    "#ffffff",
+    "#000000",
+    "#FF5252",
+    "#EA80FC",
+    "#B388FF",
+    "#8C9EFF",
+    "#84FFFF",
+    "#A7FFEB",
+    "#CCFF90",
+    "#F4FF81",
+    "#FFE57F",
     "#f00",
-    "#0f0",
-    "#00f",
-    "#ff0",
-    "#0ff",
-    "#f0f",
-    "#ffa500",
   ];
+
   const handleThicknessChange = (newThickness: number) => {
     setThickness(newThickness);
     if (canvasRef.current) {
+      // Update drawing brush thickness
       canvasRef.current.freeDrawingBrush.width = newThickness;
+      
+      // Update selected objects' stroke width
+      const activeObjects = canvasRef.current.getActiveObjects();
+      if (activeObjects.length > 0) {
+        activeObjects.forEach((obj) => {
+          if (obj.strokeWidth !== undefined) {
+            obj.set('strokeWidth', newThickness);
+          }
+        });
+        canvasRef.current.requestRenderAll();
+      }
     }
   };
+
+  const handleColorChange = (newColor: string) => {
+    setColor(newColor);
+    if (canvasRef.current) {
+      // Update drawing brush color
+      canvasRef.current.freeDrawingBrush.color = newColor;
+      
+      // Update selected objects' colors
+      const activeObjects = canvasRef.current.getActiveObjects();
+      if (activeObjects.length > 0) {
+        activeObjects.forEach((obj) => {
+          // Update stroke color for lines and shapes
+          if (obj.stroke !== undefined) {
+            obj.set('stroke', newColor);
+          }
+          // Update fill color for shapes
+          if (obj.fill !== undefined) {
+            obj.set('fill', newColor);
+          }
+        });
+        canvasRef.current.requestRenderAll();
+      }
+    }
+  };
+
   return (
     <div className="color-settings animate__animated animate__slideInRight ">
       <p className="draw-title mb-2">Colors</p>
@@ -35,12 +76,7 @@ export default function Draw({
             <div
               className="color-settings-item-color"
               style={{ backgroundColor: c }}
-              onClick={() => {
-                setColor(c);
-                if (canvasRef.current) {
-                  canvasRef.current.freeDrawingBrush.color = c;
-                }
-              }}
+              onClick={() => handleColorChange(c)}
             ></div>
           </div>
         ))}
@@ -67,6 +103,13 @@ export default function Draw({
           onClick={() => handleThicknessChange(6)}
         >
           <div className="draw-size-thick-inner" />
+        </div>
+        <div
+          className="draw-size-xlthick"
+          id={thickness === 8 ? "activeThickness" : ""}
+          onClick={() => handleThicknessChange(8)}
+        >
+          <div className="draw-size-xlthick-inner" />
         </div>
       </div>
     </div>

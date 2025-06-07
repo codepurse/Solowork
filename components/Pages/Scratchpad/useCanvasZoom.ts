@@ -1,9 +1,11 @@
 import { Canvas, Point } from "fabric";
 import { useEffect } from "react";
+import useWhiteBoardStore from "../../../store/whiteBoardStore";
 
 export default function useCanvasZoom(
   canvasRef: React.MutableRefObject<Canvas | null>
 ) {
+  const { zoom, setZoom } = useWhiteBoardStore();
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -12,32 +14,39 @@ export default function useCanvasZoom(
       if (!e.ctrlKey || !canvasRef.current) return;
 
       e.preventDefault();
+      const canvas = canvasRef.current;
       const delta = e.deltaY;
-      const zoom = canvasRef.current.getZoom();
-      const pointer = canvasRef.current.getPointer(e);
+      const pointer = canvas.getPointer(e);
+      const currentZoom = canvas.getZoom(); // 👈 get latest zoom directly
 
-      let newZoom = zoom * (delta > 0 ? 0.9 : 1.1);
+      let newZoom = currentZoom * (delta > 0 ? 0.9 : 1.1);
       newZoom = Math.max(0.1, Math.min(5, newZoom));
 
-      canvasRef.current.zoomToPoint(new Point(pointer.x, pointer.y), newZoom);
+      canvas.zoomToPoint(new Point(pointer.x, pointer.y), newZoom);
+      setZoom(newZoom); // optional if you want to track in store
     };
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (!canvasRef.current) return;
-
+      const canvas = canvasRef.current;
+      if (!canvas) return;
+    
       const zoomStep = 0.1;
-      let zoom = canvasRef.current.getZoom();
-
+      const currentZoom = canvas.getZoom();
+      const center = new Point(canvas.getWidth() / 2, canvas.getHeight() / 2); // 👈 center of viewport
+    
       if (e.ctrlKey && (e.key === "+" || e.key === "=")) {
         e.preventDefault();
-        zoom = Math.min(zoom + zoomStep, 5);
-        canvasRef.current.setZoom(zoom);
+        const newZoom = Math.min(currentZoom + zoomStep, 5);
+        canvas.zoomToPoint(center, newZoom); // 👈 use zoomToPoint for better experience
+        setZoom(newZoom);
       } else if (e.ctrlKey && e.key === "-") {
         e.preventDefault();
-        zoom = Math.max(zoom - zoomStep, 0.1);
-        canvasRef.current.setZoom(zoom);
+        const newZoom = Math.max(currentZoom - zoomStep, 0.1);
+        canvas.zoomToPoint(center, newZoom); // 👈 match behavior with wheel
+        setZoom(newZoom);
       }
     };
+    
 
     window.addEventListener("wheel", handleWheel, { passive: false });
     window.addEventListener("keydown", handleKeyDown);
@@ -46,5 +55,5 @@ export default function useCanvasZoom(
       window.removeEventListener("wheel", handleWheel);
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [canvasRef]);
+  }, [canvasRef, zoom, setZoom]);
 }
