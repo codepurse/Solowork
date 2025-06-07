@@ -48,13 +48,14 @@ export default function useCreateText(canvasRef: React.RefObject<Canvas>) {
     setIsItalic,
     isUnderline,
     setIsUnderline,
+    lockMode,
   } = useWhiteBoardStore();
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
     const handleMouseDown = (opt: any) => {
-      if (tool !== "text" || !isCreateText) return;
+      if (tool !== "text" || !isCreateText || lockMode) return;
       const pointer = canvas.getPointer(opt.e);
       let transformedText = text;
 
@@ -193,6 +194,7 @@ export default function useCreateText(canvasRef: React.RefObject<Canvas>) {
     isCaseLower,
     text,
     textColor,
+    lockMode,
   ]); // Added style dependencies
 
   // Add new effect to update text when text state changes

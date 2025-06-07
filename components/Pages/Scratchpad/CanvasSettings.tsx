@@ -1,0 +1,86 @@
+import { Download, Lock, Settings, Telescope } from "lucide-react";
+import { useState } from "react";
+import useWhiteBoardStore from "../../../store/whiteBoardStore";
+import Switch from "../../Elements/Switch";
+import Space from "../../space";
+
+type CanvasSettingsProps = {
+  canvasRef: any;
+};
+
+export default function CanvasSettings({
+  canvasRef,
+}: Readonly<CanvasSettingsProps>) {
+  const { focusMode, setFocusMode, lockMode, setLockMode } =
+    useWhiteBoardStore();
+  const [showSettings, setShowSettings] = useState(false);
+  const handleDownload = () => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const dataURL = canvas.toDataURL({
+      format: "png", // or 'jpeg'
+      quality: 1,
+      multiplier: 1,
+      enableRetinaScaling: true,
+    } as any);
+
+    const link = document.createElement("a");
+    link.href = dataURL;
+    link.download = "canvas.png";
+    link.click();
+  };
+  return (
+    <div className="canvas-settings">
+      <i onClick={() => setShowSettings(!showSettings)}>
+        <Settings size={18} />
+      </i>
+      <div className="canvas-settings-item-container">
+        {showSettings && (
+          <div className="canvas-settings-item">
+            <div className="canvas-settings-content">
+              <Space gap={8} onClick={handleDownload}>
+                <i>
+                  <Download size={17} />
+                </i>
+                <span className="canvas-settings-item-content-text">
+                  Download
+                </span>
+              </Space>
+              <Space gap={8} className="mt-1" align="evenly">
+                <Space gap={8}>
+                  <i>
+                    <Telescope size={17} />
+                  </i>
+                  <span className="canvas-settings-item-content-text">
+                    Focus mode
+                  </span>
+                </Space>
+                <Switch
+                  checked={focusMode}
+                  onChange={() => setFocusMode(!focusMode)}
+                  size="x-small"
+                />
+              </Space>
+              <Space gap={8} className="mt-1" align="evenly">
+                <Space gap={8}>
+                  <i>
+                    <Lock size={17} />
+                  </i>
+                  <span className="canvas-settings-item-content-text">
+                    Lock
+                  </span>
+                </Space>
+                <Switch
+                  checked={lockMode}
+                  onChange={() => setLockMode(!lockMode)}
+                  size="x-small"
+                />
+              </Space>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}

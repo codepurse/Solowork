@@ -6,9 +6,10 @@ import {
   MousePointer,
   Pencil,
   StickyNote,
-  Type,
+  Type
 } from "lucide-react";
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
+import CanvasSettings from "../components/Pages/Scratchpad/CanvasSettings";
 import Draw from "../components/Pages/Scratchpad/Draw";
 import ShapeSettings from "../components/Pages/Scratchpad/ShapeSettings";
 import TextSettings from "../components/Pages/Scratchpad/TextSettings";
@@ -32,6 +33,7 @@ export default function Scratchpad() {
     setTool,
     tool,
     zoom,
+    lockMode,
   } = useWhiteBoardStore();
 
   const { handleImageUpload } = useImageUpload({ canvasRef, setTool });
@@ -43,6 +45,8 @@ export default function Scratchpad() {
   useCreateText(canvasRef);
 
   const handleToolClick = (selectedTool: string, selectedColor?: string) => {
+    if (lockMode) return; // Prevent tool changes when locked
+    
     setTool(selectedTool);
     if (!canvasRef.current) return;
 
@@ -66,10 +70,6 @@ export default function Scratchpad() {
       canvasRef.current.defaultCursor = "default";
     }
   };
-
-  useEffect(() => {
-    console.log("zoom", zoom);
-  }, [zoom]);
 
   return (
     <div className="container-scratchpad">
@@ -109,7 +109,7 @@ export default function Scratchpad() {
           <i
             onClick={() => {
               handleToolClick("text", color);
-              setIsCreateText(true);
+              if (!lockMode) setIsCreateText(true);
             }}
             className={tool === "text" ? "active" : ""}
           >
@@ -125,7 +125,7 @@ export default function Scratchpad() {
             className={tool === "eraser" ? "active" : ""}
             onClick={() => {
               handleToolClick("eraser", color);
-              setTool("eraser");
+              if (!lockMode) setTool("eraser");
             }}
           >
             <Eraser size={18} />
@@ -138,7 +138,7 @@ export default function Scratchpad() {
         <canvas id="drawing-canvas" />
       </div>
 
-      {tool === "pencil" && (
+      {tool === "pencil" && !lockMode && (
         <Draw
           color={color}
           thickness={thickness}
@@ -147,12 +147,12 @@ export default function Scratchpad() {
           canvasRef={canvasRef}
         />
       )}
-      {tool === "shape" && <ShapeSettings canvasRef={canvasRef} />}
-      {tool === "text" && <TextSettings canvasRef={canvasRef} />}
+      {tool === "shape" && !lockMode && <ShapeSettings canvasRef={canvasRef} />}
+      {tool === "text" && !lockMode && <TextSettings canvasRef={canvasRef} />}
       <div className="zoom-container">
         <span>{Math.round(zoom * 100)} %</span>
       </div>
-      <div className="canvas-settings"></div>
+      <CanvasSettings canvasRef={canvasRef} />
     </div>
   );
 }

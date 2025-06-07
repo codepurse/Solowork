@@ -1,4 +1,4 @@
-import { create } from 'zustand';
+import { create } from "zustand";
 
 interface WhiteBoardStore {
   tool: string;
@@ -41,18 +41,22 @@ interface WhiteBoardStore {
   setShapeFill: (color: string) => void;
   zoom: number;
   setZoom: (zoom: number) => void;
+  focusMode: boolean;
+  setFocusMode: (focusMode: boolean) => void;
+  lockMode: boolean;
+  setLockMode: (lockMode: boolean) => void;
 }
 
 const useWhiteBoardStore = create<WhiteBoardStore>((set) => ({
-  tool: '',
+  tool: "",
   setTool: (tool) => set({ tool }),
-  color: '#fff',
+  color: "#fff",
   setColor: (color) => set({ color }),
   thickness: 2,
   setThickness: (thickness) => set({ thickness }),
-  selectedShape: 'box',
+  selectedShape: "box",
   setSelectedShape: (selectedShape) => set({ selectedShape }),
-  shapeColor: '#FF5252',
+  shapeColor: "#FF5252",
   setShapeColor: (shapeColor) => set({ shapeColor }),
   isBold: false,
   setIsBold: (isBold) => set({ isBold }),
@@ -64,9 +68,9 @@ const useWhiteBoardStore = create<WhiteBoardStore>((set) => ({
   setIsCreateText: (isCreateText) => set({ isCreateText }),
   textFontSize: 16,
   setTextFontSize: (textFontSize) => set({ textFontSize }),
-  textFontWeight: 'normal',
+  textFontWeight: "normal",
   setTextFontWeight: (textFontWeight) => set({ textFontWeight }),
-  textFontStyle: 'normal',
+  textFontStyle: "normal",
   setTextFontStyle: (textFontStyle) => set({ textFontStyle }),
   isCaseSensitive: false,
   setIsCaseSensitive: (isCaseSensitive) => set({ isCaseSensitive }),
@@ -74,16 +78,20 @@ const useWhiteBoardStore = create<WhiteBoardStore>((set) => ({
   setIsCaseUpper: (isCaseUpper) => set({ isCaseUpper }),
   isCaseLower: false,
   setIsCaseLower: (isCaseLower) => set({ isCaseLower }),
-  text: 'This is a text',
+  text: "This is a text",
   setText: (text) => set({ text }),
-  textColor: '#ffffff',
+  textColor: "#ffffff",
   setTextColor: (textColor) => set({ textColor }),
-  shapeStroke: '#ffffff',
+  shapeStroke: "#ffffff",
   setShapeStroke: (shapeStroke) => set({ shapeStroke }),
-  shapeFill: '#ffffff',
-  setShapeFill: (shapeFill) => set({ shapeFill }),  
+  shapeFill: "#ffffff",
+  setShapeFill: (shapeFill) => set({ shapeFill }),
   zoom: 1,
   setZoom: (zoom) => set({ zoom }),
+  focusMode: false,
+  setFocusMode: (focusMode) => set({ focusMode }),
+  lockMode: false,
+  setLockMode: (lockMode) => set({ lockMode }),
 }));
 
 export default useWhiteBoardStore;

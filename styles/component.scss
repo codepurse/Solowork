@@ -1128,6 +1128,15 @@ div.svg-wrap {
   width: 44px;
   height: 24px;
 
+  &.switch-x-small {
+    width: 30px;
+    height: 16px;
+    .switch-toggle {
+      width: 12px;
+      height: 12px;
+    }
+  }
+
   &.switch-small {
     width: 36px;
     height: 20px;
@@ -1156,6 +1165,9 @@ div.svg-wrap {
     }
     &.switch-large .switch-toggle {
       left: calc(100% - 26px); // Fixed position for large size
+    }
+    &.switch-x-small .switch-toggle {
+      left: calc(100% - 14px); // Fixed position for x-small size
     }
   }
 

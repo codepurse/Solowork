@@ -1,3 +1,5 @@
+import useWhiteBoardStore from "../../../store/whiteBoardStore";
+
 export default function Draw({
   color,
   thickness,
@@ -5,6 +7,8 @@ export default function Draw({
   setThickness,
   canvasRef,
 }) {
+  const { lockMode } = useWhiteBoardStore();
+  
   const colors = [
     "#ffffff",
     "#000000",
@@ -21,6 +25,8 @@ export default function Draw({
   ];
 
   const handleThicknessChange = (newThickness: number) => {
+    if (lockMode) return;
+    
     setThickness(newThickness);
     if (canvasRef.current) {
       // Update drawing brush thickness
@@ -40,6 +46,8 @@ export default function Draw({
   };
 
   const handleColorChange = (newColor: string) => {
+    if (lockMode) return;
+    
     setColor(newColor);
     if (canvasRef.current) {
       // Update drawing brush color
@@ -63,19 +71,28 @@ export default function Draw({
     }
   };
 
+  // Disable drawing mode when locked
+  if (canvasRef.current && lockMode) {
+    canvasRef.current.isDrawingMode = false;
+  }
+
   return (
     <div className="color-settings animate__animated animate__slideInRight ">
       <p className="draw-title mb-2">Colors</p>
       <div className="color-settings-colors">
         {colors.map((c) => (
           <div
-            className="color-settings-item"
+            className={`color-settings-item ${lockMode ? 'disabled' : ''}`}
             key={c}
             id={c === color ? "activeColor" : ""}
           >
             <div
               className="color-settings-item-color"
-              style={{ backgroundColor: c }}
+              style={{ 
+                backgroundColor: c,
+                cursor: lockMode ? 'not-allowed' : 'pointer',
+                opacity: lockMode ? 0.5 : 1
+              }}
               onClick={() => handleColorChange(c)}
             ></div>
           </div>
@@ -84,30 +101,34 @@ export default function Draw({
       <p className="draw-title mb-2 mt-3">Thickness</p>
       <div className="draw-sizes">
         <div
-          className="draw-size-thin"
+          className={`draw-size-thin ${lockMode ? 'disabled' : ''}`}
           id={thickness === 2 ? "activeThickness" : ""}
           onClick={() => handleThicknessChange(2)}
+          style={{ cursor: lockMode ? 'not-allowed' : 'pointer', opacity: lockMode ? 0.5 : 1 }}
         >
           <div className="draw-size-thin-inner" />
         </div>
         <div
-          className="draw-size-medium"
+          className={`draw-size-medium ${lockMode ? 'disabled' : ''}`}
           id={thickness === 4 ? "activeThickness" : ""}
           onClick={() => handleThicknessChange(4)}
+          style={{ cursor: lockMode ? 'not-allowed' : 'pointer', opacity: lockMode ? 0.5 : 1 }}
         >
           <div className="draw-size-medium-inner" />
         </div>
         <div
-          className="draw-size-thick"
+          className={`draw-size-thick ${lockMode ? 'disabled' : ''}`}
           id={thickness === 6 ? "activeThickness" : ""}
           onClick={() => handleThicknessChange(6)}
+          style={{ cursor: lockMode ? 'not-allowed' : 'pointer', opacity: lockMode ? 0.5 : 1 }}
         >
           <div className="draw-size-thick-inner" />
         </div>
         <div
-          className="draw-size-xlthick"
+          className={`draw-size-xlthick ${lockMode ? 'disabled' : ''}`}
           id={thickness === 8 ? "activeThickness" : ""}
           onClick={() => handleThicknessChange(8)}
+          style={{ cursor: lockMode ? 'not-allowed' : 'pointer', opacity: lockMode ? 0.5 : 1 }}
         >
           <div className="draw-size-xlthick-inner" />
         </div>

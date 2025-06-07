@@ -1,5 +1,6 @@
-import { Canvas, PencilBrush } from "fabric";
-import { useEffect } from "react";
+import { Canvas, Line, PencilBrush } from "fabric";
+import { useEffect, useRef } from "react";
+import useWhiteBoardStore from "../../../store/whiteBoardStore";
 
 type UseCanvasProps = {
   canvasRef: React.RefObject<Canvas>;
@@ -8,12 +9,34 @@ type UseCanvasProps = {
   setShapeStroke?: (stroke: string) => void;
 };
 
+// Alignment guide configuration
+const ALIGNMENT_THRESHOLD = 10; // Distance in pixels to trigger alignment
+const GUIDE_COLOR = "#ff69b4"; // Pink color for vertical guides
+const GUIDE_COLOR_ALT = "#00bfff"; // Blue color for horizontal guides
+
+interface GuideLines {
+  vertical: { x: number; y1: number; y2: number }[];
+  horizontal: { y: number; x1: number; x2: number }[];
+}
+
 export default function useCanvas({
   canvasRef,
   setTool,
   setShapeFill,
   setShapeStroke,
 }: Readonly<UseCanvasProps>) {
+  const { focusMode, lockMode } = useWhiteBoardStore();
+  const focusModeRef = useRef(focusMode);
+  const lockModeRef = useRef(lockMode);
+
+  useEffect(() => {
+    focusModeRef.current = focusMode;
+  }, [focusMode]);
+
+  useEffect(() => {
+    lockModeRef.current = lockMode;
+  }, [lockMode]);
+
   useEffect(() => {
     // Initialize Fabric.js canvas
     const canvas = new Canvas("drawing-canvas", {
@@ -26,6 +49,89 @@ export default function useCanvas({
 
     // Create a WeakMap to store original opacity values
     const originalOpacities = new WeakMap<object, number>();
+
+    // Store guide lines
+    let activeGuideLines: Line[] = [];
+
+    // Helper function to clear existing guide lines
+    const clearGuideLines = () => {
+      activeGuideLines.forEach((line) => canvas.remove(line));
+      activeGuideLines = [];
+      canvas.requestRenderAll();
+    };
+
+    // Helper function to create a guide line
+    const createGuideLine = (
+      coords: { x1: number; y1: number; x2: number; y2: number },
+      isVertical: boolean
+    ) => {
+      return new Line([coords.x1, coords.y1, coords.x2, coords.y2], {
+        stroke: isVertical ? GUIDE_COLOR : GUIDE_COLOR_ALT,
+        strokeWidth: 1,
+        strokeDashArray: [5, 5],
+        selectable: false,
+        evented: false,
+        excludeFromExport: true,
+        strokeLineCap: "round",
+      });
+    };
+
+    // Helper function to get object boundaries
+    const getObjectBounds = (obj: any) => {
+      const bounds = obj.getBoundingRect(true);
+      return {
+        left: bounds.left,
+        top: bounds.top,
+        right: bounds.left + bounds.width,
+        bottom: bounds.top + bounds.height,
+        centerX: bounds.left + bounds.width / 2,
+        centerY: bounds.top + bounds.height / 2,
+      };
+    };
+
+    // Function to find alignment points
+    const findAlignmentGuides = (activeObj: any): GuideLines => {
+      const guides: GuideLines = { vertical: [], horizontal: [] };
+      const activeBounds = getObjectBounds(activeObj);
+
+      canvas.getObjects().forEach((obj) => {
+        if (obj === activeObj || !obj.visible || obj instanceof Line) return;
+
+        const targetBounds = getObjectBounds(obj);
+
+        // Vertical alignments (left, center, right)
+        [
+          { active: activeBounds.left, target: targetBounds.left },
+          { active: activeBounds.centerX, target: targetBounds.centerX },
+          { active: activeBounds.right, target: targetBounds.right },
+        ].forEach(({ active, target }) => {
+          if (Math.abs(active - target) < ALIGNMENT_THRESHOLD) {
+            guides.vertical.push({
+              x: target,
+              y1: Math.min(activeBounds.top, targetBounds.top) - 20,
+              y2: Math.max(activeBounds.bottom, targetBounds.bottom) + 20,
+            });
+          }
+        });
+
+        // Horizontal alignments (top, middle, bottom)
+        [
+          { active: activeBounds.top, target: targetBounds.top },
+          { active: activeBounds.centerY, target: targetBounds.centerY },
+          { active: activeBounds.bottom, target: targetBounds.bottom },
+        ].forEach(({ active, target }) => {
+          if (Math.abs(active - target) < ALIGNMENT_THRESHOLD) {
+            guides.horizontal.push({
+              y: target,
+              x1: Math.min(activeBounds.left, targetBounds.left) - 20,
+              x2: Math.max(activeBounds.right, targetBounds.right) + 20,
+            });
+          }
+        });
+      });
+
+      return guides;
+    };
 
     // Selection event listeners
     const getObjectType = (obj: any) => {
@@ -58,12 +164,16 @@ export default function useCanvas({
     };
 
     const handleSelection = (e: any) => {
+      if (lockModeRef.current) return; // Prevent selection when locked
+      
       const selectedObjects = e.selected;
       if (!selectedObjects) return;
 
       // Check if multiple objects are selected
       if (selectedObjects.length > 1) {
-        console.log(`Multiple objects selected: ${selectedObjects.length} items`);
+        console.log(
+          `Multiple objects selected: ${selectedObjects.length} items`
+        );
         setTool(""); // Optional: clear or set specific tool for multiple selection
         return;
       }
@@ -83,28 +193,51 @@ export default function useCanvas({
       }
     };
 
-    // Add drag opacity handlers
-    const handleDragStart = (e: any) => {
+    const handleDragMove = (e: any) => {
+      if (lockModeRef.current) return; // Prevent dragging when locked
+      
       const target = e.target;
       if (!target) return;
 
-      // Store the original opacity if not already stored
-      if (!originalOpacities.has(target)) {
-        originalOpacities.set(target, target.opacity || 1);
+      clearGuideLines();
+
+      // Only show guide lines if focus mode is enabled
+      if (focusModeRef.current) {
+        const guides = findAlignmentGuides(target);
+
+        // Create and add guide lines
+        guides.vertical.forEach((guide) => {
+          const line = createGuideLine(
+            { x1: guide.x, y1: guide.y1, x2: guide.x, y2: guide.y2 },
+            true
+          );
+          canvas.add(line);
+          activeGuideLines.push(line);
+        });
+
+        guides.horizontal.forEach((guide) => {
+          const line = createGuideLine(
+            { x1: guide.x1, y1: guide.y, x2: guide.x2, y2: guide.y },
+            false
+          );
+          canvas.add(line);
+          activeGuideLines.push(line);
+        });
+
+        canvas.requestRenderAll();
       }
-      // Set a lower opacity while dragging
-      target.set('opacity', 0.5);
-      canvas.requestRenderAll();
     };
 
     const handleDragEnd = (e: any) => {
+      if (lockModeRef.current) return; // Prevent drag end when locked
+      
       const target = e.target || canvas.getActiveObject();
       if (!target) return;
 
-      // Restore the original opacity
+      clearGuideLines();
       const originalOpacity = originalOpacities.get(target);
       if (originalOpacity !== undefined) {
-        target.set('opacity', originalOpacity);
+        target.set("opacity", originalOpacity);
         originalOpacities.delete(target);
         canvas.requestRenderAll();
       }
@@ -112,9 +245,11 @@ export default function useCanvas({
 
     // Handle mouse down to reset opacity if needed
     const handleMouseDown = (e: any) => {
+      if (lockModeRef.current) return; // Prevent mouse down when locked
+      
       const target = e.target;
       if (target && originalOpacities.has(target)) {
-        target.set('opacity', originalOpacities.get(target)!);
+        target.set("opacity", originalOpacities.get(target)!);
         originalOpacities.delete(target);
         canvas.requestRenderAll();
       }
@@ -122,11 +257,13 @@ export default function useCanvas({
 
     // Handle selection cleared to reset opacity
     const handleSelectionCleared = () => {
+      if (lockModeRef.current) return; // Prevent selection clearing when locked
+      
       const objects = canvas.getObjects();
-      objects.forEach(obj => {
+      objects.forEach((obj) => {
         const originalOpacity = originalOpacities.get(obj);
         if (originalOpacity !== undefined) {
-          obj.set('opacity', originalOpacity);
+          obj.set("opacity", originalOpacity);
           originalOpacities.delete(obj);
         }
       });
@@ -134,7 +271,25 @@ export default function useCanvas({
       setTool("");
     };
 
-    canvas.on("object:moving", handleDragStart);
+    // Update canvas selection and object selection based on lock mode
+    const updateCanvasInteractivity = () => {
+      canvas.selection = !lockModeRef.current;
+      canvas.getObjects().forEach((obj) => {
+        obj.selectable = !lockModeRef.current;
+        obj.evented = !lockModeRef.current;
+      });
+      canvas.requestRenderAll();
+    };
+
+    // Add effect to update canvas interactivity when lock mode changes
+    const handleLockModeChange = () => {
+      updateCanvasInteractivity();
+    };
+
+    // Initial setup
+    updateCanvasInteractivity();
+
+    canvas.on("object:moving", handleDragMove);
     canvas.on("mouse:down", handleMouseDown);
     canvas.on("mouse:up", handleDragEnd);
     canvas.on("selection:created", handleSelection);
@@ -143,6 +298,8 @@ export default function useCanvas({
 
     // Delete key listener (object-level delete)
     const handleKeyDown = (e: KeyboardEvent) => {
+      if (lockModeRef.current) return; // Prevent deletion when locked
+      
       if (e.key === "Delete" || e.key === "Backspace") {
         const activeObjects = canvas.getActiveObjects();
         if (activeObjects.length > 0) {
@@ -158,7 +315,8 @@ export default function useCanvas({
     window.addEventListener("keydown", handleKeyDown);
 
     return () => {
-      canvas.off("object:moving", handleDragStart);
+      clearGuideLines();
+      canvas.off("object:moving", handleDragMove);
       canvas.off("mouse:down", handleMouseDown);
       canvas.off("mouse:up", handleDragEnd);
       canvas.off("selection:created", handleSelection);

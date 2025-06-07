@@ -5,7 +5,7 @@ export interface SwitchProps {
   checked: boolean;
   onChange: (checked: boolean) => void;
   label?: string;
-  size?: "small" | "medium" | "large";
+  size?: "x-small" | "small" | "medium" | "large";
   disabled?: boolean;
   className?: string;
 }
