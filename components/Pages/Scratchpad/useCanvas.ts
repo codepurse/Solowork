@@ -7,12 +7,13 @@ type UseCanvasProps = {
   setTool: (tool: string) => void;
   setShapeFill?: (fill: string) => void;
   setShapeStroke?: (stroke: string) => void;
+  selectedWhiteboard: any;
 };
 
 // Alignment guide configuration
 const ALIGNMENT_THRESHOLD = 10; // Distance in pixels to trigger alignment
-const GUIDE_COLOR = "#ff69b4"; // Pink color for vertical guides
-const GUIDE_COLOR_ALT = "#00bfff"; // Blue color for horizontal guides
+const GUIDE_COLOR = "#FF5252"; // Pink color for vertical guides
+const GUIDE_COLOR_ALT = "#8C9EFF"; // Blue color for horizontal guides
 
 interface GuideLines {
   vertical: { x: number; y1: number; y2: number }[];
@@ -24,8 +25,9 @@ export default function useCanvas({
   setTool,
   setShapeFill,
   setShapeStroke,
+  selectedWhiteboard,
 }: Readonly<UseCanvasProps>) {
-  const { focusMode, lockMode } = useWhiteBoardStore();
+  const { focusMode, lockMode, isEditMode } = useWhiteBoardStore();
   const focusModeRef = useRef(focusMode);
   const lockModeRef = useRef(lockMode);
 
@@ -46,6 +48,18 @@ export default function useCanvas({
     });
     canvas.freeDrawingBrush = new PencilBrush(canvas);
     canvasRef.current = canvas;
+
+    // Load whiteboard data if available
+    if (selectedWhiteboard && isEditMode) {
+      try {
+        const whiteBoardJson = JSON.parse(selectedWhiteboard.body);
+        canvas.loadFromJSON(whiteBoardJson, () => {
+          canvas.renderAll();
+        });
+      } catch (error) {
+        console.error("Error loading whiteboard:", error);
+      }
+    }
 
     // Create a WeakMap to store original opacity values
     const originalOpacities = new WeakMap<object, number>();
@@ -324,6 +338,23 @@ export default function useCanvas({
       canvas.off("selection:cleared", handleSelectionCleared);
       canvas.dispose();
       window.removeEventListener("keydown", handleKeyDown);
+
+      canvas.dispose();
+      canvasRef.current = null;
     };
   }, []);
+
+  // Effect to handle whiteboard changes
+  useEffect(() => {
+    if (!canvasRef.current || !selectedWhiteboard || !isEditMode) return;
+
+    try {
+      const whiteBoardJson = JSON.parse(selectedWhiteboard.body);
+      canvasRef.current.loadFromJSON(whiteBoardJson, () => {
+        canvasRef.current?.renderAll();
+      });
+    } catch (error) {
+      console.error("Error loading whiteboard:", error);
+    }
+  }, [selectedWhiteboard, isEditMode]);
 }

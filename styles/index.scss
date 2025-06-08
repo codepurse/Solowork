@@ -3361,12 +3361,27 @@ main {
   }
 }
 
+.dotted {
+  background-image: radial-gradient(#2a2a4d 1px, transparent 0) !important;
+  background-size: 20px 20px; /* Adjust spacing */
+}
+
+.paper {
+  background-image: linear-gradient(#2a2a4d 1px, transparent 1px) !important;
+  background-size: 40px 40px; /* Adjust spacing */
+}
+
+.grid {
+  background-image: linear-gradient(#2a2a4d 1px, transparent 1px),
+    linear-gradient(90deg, #2a2a4d 1px, transparent 1px) !important;
+  background-size: 60px 60px; /* Adjust spacing */
+}
+
 .container-scratchpad {
   width: 100%;
   height: 100vh;
   background-color: #040019;
   background-image: radial-gradient(#2a2a4d 1px, transparent 0);
-  background-size: 20px 20px; /* Adjust spacing */
   background-position: center;
   position: relative;
   overflow: hidden;
@@ -3705,7 +3720,7 @@ main {
       background-color: #040019;
       border: 1px solid #311b92;
       border-radius: 5px;
-      width: 200px;
+      width: 270px;
       padding: 5px 15px 5px 10px;
       .canvas-settings-item-content-text {
         font-size: 13px;
@@ -3713,6 +3728,109 @@ main {
         color: white;
         margin-bottom: -5px;
         cursor: pointer;
+      }
+    }
+  }
+  .dotted {
+    background-color: rgba(26, 17, 64, 1);
+    border: 1px solid #311b92;
+    background-image: radial-gradient(#311b92 1px, transparent 0);
+    background-size: 20px 20px;
+    background-position: center;
+    width: 100%;
+    height: 78px;
+    border-radius: 5px;
+    cursor: pointer;
+    &:hover {
+      border-color: $primary-color;
+    }
+  }
+
+  .paper {
+    background-color: rgba(26, 17, 64, 1);
+    border: 1px solid #311b92;
+    background-image: linear-gradient(#311b92 1px, transparent 1px);
+    background-size: 100% 15px; /* Reduced from 25px to 15px for closer lines */
+    background-position: 0 15px; /* Offset to hide top line */
+    position: relative;
+    width: 100%;
+    height: 78px;
+    border-radius: 5px;
+    overflow: hidden;
+    cursor: pointer;
+    &:hover {
+      border-color: $primary-color;
+    }
+  }
+
+  .grid {
+    background-color: rgba(26, 17, 64, 1);
+    border: 1px solid #311b92;
+    background-image: linear-gradient(#311b92 1px, transparent 1px),
+      linear-gradient(90deg, #311b92 1px, transparent 1px);
+    background-size: 15px 15px;
+    width: 100%;
+    height: 78px;
+    border-radius: 5px;
+    overflow: hidden;
+    cursor: pointer;
+    &:hover {
+      border-color: $primary-color;
+    }
+  }
+  .activeStyle {
+    border-color: $primary-color !important;
+  }
+}
+
+.whiteboard-list {
+  width: 100%;
+  height: 100vh;
+  background-color: #040019;
+  background-image: radial-gradient(#2a2a4d 1px, transparent 0);
+  background-position: center;
+  position: relative;
+  overflow: hidden;
+  .whiteboard-list-item {
+    padding-top: 80px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    .whiteboard-list-item-card {
+      width: 100%;
+      height: 100px;
+      background-color: transparent;
+      border: 1px solid #212121;
+      border-radius: 10px;
+      cursor: pointer;
+      overflow: hidden;
+      min-height: 200px;
+      max-height: 200px;
+      &:hover {
+        border-color: $primary-color;
+      }
+      .whiteboard-header {
+        width: 100%;
+        border-bottom: 1px solid #313131;
+        padding: 10px 12px;
+        padding-bottom: 12px;
+        background-color: #110d28;
+        h1 {
+          font-size: 14px;
+          font-weight: 400;
+          margin-bottom: 0px;
+          color: lightgray;
+        }
+      }
+      .whiteboard-list-item-card-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
       }
     }
   }

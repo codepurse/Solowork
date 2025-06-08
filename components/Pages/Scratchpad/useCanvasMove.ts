@@ -19,7 +19,6 @@ export default function useCanvasMove(
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.code === "Space" && !isSpacePressed.current) {
         if (tool === "pencil") {
-          
           canvasRef.current.isDrawingMode = false;
         }
         isSpacePressed.current = true;
@@ -50,7 +49,7 @@ export default function useCanvasMove(
         canvas.defaultCursor = "default";
         canvas.upperCanvasEl.style.cursor = "default";
         canvas.requestRenderAll();
-        
+
         // Restore drawing mode if tool is pencil
         if (tool === "pencil" && canvasRef.current) {
           canvasRef.current.isDrawingMode = true;

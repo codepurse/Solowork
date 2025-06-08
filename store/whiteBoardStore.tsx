@@ -51,6 +51,14 @@ interface WhiteBoardStore {
   canRedo: boolean;
   setCanUndo: (canUndo: boolean) => void;
   setCanRedo: (canRedo: boolean) => void;
+  canvasStyle: string;
+  setCanvasStyle: (canvasStyle: string) => void;
+  snapToGrid: boolean;
+  setSnapToGrid: (snapToGrid: boolean) => void;
+  selectedWhiteboard: any;
+  setSelectedWhiteboard: (selectedWhiteboard: any) => void;
+  isEditMode: boolean;
+  setIsEditMode: (isEditMode: boolean) => void;
 }
 
 const useWhiteBoardStore = create<WhiteBoardStore>((set) => ({
@@ -104,6 +112,14 @@ const useWhiteBoardStore = create<WhiteBoardStore>((set) => ({
   canRedo: false,
   setCanUndo: (canUndo) => set({ canUndo }),
   setCanRedo: (canRedo) => set({ canRedo }),
+  canvasStyle: "dotted",
+  setCanvasStyle: (canvasStyle) => set({ canvasStyle }),
+  snapToGrid: false,
+  setSnapToGrid: (snapToGrid) => set({ snapToGrid }),
+  selectedWhiteboard: null,
+  setSelectedWhiteboard: (selectedWhiteboard) => set({ selectedWhiteboard }),
+  isEditMode: false,
+  setIsEditMode: (isEditMode) => set({ isEditMode }),
 }));
 
 export default useWhiteBoardStore;
