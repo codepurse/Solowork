@@ -3370,6 +3370,13 @@ main {
   background-position: center;
   position: relative;
   overflow: hidden;
+  .divider {
+    width: 100%;
+    height: 1px;
+    background-color: #311b92;
+    margin-top: -5px;
+    margin-bottom: -10px;
+  }
   .scratchpad-tools-container {
     position: absolute;
     top: 50%;

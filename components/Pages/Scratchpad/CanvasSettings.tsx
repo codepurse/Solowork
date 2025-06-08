@@ -1,5 +1,5 @@
 import { Download, Lock, Settings, Telescope } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import useWhiteBoardStore from "../../../store/whiteBoardStore";
 import Switch from "../../Elements/Switch";
 import Space from "../../space";
@@ -14,24 +14,65 @@ export default function CanvasSettings({
   const { focusMode, setFocusMode, lockMode, setLockMode } =
     useWhiteBoardStore();
   const [showSettings, setShowSettings] = useState(false);
+
+  const settingsRef = useRef<HTMLDivElement>(null);
+  
   const handleDownload = () => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
     const dataURL = canvas.toDataURL({
-      format: "png", // or 'jpeg'
+      format: "png",
       quality: 1,
       multiplier: 1,
       enableRetinaScaling: true,
     } as any);
 
+    // Try the traditional download first
     const link = document.createElement("a");
     link.href = dataURL;
     link.download = "canvas.png";
-    link.click();
+    
+    // Check if we're on a mobile device
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    
+    if (isMobile) {
+      // For mobile devices, open in a new tab
+      window.open(dataURL, '_blank');
+    } else {
+      // For desktop, try the direct download
+      try {
+        link.click();
+      } catch (err) {
+        // Fallback to opening in new tab if download fails
+        window.open(dataURL, '_blank');
+      }
+    }
   };
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        settingsRef.current &&
+        !settingsRef.current.contains(event.target as Node)
+      ) {
+        setShowSettings(false);
+      }
+    }
+
+    if (showSettings) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showSettings]);
+
   return (
-    <div className="canvas-settings">
+    <div className="canvas-settings" ref={settingsRef}>
       <i onClick={() => setShowSettings(!showSettings)}>
         <Settings size={18} />
       </i>

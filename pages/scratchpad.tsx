@@ -1,12 +1,12 @@
-import { Canvas } from "fabric";
 import {
   Box,
   Eraser,
   Image,
   MousePointer,
   Pencil,
-  StickyNote,
-  Type
+  Redo,
+  Type,
+  Undo,
 } from "lucide-react";
 import { useRef } from "react";
 import CanvasSettings from "../components/Pages/Scratchpad/CanvasSettings";
@@ -22,7 +22,7 @@ import { useImageUpload } from "../components/Pages/Scratchpad/useImageUpload";
 import useWhiteBoardStore from "../store/whiteBoardStore";
 
 export default function Scratchpad() {
-  const canvasRef = useRef<Canvas | null>(null);
+  const canvasRef = useRef<any>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const {
     color,
@@ -41,12 +41,12 @@ export default function Scratchpad() {
   useCanvas({ canvasRef, setTool });
   useEraser(canvasRef, tool);
   useCanvasZoom(canvasRef);
-  useCanvasMove(canvasRef);
+  useCanvasMove(canvasRef, tool);
   useCreateText(canvasRef);
 
   const handleToolClick = (selectedTool: string, selectedColor?: string) => {
     if (lockMode) return; // Prevent tool changes when locked
-    
+
     setTool(selectedTool);
     if (!canvasRef.current) return;
 
@@ -95,12 +95,6 @@ export default function Scratchpad() {
             <Pencil size={18} />
           </i>
           <i
-            className={tool === "stickynote" ? "active" : ""}
-            onClick={() => handleToolClick("stickynote", color)}
-          >
-            <StickyNote size={18} />
-          </i>
-          <i
             className={tool === "shape" ? "active" : ""}
             onClick={() => handleToolClick("shape", color)}
           >
@@ -129,6 +123,13 @@ export default function Scratchpad() {
             }}
           >
             <Eraser size={18} />
+          </i>
+          <div className="divider" />
+          <i>
+            <Undo size={18} />
+          </i>
+          <i>
+            <Redo size={18} />
           </i>
         </div>
       </div>

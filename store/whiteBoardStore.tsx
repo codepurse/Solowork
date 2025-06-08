@@ -45,6 +45,12 @@ interface WhiteBoardStore {
   setFocusMode: (focusMode: boolean) => void;
   lockMode: boolean;
   setLockMode: (lockMode: boolean) => void;
+  isDragging: boolean;
+  setIsDragging: (isDragging: boolean) => void;
+  canUndo: boolean;
+  canRedo: boolean;
+  setCanUndo: (canUndo: boolean) => void;
+  setCanRedo: (canRedo: boolean) => void;
 }
 
 const useWhiteBoardStore = create<WhiteBoardStore>((set) => ({
@@ -92,6 +98,12 @@ const useWhiteBoardStore = create<WhiteBoardStore>((set) => ({
   setFocusMode: (focusMode) => set({ focusMode }),
   lockMode: false,
   setLockMode: (lockMode) => set({ lockMode }),
+  isDragging: false,
+  setIsDragging: (isDragging) => set({ isDragging }),
+  canUndo: false,
+  canRedo: false,
+  setCanUndo: (canUndo) => set({ canUndo }),
+  setCanRedo: (canRedo) => set({ canRedo }),
 }));
 
 export default useWhiteBoardStore;

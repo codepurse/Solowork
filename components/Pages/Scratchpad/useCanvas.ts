@@ -165,7 +165,7 @@ export default function useCanvas({
 
     const handleSelection = (e: any) => {
       if (lockModeRef.current) return; // Prevent selection when locked
-      
+
       const selectedObjects = e.selected;
       if (!selectedObjects) return;
 
@@ -195,7 +195,7 @@ export default function useCanvas({
 
     const handleDragMove = (e: any) => {
       if (lockModeRef.current) return; // Prevent dragging when locked
-      
+
       const target = e.target;
       if (!target) return;
 
@@ -230,7 +230,7 @@ export default function useCanvas({
 
     const handleDragEnd = (e: any) => {
       if (lockModeRef.current) return; // Prevent drag end when locked
-      
+
       const target = e.target || canvas.getActiveObject();
       if (!target) return;
 
@@ -246,7 +246,7 @@ export default function useCanvas({
     // Handle mouse down to reset opacity if needed
     const handleMouseDown = (e: any) => {
       if (lockModeRef.current) return; // Prevent mouse down when locked
-      
+
       const target = e.target;
       if (target && originalOpacities.has(target)) {
         target.set("opacity", originalOpacities.get(target)!);
@@ -258,7 +258,7 @@ export default function useCanvas({
     // Handle selection cleared to reset opacity
     const handleSelectionCleared = () => {
       if (lockModeRef.current) return; // Prevent selection clearing when locked
-      
+
       const objects = canvas.getObjects();
       objects.forEach((obj) => {
         const originalOpacity = originalOpacities.get(obj);
@@ -299,7 +299,7 @@ export default function useCanvas({
     // Delete key listener (object-level delete)
     const handleKeyDown = (e: KeyboardEvent) => {
       if (lockModeRef.current) return; // Prevent deletion when locked
-      
+
       if (e.key === "Delete" || e.key === "Backspace") {
         const activeObjects = canvas.getActiveObjects();
         if (activeObjects.length > 0) {

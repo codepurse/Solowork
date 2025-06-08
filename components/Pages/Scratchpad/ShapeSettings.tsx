@@ -1,5 +1,4 @@
-import * as fabric from "fabric";
-import { Canvas } from "fabric";
+import "fabric";
 import {
   Circle,
   Cylinder,
@@ -18,6 +17,7 @@ import {
 } from "lucide-react";
 import { useEffect } from "react";
 import useWhiteBoardStore from "../../../store/whiteBoardStore";
+declare const fabric: any;
 
 const fillColors = [
   "#FF5252",
@@ -33,7 +33,7 @@ const fillColors = [
 ];
 
 type ShapeSettingsProps = {
-  canvasRef: React.RefObject<Canvas>;
+  canvasRef: React.RefObject<any>;
 };
 
 export default function ShapeSettings({
@@ -628,7 +628,6 @@ export default function ShapeSettings({
       canvas.add(shape);
       canvas.setActiveObject(shape);
       canvas.requestRenderAll();
-
 
       setSelectedShape("");
     };
