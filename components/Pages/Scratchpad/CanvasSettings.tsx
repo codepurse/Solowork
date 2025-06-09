@@ -1,6 +1,7 @@
 import { ID } from "appwrite";
 import { Download, Image, Lock, Save, Settings, Telescope } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { mutate } from "swr";
 import {
   DATABASE_ID,
   databases,
@@ -25,6 +26,8 @@ export default function CanvasSettings({
     setLockMode,
     canvasStyle,
     setCanvasStyle,
+    isEditMode,
+    selectedWhiteboard,
   } = useWhiteBoardStore();
   const [showSettings, setShowSettings] = useState(false);
   const settingsRef = useRef<HTMLDivElement>(null);
@@ -87,30 +90,51 @@ export default function CanvasSettings({
   }, [showSettings]);
 
   const handleSave = async () => {
-    try {
-      await databases.createDocument(
-        DATABASE_ID,
-        WHITEBOARD_COLLECTION_ID,
-        ID.unique(),
-        {
-          name: "Untitled",
-          description: "Untitled",
-          body: JSON.stringify(canvasRef.current),
-          userId: user.$id,
-          image: canvasRef.current.toDataURL(),
-        }
-      );
+    if (!isEditMode) {
+      try {
+        await databases.createDocument(
+          DATABASE_ID,
+          WHITEBOARD_COLLECTION_ID,
+          ID.unique(),
+          {
+            name: "Untitled",
+            description: "Untitled",
+            body: JSON.stringify(canvasRef.current),
+            userId: user.$id,
+            image: canvasRef.current.toDataURL(),
+          }
+        );
 
-      setShowToast(true);
-      setToastTitle("Save");
-      setToastMessage("Canvas saved!");
-    } catch (error) {
-      console.log(error);
+        setShowToast(true);
+        setToastTitle("Save");
+        setToastMessage("Canvas saved!");
+        mutate("Whiteboards");
+      } catch (error) {
+        console.log(error);
+      }
+    } else {
+      try {
+        await databases.updateDocument(
+          DATABASE_ID,
+          WHITEBOARD_COLLECTION_ID,
+          selectedWhiteboard.$id,
+          {
+            body: JSON.stringify(canvasRef.current),
+            image: canvasRef.current.toDataURL(),
+          }
+        );
+        setShowToast(true);
+        setToastTitle("Save");
+        setToastMessage("Canvas saved!");
+        mutate("Whiteboards");
+      } catch (error) {
+        console.log(error);
+      }
     }
   };
 
   return (
-    <div className="canvas-settings" ref={settingsRef}>
+    <div className="canvas-settings slideInRight" ref={settingsRef}>
       <i onClick={() => setShowSettings(!showSettings)}>
         <Settings size={18} />
       </i>

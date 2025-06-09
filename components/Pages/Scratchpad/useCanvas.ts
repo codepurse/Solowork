@@ -20,6 +20,56 @@ interface GuideLines {
   horizontal: { y: number; x1: number; x2: number }[];
 }
 
+// Helper function to load whiteboard data
+const loadWhiteboardData = (canvas: Canvas | null, whiteboard: any) => {
+  if (!canvas || !whiteboard?.body) return;
+  
+  try {
+    const whiteBoardJson = JSON.parse(whiteboard.body);
+    
+    // Count total images that need to be loaded
+    let totalImages = 0;
+    let loadedImages = 0;
+    
+    // First pass: count images
+    if (whiteBoardJson.objects) {
+      totalImages = whiteBoardJson.objects.filter((obj: any) => obj.type === 'image').length;
+    }
+
+    // If no images, just load normally
+    if (totalImages === 0) {
+      canvas.loadFromJSON(whiteBoardJson, () => {
+        canvas.renderAll();
+      });
+      return;
+    }
+
+    // If we have images, use the reviver to track loading
+    canvas.loadFromJSON(whiteBoardJson, 
+      // After loading callback
+      function() {
+        if (loadedImages === totalImages) {
+          canvas.renderAll();
+        }
+      },
+      // During loading callback
+      function(this: Canvas, _o: any, object: fabric.Object) {
+        if (object.type === 'image') {
+          // Force image loading and update canvas once loaded
+          object.on('loaded', () => {
+            loadedImages++;
+            if (loadedImages === totalImages) {
+              this.renderAll();
+            }
+          });
+        }
+      }.bind(canvas)
+    );
+  } catch (error) {
+    console.error("Error loading whiteboard:", error);
+  }
+};
+
 export default function useCanvas({
   canvasRef,
   setTool,
@@ -51,14 +101,7 @@ export default function useCanvas({
 
     // Load whiteboard data if available
     if (selectedWhiteboard && isEditMode) {
-      try {
-        const whiteBoardJson = JSON.parse(selectedWhiteboard.body);
-        canvas.loadFromJSON(whiteBoardJson, () => {
-          canvas.renderAll();
-        });
-      } catch (error) {
-        console.error("Error loading whiteboard:", error);
-      }
+      loadWhiteboardData(canvas, selectedWhiteboard);
     }
 
     // Create a WeakMap to store original opacity values
@@ -295,11 +338,6 @@ export default function useCanvas({
       canvas.requestRenderAll();
     };
 
-    // Add effect to update canvas interactivity when lock mode changes
-    const handleLockModeChange = () => {
-      updateCanvasInteractivity();
-    };
-
     // Initial setup
     updateCanvasInteractivity();
 
@@ -346,15 +384,7 @@ export default function useCanvas({
 
   // Effect to handle whiteboard changes
   useEffect(() => {
-    if (!canvasRef.current || !selectedWhiteboard || !isEditMode) return;
-
-    try {
-      const whiteBoardJson = JSON.parse(selectedWhiteboard.body);
-      canvasRef.current.loadFromJSON(whiteBoardJson, () => {
-        canvasRef.current?.renderAll();
-      });
-    } catch (error) {
-      console.error("Error loading whiteboard:", error);
-    }
+    if (!isEditMode) return;
+    loadWhiteboardData(canvasRef.current, selectedWhiteboard);
   }, [selectedWhiteboard, isEditMode]);
 }

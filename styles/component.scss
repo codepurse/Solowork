@@ -1703,3 +1703,39 @@ div.svg-wrap {
     transform: translate(-50%, -50%) scale(1);
   }
 }
+
+.slideInRight {
+  animation-duration: 0.3s;
+  animation-name: slideInRight;
+  animation-timing-function: ease-out;
+  animation-fill-mode: both;
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.slideInLeft {
+  animation-name: slideInLeft !important;
+  animation-timing-function: ease-out !important;
+  animation-fill-mode: both !important;
+  animation-duration: 0.3s !important;
+}
+
+@keyframes slideInLeft {
+  from {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}

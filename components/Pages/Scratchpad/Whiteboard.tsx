@@ -1,4 +1,5 @@
 import {
+  ArrowLeft,
   Box,
   Eraser,
   Image,
@@ -38,7 +39,8 @@ export default function Whiteboard() {
     isDragging,
     canvasStyle,
     selectedWhiteboard,
-    isEditMode,
+    setIsEditMode,
+    setSelectedWhiteboard,
   } = useWhiteBoardStore();
 
   const { handleImageUpload } = useImageUpload({ canvasRef, setTool });
@@ -92,7 +94,7 @@ export default function Whiteboard() {
         accept="image/*"
         onChange={handleImageUpload}
       />
-      <div className="scratchpad-tools-container">
+      <div className="scratchpad-tools-container slideInLeft">
         <div className="scratchpad-tools-container-item">
           <i
             className={tool === "mouse" ? "active" : ""}
@@ -162,10 +164,21 @@ export default function Whiteboard() {
       )}
       {tool === "shape" && !lockMode && <ShapeSettings canvasRef={canvasRef} />}
       {tool === "text" && !lockMode && <TextSettings canvasRef={canvasRef} />}
-      <div className="zoom-container">
+      <div className="zoom-container slideInRight">
         <span>{Math.round(zoom * 100)} %</span>
       </div>
       <CanvasSettings canvasRef={canvasRef} />
+      <div
+        className="whiteboard-back slideInLeft"
+        onClick={() => {
+          setIsEditMode(false);
+          setSelectedWhiteboard(null);
+        }}
+      >
+        <i>
+          <ArrowLeft size={18} />
+        </i>
+      </div>
     </div>
   );
 }
