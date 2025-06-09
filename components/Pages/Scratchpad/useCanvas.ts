@@ -1,6 +1,10 @@
-import { Canvas, Line, PencilBrush } from "fabric";
+import { Canvas, FabricObject, IText, Line, PencilBrush, Textbox } from "fabric";
+import LZString from "lz-string";
 import { useEffect, useRef } from "react";
 import useWhiteBoardStore from "../../../store/whiteBoardStore";
+
+// Disable object caching globally
+FabricObject.prototype.objectCaching = false;
 
 type UseCanvasProps = {
   canvasRef: React.RefObject<Canvas>;
@@ -23,17 +27,19 @@ interface GuideLines {
 // Helper function to load whiteboard data
 const loadWhiteboardData = (canvas: Canvas | null, whiteboard: any) => {
   if (!canvas || !whiteboard?.body) return;
-  
+
   try {
-    const whiteBoardJson = JSON.parse(whiteboard.body);
-    
+    const whiteBoardJson = JSON.parse(LZString.decompressFromUTF16(whiteboard.body));
+
     // Count total images that need to be loaded
     let totalImages = 0;
     let loadedImages = 0;
-    
+
     // First pass: count images
     if (whiteBoardJson.objects) {
-      totalImages = whiteBoardJson.objects.filter((obj: any) => obj.type === 'image').length;
+      totalImages = whiteBoardJson.objects.filter(
+        (obj: any) => obj.type === "image"
+      ).length;
     }
 
     // If no images, just load normally
@@ -45,18 +51,19 @@ const loadWhiteboardData = (canvas: Canvas | null, whiteboard: any) => {
     }
 
     // If we have images, use the reviver to track loading
-    canvas.loadFromJSON(whiteBoardJson, 
+    canvas.loadFromJSON(
+      whiteBoardJson,
       // After loading callback
-      function() {
+      function () {
         if (loadedImages === totalImages) {
           canvas.renderAll();
         }
       },
       // During loading callback
-      function(this: Canvas, _o: any, object: fabric.Object) {
-        if (object.type === 'image') {
+      function (this: Canvas, _o: any, object: fabric.Object) {
+        if (object.type === "image") {
           // Force image loading and update canvas once loaded
-          object.on('loaded', () => {
+          object.on("loaded", () => {
             loadedImages++;
             if (loadedImages === totalImages) {
               this.renderAll();
@@ -77,17 +84,12 @@ export default function useCanvas({
   setShapeStroke,
   selectedWhiteboard,
 }: Readonly<UseCanvasProps>) {
-  const { focusMode, lockMode, isEditMode } = useWhiteBoardStore();
-  const focusModeRef = useRef(focusMode);
-  const lockModeRef = useRef(lockMode);
+  const { showGridLines, lockMode, isEditMode } = useWhiteBoardStore();
+  const focusModeRef = useRef(showGridLines);
 
   useEffect(() => {
-    focusModeRef.current = focusMode;
-  }, [focusMode]);
-
-  useEffect(() => {
-    lockModeRef.current = lockMode;
-  }, [lockMode]);
+    focusModeRef.current = showGridLines;
+  }, [showGridLines]);
 
   useEffect(() => {
     // Initialize Fabric.js canvas
@@ -221,8 +223,6 @@ export default function useCanvas({
     };
 
     const handleSelection = (e: any) => {
-      if (lockModeRef.current) return; // Prevent selection when locked
-
       const selectedObjects = e.selected;
       if (!selectedObjects) return;
 
@@ -251,8 +251,6 @@ export default function useCanvas({
     };
 
     const handleDragMove = (e: any) => {
-      if (lockModeRef.current) return; // Prevent dragging when locked
-
       const target = e.target;
       if (!target) return;
 
@@ -286,8 +284,6 @@ export default function useCanvas({
     };
 
     const handleDragEnd = (e: any) => {
-      if (lockModeRef.current) return; // Prevent drag end when locked
-
       const target = e.target || canvas.getActiveObject();
       if (!target) return;
 
@@ -302,8 +298,6 @@ export default function useCanvas({
 
     // Handle mouse down to reset opacity if needed
     const handleMouseDown = (e: any) => {
-      if (lockModeRef.current) return; // Prevent mouse down when locked
-
       const target = e.target;
       if (target && originalOpacities.has(target)) {
         target.set("opacity", originalOpacities.get(target)!);
@@ -314,8 +308,6 @@ export default function useCanvas({
 
     // Handle selection cleared to reset opacity
     const handleSelectionCleared = () => {
-      if (lockModeRef.current) return; // Prevent selection clearing when locked
-
       const objects = canvas.getObjects();
       objects.forEach((obj) => {
         const originalOpacity = originalOpacities.get(obj);
@@ -328,19 +320,6 @@ export default function useCanvas({
       setTool("");
     };
 
-    // Update canvas selection and object selection based on lock mode
-    const updateCanvasInteractivity = () => {
-      canvas.selection = !lockModeRef.current;
-      canvas.getObjects().forEach((obj) => {
-        obj.selectable = !lockModeRef.current;
-        obj.evented = !lockModeRef.current;
-      });
-      canvas.requestRenderAll();
-    };
-
-    // Initial setup
-    updateCanvasInteractivity();
-
     canvas.on("object:moving", handleDragMove);
     canvas.on("mouse:down", handleMouseDown);
     canvas.on("mouse:up", handleDragEnd);
@@ -350,8 +329,6 @@ export default function useCanvas({
 
     // Delete key listener (object-level delete)
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (lockModeRef.current) return; // Prevent deletion when locked
-
       if (e.key === "Delete" || e.key === "Backspace") {
         const activeObjects = canvas.getActiveObjects();
         if (activeObjects.length > 0) {
@@ -387,4 +364,27 @@ export default function useCanvas({
     if (!isEditMode) return;
     loadWhiteboardData(canvasRef.current, selectedWhiteboard);
   }, [selectedWhiteboard, isEditMode]);
+
+  // Effect to handle lock mode changes
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    // Make canvas and all objects non-interactive when locked
+    canvas.selection = !lockMode;
+    canvas.isDrawingMode = false;
+    canvas.defaultCursor = lockMode ? "not-allowed" : "default";
+    setTool("");
+    
+    // Update all objects to be non-selectable and non-editable when locked
+    canvas.getObjects().forEach((obj) => {
+      obj.selectable = !lockMode;
+      obj.evented = !lockMode;
+      if (obj instanceof IText || obj instanceof Textbox) {
+        obj.editable = !lockMode;
+      }
+    });
+
+    canvas.requestRenderAll();
+  }, [lockMode]);
 }

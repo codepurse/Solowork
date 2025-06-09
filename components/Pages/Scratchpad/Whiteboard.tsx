@@ -41,6 +41,8 @@ export default function Whiteboard() {
     selectedWhiteboard,
     setIsEditMode,
     setSelectedWhiteboard,
+    focusMode,
+    setFocusMode,
   } = useWhiteBoardStore();
 
   const { handleImageUpload } = useImageUpload({ canvasRef, setTool });
@@ -170,9 +172,11 @@ export default function Whiteboard() {
       <CanvasSettings canvasRef={canvasRef} />
       <div
         className="whiteboard-back slideInLeft"
+        style={{ top: focusMode ? "10px" : "70px" }}
         onClick={() => {
           setIsEditMode(false);
           setSelectedWhiteboard(null);
+          setFocusMode(false);
         }}
       >
         <i>

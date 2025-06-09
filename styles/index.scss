@@ -3696,13 +3696,13 @@ main {
 
 .canvas-settings {
   position: fixed;
-  top: 70px;
   right: 10px;
   z-index: 1000;
   background-color: rgba(26, 17, 64, 0.8);
   border: 1px solid #311b92;
   padding: 3px 10px 3px 10px;
   border-radius: 5px;
+  transition: all 0.2s ease-in-out;
   i {
     cursor: pointer;
     color: #eee;
@@ -3721,7 +3721,7 @@ main {
       border: 1px solid #311b92;
       border-radius: 5px;
       width: 270px;
-      padding: 5px 15px 5px 10px;
+      padding: 10px 15px;
       .canvas-settings-item-content-text {
         font-size: 13px;
         font-weight: 400;

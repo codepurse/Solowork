@@ -1,4 +1,4 @@
-import "fabric";
+import * as fabric from "fabric";
 import {
   Circle,
   Cylinder,
@@ -17,7 +17,6 @@ import {
 } from "lucide-react";
 import { useEffect } from "react";
 import useWhiteBoardStore from "../../../store/whiteBoardStore";
-declare const fabric: any;
 
 const fillColors = [
   "#FF5252",

@@ -1,6 +1,6 @@
 import { useRouter } from "next/router";
 import { useStore } from "../store/store";
-
+import useWhiteBoardStore from "../store/whiteBoardStore";
 export default function PageLayout({
   children,
 }: Readonly<{
@@ -9,13 +9,18 @@ export default function PageLayout({
   const router = useRouter();
   const { useStoreSidebar } = useStore();
   const { showSidebar } = useStoreSidebar();
+  const { focusMode } = useWhiteBoardStore();
 
   const style =
     router.pathname === "/login"
       ? { marginLeft: "0ox" }
       : {
-          marginLeft: showSidebar ? "250px" : "58px",
-          width: showSidebar ? "calc(100vw - 250px)" : "calc(100vw - 58px)",
+          marginLeft: focusMode ? "0px" : showSidebar ? "250px" : "58px",
+          width: focusMode
+            ? "100vw"
+            : showSidebar
+            ? "calc(100vw - 250px)"
+            : "calc(100vw - 58px)",
           zIndex: showSidebar ? 0 : 1,
         };
 

@@ -15,22 +15,23 @@ export const useImageUpload = ({ canvasRef, setTool }: UseImageUploadProps) => {
     const reader = new FileReader();
     reader.onload = (event) => {
       const imgUrl = event.target?.result;
-      if (typeof imgUrl !== 'string') return;
+      if (typeof imgUrl !== "string") return;
 
       // Create a new image element
-      const img = document.createElement('img');
+      const img = document.createElement("img");
       img.src = imgUrl;
       img.onload = () => {
         // Create a new fabric image instance
         const fabricImage = new fabric.Image(img, {
-          crossOrigin: 'anonymous'
+          crossOrigin: "anonymous",
         });
-        
+
         // Scale image to reasonable size if too large
         const maxSize = 500;
         if (fabricImage.width && fabricImage.height) {
           if (fabricImage.width > maxSize || fabricImage.height > maxSize) {
-            const scale = maxSize / Math.max(fabricImage.width, fabricImage.height);
+            const scale =
+              maxSize / Math.max(fabricImage.width, fabricImage.height);
             fabricImage.scale(scale);
           }
         }
@@ -38,10 +39,14 @@ export const useImageUpload = ({ canvasRef, setTool }: UseImageUploadProps) => {
         // Center the image on canvas
         if (canvasRef.current) {
           fabricImage.set({
-            left: (canvasRef.current.width ?? 0) / 2 - (fabricImage.width ?? 0) * (fabricImage.scaleX ?? 1) / 2,
-            top: (canvasRef.current.height ?? 0) / 2 - (fabricImage.height ?? 0) * (fabricImage.scaleY ?? 1) / 2
+            left:
+              (canvasRef.current.width ?? 0) / 2 -
+              ((fabricImage.width ?? 0) * (fabricImage.scaleX ?? 1)) / 2,
+            top:
+              (canvasRef.current.height ?? 0) / 2 -
+              ((fabricImage.height ?? 0) * (fabricImage.scaleY ?? 1)) / 2,
           });
-          
+
           canvasRef.current.add(fabricImage);
           canvasRef.current.setActiveObject(fabricImage);
           canvasRef.current.renderAll();
@@ -51,9 +56,9 @@ export const useImageUpload = ({ canvasRef, setTool }: UseImageUploadProps) => {
     reader.readAsDataURL(file);
 
     // Reset file input
-    e.target.value = '';
-    setTool('');
+    e.target.value = "";
+    setTool("");
   };
 
   return { handleImageUpload };
-}; 
+};

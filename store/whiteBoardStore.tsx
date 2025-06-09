@@ -59,6 +59,8 @@ interface WhiteBoardStore {
   setSelectedWhiteboard: (selectedWhiteboard: any) => void;
   isEditMode: boolean;
   setIsEditMode: (isEditMode: boolean) => void;
+  showGridLines: boolean;
+  setShowGridLines: (showGridLines: boolean) => void;
 }
 
 const useWhiteBoardStore = create<WhiteBoardStore>((set) => ({
@@ -120,6 +122,8 @@ const useWhiteBoardStore = create<WhiteBoardStore>((set) => ({
   setSelectedWhiteboard: (selectedWhiteboard) => set({ selectedWhiteboard }),
   isEditMode: false,
   setIsEditMode: (isEditMode) => set({ isEditMode }),
+  showGridLines: false,
+  setShowGridLines: (showGridLines) => set({ showGridLines }),
 }));
 
 export default useWhiteBoardStore;

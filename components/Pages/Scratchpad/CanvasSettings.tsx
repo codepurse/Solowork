@@ -1,6 +1,7 @@
 import { ID } from "appwrite";
 import { Download, Image, Lock, Save, Settings, Telescope } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import LZString from "lz-string";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { mutate } from "swr";
 import {
   DATABASE_ID,
@@ -28,12 +29,15 @@ export default function CanvasSettings({
     setCanvasStyle,
     isEditMode,
     selectedWhiteboard,
+    showGridLines,
+    setShowGridLines,
   } = useWhiteBoardStore();
   const [showSettings, setShowSettings] = useState(false);
   const settingsRef = useRef<HTMLDivElement>(null);
   const { useStoreToast, useStoreUser } = useStore();
   const { user } = useStoreUser();
   const { setShowToast, setToastTitle, setToastMessage } = useStoreToast();
+  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const handleDownload = () => {
     const canvas = canvasRef.current;
@@ -89,52 +93,103 @@ export default function CanvasSettings({
     };
   }, [showSettings]);
 
-  const handleSave = async () => {
-    if (!isEditMode) {
-      try {
-        await databases.createDocument(
-          DATABASE_ID,
-          WHITEBOARD_COLLECTION_ID,
-          ID.unique(),
-          {
-            name: "Untitled",
-            description: "Untitled",
-            body: JSON.stringify(canvasRef.current),
-            userId: user.$id,
-            image: canvasRef.current.toDataURL(),
-          }
-        );
+  // Add debounced save function
+  const generateThumbnail = useCallback(() => {
+    if (!canvasRef.current) return null;
+    return canvasRef.current.toDataURL({
+      format: "jpeg", // Using JPEG instead of PNG for smaller size
+      quality: 0.1,   // Reduced quality for thumbnails
+      multiplier: 0.1, // Even smaller thumbnail
+      width: 300,     // Fixed width
+      height: 200     // Fixed height
+    });
+  }, [canvasRef]);
 
-        setShowToast(true);
-        setToastTitle("Save");
-        setToastMessage("Canvas saved!");
-        mutate("Whiteboards");
-      } catch (error) {
-        console.log(error);
+  const debouncedSave = useCallback(
+    async (state: any) => {
+      // Clear any pending save
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current);
       }
-    } else {
-      try {
-        await databases.updateDocument(
-          DATABASE_ID,
-          WHITEBOARD_COLLECTION_ID,
-          selectedWhiteboard.$id,
-          {
-            body: JSON.stringify(canvasRef.current),
-            image: canvasRef.current.toDataURL(),
+
+      // Set a new timeout
+      saveTimeoutRef.current = setTimeout(async () => {
+        try {
+          const thumbnail = generateThumbnail();
+          if (!thumbnail) return;
+
+          const payload = {
+            body: LZString.compressToUTF16(JSON.stringify(state)),
+            image: thumbnail
+          };
+
+          if (!isEditMode) {
+            await databases.createDocument(
+              DATABASE_ID,
+              WHITEBOARD_COLLECTION_ID,
+              ID.unique(),
+              {
+                name: "Untitled",
+                description: "Untitled",
+                userId: user.$id,
+                ...payload
+              }
+            );
+          } else {
+            await databases.updateDocument(
+              DATABASE_ID,
+              WHITEBOARD_COLLECTION_ID,
+              selectedWhiteboard.$id,
+              payload
+            );
           }
-        );
-        setShowToast(true);
-        setToastTitle("Save");
-        setToastMessage("Canvas saved!");
-        mutate("Whiteboards");
-      } catch (error) {
-        console.log(error);
+
+          setShowToast(true);
+          setToastTitle("Save");
+          setToastMessage("Canvas saved!");
+          mutate("Whiteboards");
+        } catch (error) {
+          console.error("Save failed:", error);
+          setShowToast(true);
+          setToastTitle("Error");
+          setToastMessage("Failed to save canvas");
+        }
+      }, 2000); // 2 second debounce
+    },
+    [isEditMode, selectedWhiteboard, user, generateThumbnail]
+  );
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current);
       }
-    }
+    };
+  }, []);
+
+  const handleSave = async () => {
+    const essentialProps = [
+      "type",
+      "version",
+      "objects",
+      "background"
+    ];
+    
+    const lightState = canvasRef.current.toDatalessJSON(essentialProps);
+    await debouncedSave(lightState);
+  };
+
+  const style = {
+    top: focusMode ? "10px" : "70px",
   };
 
   return (
-    <div className="canvas-settings slideInRight" ref={settingsRef}>
+    <div
+      className="canvas-settings slideInRight"
+      ref={settingsRef}
+      style={style}
+    >
       <i onClick={() => setShowSettings(!showSettings)}>
         <Settings size={18} />
       </i>
@@ -168,6 +223,21 @@ export default function CanvasSettings({
                 <Switch
                   checked={focusMode}
                   onChange={() => setFocusMode(!focusMode)}
+                  size="x-small"
+                />
+              </Space>
+              <Space gap={8} className="mt-1" align="evenly">
+                <Space gap={8}>
+                  <i>
+                    <Telescope size={17} />
+                  </i>
+                  <span className="canvas-settings-item-content-text">
+                    Grid lines
+                  </span>
+                </Space>
+                <Switch
+                  checked={showGridLines}
+                  onChange={() => setShowGridLines(!showGridLines)}
                   size="x-small"
                 />
               </Space>
