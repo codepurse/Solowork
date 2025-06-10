@@ -4,6 +4,7 @@ import Row from "react-bootstrap/esm/Row";
 import { useStore } from "../../store/store";
 import BannerPremium from "./BannerPremium";
 import General from "./General";
+import Pinned from "./Pinned";
 import ProjectList from "./ProjectList";
 import Workspace from "./Workspace";
 
@@ -23,6 +24,7 @@ export default function Sidebar() {
           <div className="sidebar-container mt-3">
             <General showSidebar={showSidebar} />
             <Workspace showSidebar={showSidebar} />
+            <Pinned showSidebar={showSidebar} />
           </div>
           <BannerPremium showSidebar={showSidebar} />
         </Col>

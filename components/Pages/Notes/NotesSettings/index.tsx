@@ -1,3 +1,4 @@
+import { ID, Query } from "appwrite";
 import {
   Copy,
   EyeOff,
@@ -19,6 +20,7 @@ import {
   DATABASE_ID,
   databases,
   NOTES_COLLECTION_ID,
+  PINNED_COLLECTION_ID,
 } from "../../../../constant/appwrite";
 import { useStore } from "../../../../store/store";
 import Switch from "../../../Elements/Switch";
@@ -115,25 +117,58 @@ export default function NoteSettings({
     function handleClickOutside(event: MouseEvent) {
       // Ignore clicks on the settings icon and modal content
       if (
-        (event.target as Element).closest('.settings-icon') ||
-        (event.target as Element).closest('.modal-container')
+        (event.target as Element).closest(".settings-icon") ||
+        (event.target as Element).closest(".modal-container")
       ) {
         return;
       }
-      
-      if (settingsRef.current && !settingsRef.current.contains(event.target as Node)) {
+
+      if (
+        settingsRef.current &&
+        !settingsRef.current.contains(event.target as Node)
+      ) {
         setShowSettings(false);
       }
     }
 
     // Attach the event listener
-    document.addEventListener('mousedown', handleClickOutside);
-    
+    document.addEventListener("mousedown", handleClickOutside);
+
     // Clean up the event listener
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [setShowSettings]);
+
+  const handlePinNote = async (e: boolean) => {
+    if (e) {
+      try {
+        await databases.createDocument(
+          DATABASE_ID,
+          PINNED_COLLECTION_ID,
+          ID.unique(),
+          {
+            type: "note",
+            name: selectedNote?.title,
+            id: selectedNote?.$id,
+            parentId: notes,
+          }
+        );
+      } catch (error) {
+        console.log(error);
+      }
+    } else {
+      try {
+        await databases.deleteDocument(
+          DATABASE_ID,
+          PINNED_COLLECTION_ID,
+          Query.equal("id", selectedNote?.$id)
+        );
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  };
 
   return (
     <>
@@ -261,7 +296,10 @@ export default function NoteSettings({
               </Space>
               <Switch
                 checked={noteSettings.pinned}
-                onChange={() => handleSwitchChange("pinned")}
+                onChange={(e) => {
+                  handleSwitchChange("pinned");
+                  handlePinNote(e);
+                }}
                 size="small"
               />
             </Space>

@@ -1,4 +1,13 @@
-import { ClipboardList, Image, Pencil, Timer, Trash, X } from "lucide-react";
+import { ID } from "appwrite";
+import {
+  ClipboardList,
+  Image,
+  Pencil,
+  Pin,
+  Timer,
+  Trash,
+  X,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 import { Modal } from "react-bootstrap";
 import { mutate } from "swr";
@@ -6,6 +15,7 @@ import {
   DATABASE_ID,
   databases,
   KANBAN_COLLECTION_ID,
+  PINNED_COLLECTION_ID,
   storage,
   TASKS_ATTACHMENTS_BUCKET_ID,
 } from "../../../../constant/appwrite";
@@ -104,12 +114,35 @@ export default function DrawerInfo() {
     }
   };
 
+  const handlePinTask = async () => {
+    console.log(drawerInfo);
+    try {
+      await databases.createDocument(
+        DATABASE_ID,
+        PINNED_COLLECTION_ID,
+        ID.unique(),
+        {
+          name: drawerInfo?.title,
+          type: "task",
+          id: drawerInfo?.$id,
+          parentId: drawerInfo?.kanbanId,
+        }
+      );
+      console.log("Task pinned successfully");
+    } catch (err) {
+      console.error("Error pinning task", err);
+    }
+  };
+
   return (
     <div className="drawer-info animate__animated animate__slideInRight">
       <div className="drawer-controls">
         <Space gap={10} align="end">
           <i onClick={() => setShowModal(true)}>
             <Trash size={15} />
+          </i>
+          <i onClick={handlePinTask}>
+            <Pin size={15} />
           </i>
           <i>
             <Timer size={15} />

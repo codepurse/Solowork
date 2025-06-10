@@ -57,6 +57,10 @@ main {
   width: 100%;
 }
 
+.rotated {
+  transition: all 0.2s ease;
+  transform: rotate(180deg);
+}
 .faded-line {
   border: none;
   height: 1px;
@@ -368,7 +372,7 @@ main {
       font-size: 13px;
       font-weight: 300;
       color: lightgray;
-      margin-bottom: 10px;
+      margin-bottom: 5px;
       text-transform: uppercase;
     }
     #selectedGeneral {
@@ -401,6 +405,25 @@ main {
         color: #7a3dff;
         width: 100%;
         text-align: right;
+      }
+      .chevron-container {
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+
+        &:hover {
+          color: #7a3dff;
+        }
+
+        .chevron {
+          transition: transform 0.3s ease-in-out;
+
+          &.rotated {
+            transform: rotate(180deg);
+          }
+        }
       }
     }
   }
