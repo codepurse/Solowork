@@ -30,22 +30,28 @@ export default function Navbar() {
     width: showSidebar ? "calc(100vw - 250px)" : "calc(100vw - 50px)",
   };
 
+  const showSettings = () => router.push("/settings");
+
   return (
     <div className="navbar-container" style={style}>
-      <Space align="evenly" fill style = {{height: "50px"}}>
+      <Space align="evenly" fill style={{ height: "50px" }}>
         <div style={{ display: "flex", alignItems: "center" }}>
           <HamburgerMenu
             showSidebar={showSidebar}
             setShowSidebar={setShowSidebar}
           />
-        {/*   <Text className="input-type" as="search" variant="md" /> */}
+          {/*   <Text className="input-type" as="search" variant="md" /> */}
         </div>
         <div
           style={{ cursor: "pointer", position: "relative" }}
           onClick={handleShow}
         >
           <Space gap={10}>
-            <img src="/image/pngegg.png" alt="avatar" className="avatar-user" />
+            <img 
+              src={user?.prefs?.profileImage || "/image/pngegg.png"} 
+              alt="avatar" 
+              className="avatar-user" 
+            />
             <div>
               <Space direction="column" alignItems="start">
                 <p className="span-user">{user?.prefs?.fullname}</p>
@@ -62,7 +68,7 @@ export default function Navbar() {
                 <UserRound size={15} />
                 My Profile
               </p>
-              <p className="dropdown-items">
+              <p className="dropdown-items" onClick={showSettings}>
                 <Settings size={15} />
                 Settings
               </p>

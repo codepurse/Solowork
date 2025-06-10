@@ -1,4 +1,4 @@
-import { Calendar, File, Folder, LayoutDashboard } from "lucide-react";
+import { File, Folder, LayoutDashboard } from "lucide-react";
 import { useRouter } from "next/router";
 import GeneralList from "./GeneralList";
 
@@ -17,12 +17,6 @@ export default function General({ showSidebar }: { showSidebar: boolean }) {
       icon: <Folder size={17} color="gray" />,
       collapsed: true,
       onClick: () => {},
-    },
-    {
-      id: 3,
-      name: "Calendar",
-      icon: <Calendar size={17} color="gray" />,
-      onClick: () => router.push("/calendar"),
     },
     {
       id: 4,

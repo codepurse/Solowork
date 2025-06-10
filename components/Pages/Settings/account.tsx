@@ -25,6 +25,11 @@ export default function Account() {
       setFullName(user.prefs?.fullname);
       setInitialEmail(user.email);
       setEmail(user.email);
+      
+      // Load profile image from preferences if available
+      if (user.prefs?.profileImage) {
+        setProfileImage(user.prefs.profileImage);
+      }
     };
     fetchUser();
   }, []);
@@ -36,13 +41,48 @@ export default function Account() {
     }
   }, [isModalOpen]);
 
+  // Compress image to 80x80 WebP base64
+  const compressImageToBase64 = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+
+      if (!ctx) {
+        reject(new Error('Canvas context not available'));
+        return;
+      }
+
+      img.onload = () => {
+        // Set canvas dimensions to 80x80
+        canvas.width = 80;
+        canvas.height = 80;
+
+        // Clear canvas and draw image scaled to fit 80x80
+        ctx.clearRect(0, 0, 80, 80);
+        ctx.drawImage(img, 0, 0, 80, 80);
+
+        // Convert to WebP with 0.7 quality (70% quality for good compression)
+        const compressedBase64 = canvas.toDataURL('image/webp', 0.7);
+        resolve(compressedBase64);
+      };
+
+      img.onerror = () => {
+        reject(new Error('Failed to load image'));
+      };
+
+      // Create object URL for the image
+      img.src = URL.createObjectURL(file);
+    });
+  };
+
   const handleProfileImageChange = () => {
     if (profileImageRef.current) {
       profileImageRef.current.click();
     }
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
 
     if (!file) return;
@@ -64,14 +104,14 @@ export default function Account() {
     // Reset error state
     setError(null);
 
-    // Create preview URL
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      if (e.target?.result) {
-        setProfileImage(e.target.result as string);
-      }
-    };
-    reader.readAsDataURL(file);
+    try {
+      // Compress image to 80x80 WebP base64
+      const compressedBase64 = await compressImageToBase64(file);
+      setProfileImage(compressedBase64);
+    } catch (error) {
+      setError("Failed to process image");
+      console.error("Image compression error:", error);
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -90,6 +130,7 @@ export default function Account() {
       await account.updatePrefs({
         ...currentPrefs,
         fullname: fullName,
+        profileImage: profileImage,
       });
       if (email !== initialEmail) {
         await account.updateEmail(email, password);
@@ -267,7 +308,7 @@ export default function Account() {
         <Space gap={10} className="mt-3 mb-2">
           <CircleX size={16} color="#ff5252" />
           <p className="modal-description-delete">
-            Your account will be deleted and you’ll be logged out
+            Your account will be deleted and you'll be logged out
           </p>
         </Space>
         <Space gap={10}>

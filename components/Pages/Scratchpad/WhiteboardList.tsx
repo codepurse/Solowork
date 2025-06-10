@@ -73,9 +73,10 @@ export default function WhiteboardList() {
                     </Space>
                   </Space>
                 </div>
-                <div className="whiteboard-list-item-card-image">
-                  <img src={whiteboard.image} alt={" "} />
-                </div>
+                <div
+                  className="whiteboard-list-item-card-image"
+                  style={{ backgroundImage: `url(${whiteboard.image})` }}
+                ></div>
               </div>
             ))}
           </div>

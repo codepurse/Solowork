@@ -93,16 +93,87 @@ export default function CanvasSettings({
     };
   }, [showSettings]);
 
-  // Add debounced save function
   const generateThumbnail = useCallback(() => {
     if (!canvasRef.current) return null;
-    return canvasRef.current.toDataURL({
-      format: "jpeg", // Using JPEG instead of PNG for smaller size
-      quality: 0.1,   // Reduced quality for thumbnails
-      multiplier: 0.1, // Even smaller thumbnail
-      width: 300,     // Fixed width
-      height: 200     // Fixed height
-    });
+    
+    // Store current dimensions and viewport transform
+    const currentWidth = canvasRef.current.width;
+    const currentHeight = canvasRef.current.height;
+    const currentViewportTransform = [...canvasRef.current.viewportTransform];
+    const currentZoom = canvasRef.current.getZoom();
+    
+    try {
+      // Reset viewport transform and ensure all objects are visible
+      canvasRef.current.setViewportTransform([1, 0, 0, 1, 0, 0]);
+      canvasRef.current.setDimensions({
+        width: 300,
+        height: 200
+      });
+      
+      // Get the bounding box of all objects
+      const objects = canvasRef.current.getObjects();
+      if (objects.length > 0) {
+        const bounds = canvasRef.current.getObjects().reduce((acc, obj) => {
+          const objBounds = obj.getBoundingRect();
+          return {
+            left: Math.min(acc.left, objBounds.left),
+            top: Math.min(acc.top, objBounds.top),
+            right: Math.max(acc.right, objBounds.left + objBounds.width),
+            bottom: Math.max(acc.bottom, objBounds.top + objBounds.height)
+          };
+        }, { left: Infinity, top: Infinity, right: -Infinity, bottom: -Infinity });
+        
+        // Calculate scale to fit content
+        const contentWidth = bounds.right - bounds.left;
+        const contentHeight = bounds.bottom - bounds.top;
+        const scale = Math.min(
+          280 / contentWidth,
+          180 / contentHeight
+        );
+        
+        // Apply zoom and center content
+        canvasRef.current.setZoom(scale);
+        canvasRef.current.absolutePan({
+          x: -bounds.left * scale + (300 - contentWidth * scale) / 2,
+          y: -bounds.top * scale + (200 - contentHeight * scale) / 2
+        });
+      }
+      
+      // Force a render and wait for it to complete
+      canvasRef.current.renderAll();
+      
+      // Generate thumbnail
+      const thumbnail = canvasRef.current.toDataURL({
+        format: 'webp',
+        quality: 0.2,
+        multiplier: 1,
+        enableRetinaScaling: true
+      });
+      
+      // Restore original state
+      canvasRef.current.setDimensions({
+        width: currentWidth,
+        height: currentHeight
+      });
+      canvasRef.current.setViewportTransform(currentViewportTransform);
+      canvasRef.current.setZoom(currentZoom);
+      canvasRef.current.renderAll();
+      
+      return thumbnail;
+    } catch (error) {
+      console.error('Error generating thumbnail:', error);
+      
+      // Restore original state in case of error
+      canvasRef.current.setDimensions({
+        width: currentWidth,
+        height: currentHeight
+      });
+      canvasRef.current.setViewportTransform(currentViewportTransform);
+      canvasRef.current.setZoom(currentZoom);
+      canvasRef.current.renderAll();
+      
+      return null;
+    }
   }, [canvasRef]);
 
   const debouncedSave = useCallback(

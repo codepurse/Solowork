@@ -1,4 +1,4 @@
-import { MessageCircle, Phone, Settings } from "lucide-react";
+import { MessageCircle, Phone } from "lucide-react";
 import { useRouter } from "next/router";
 import Space from "../../space";
 
@@ -21,14 +21,6 @@ export default function Support({ showSidebar }: { showSidebar: boolean }) {
       collapsed: true,
       onClick: () => {
         router.push("/help-center");
-      },
-    },
-    {
-      id: 3,
-      name: "Settings",
-      icon: <Settings size={17} color="gray" />,
-      onClick: () => {
-        router.push("/settings");
       },
     },
   ];

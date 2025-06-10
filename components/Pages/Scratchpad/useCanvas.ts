@@ -1,10 +1,31 @@
-import { Canvas, FabricObject, IText, Line, PencilBrush, Textbox } from "fabric";
+import * as fabric from "fabric";
+import {
+  Canvas,
+  FabricObject,
+  IText,
+  Line,
+  PencilBrush,
+  Textbox,
+} from "fabric";
 import LZString from "lz-string";
 import { useEffect, useRef } from "react";
 import useWhiteBoardStore from "../../../store/whiteBoardStore";
 
 // Disable object caching globally
 FabricObject.prototype.objectCaching = false;
+
+// Helper function to mark object as dirty and request render
+const markDirty = (canvas: Canvas, obj: FabricObject) => {
+  if (!obj) return;
+  obj.dirty = true;
+  canvas.requestRenderAll();
+};
+
+// Helper function to mark multiple objects as dirty
+const markObjectsDirty = (canvas: Canvas, objects: FabricObject[]) => {
+  objects.forEach((obj) => (obj.dirty = true));
+  canvas.requestRenderAll();
+};
 
 type UseCanvasProps = {
   canvasRef: React.RefObject<Canvas>;
@@ -29,51 +50,65 @@ const loadWhiteboardData = (canvas: Canvas | null, whiteboard: any) => {
   if (!canvas || !whiteboard?.body) return;
 
   try {
-    const whiteBoardJson = JSON.parse(LZString.decompressFromUTF16(whiteboard.body));
+    // Clear all existing objects and reset canvas state
+    canvas.clear();
+    canvas.renderAll(); // Ensure clear is rendered immediately
 
-    // Count total images that need to be loaded
-    let totalImages = 0;
-    let loadedImages = 0;
+    const whiteBoardJson = JSON.parse(
+      LZString.decompressFromUTF16(whiteboard.body)
+    );
 
-    // First pass: count images
-    if (whiteBoardJson.objects) {
-      totalImages = whiteBoardJson.objects.filter(
-        (obj: any) => obj.type === "image"
-      ).length;
-    }
-
-    // If no images, just load normally
-    if (totalImages === 0) {
-      canvas.loadFromJSON(whiteBoardJson, () => {
-        canvas.renderAll();
-      });
+    if (!whiteBoardJson.objects || !Array.isArray(whiteBoardJson.objects)) {
+      console.warn("No objects found in whiteboard data");
       return;
     }
 
-    // If we have images, use the reviver to track loading
-    canvas.loadFromJSON(
-      whiteBoardJson,
-      // After loading callback
-      function () {
-        if (loadedImages === totalImages) {
-          canvas.renderAll();
-        }
-      },
-      // During loading callback
-      function (this: Canvas, _o: any, object: fabric.Object) {
-        if (object.type === "image") {
-          // Force image loading and update canvas once loaded
-          object.on("loaded", () => {
+    // Apply canvas properties first
+    if (whiteBoardJson.background)
+      canvas.backgroundColor = whiteBoardJson.background;
+    if (whiteBoardJson.viewportTransform)
+      canvas.setViewportTransform(whiteBoardJson.viewportTransform);
+
+    // Count total images for tracking
+    const totalImages = whiteBoardJson.objects.filter(
+      (obj: any) => obj.type === "image"
+    ).length;
+    let loadedImages = 0;
+
+    // Use enlivenObjects for better performance
+    fabric.util
+      .enlivenObjects(whiteBoardJson.objects)
+      .then((objects) => {
+        // Double-check canvas is still valid and clear
+        if (!canvas || canvas.disposed) return;
+
+        objects.forEach((obj) => {
+          canvas.add(obj as fabric.Object);
+          markDirty(canvas, obj as FabricObject);
+
+          // Track image loading
+          if ((obj as fabric.Object).type === "image") {
             loadedImages++;
             if (loadedImages === totalImages) {
-              this.renderAll();
+              canvas.requestRenderAll();
             }
-          });
+          }
+        });
+
+        // If no images, render immediately
+        if (totalImages === 0) {
+          canvas.renderAll();
         }
-      }.bind(canvas)
-    );
+      })
+      .catch((error) => {
+        console.error("Error enlivening objects:", error);
+        canvas.clear();
+        canvas.renderAll();
+      });
   } catch (error) {
     console.error("Error loading whiteboard:", error);
+    canvas.clear();
+    canvas.renderAll();
   }
 };
 
@@ -86,6 +121,8 @@ export default function useCanvas({
 }: Readonly<UseCanvasProps>) {
   const { showGridLines, lockMode, isEditMode } = useWhiteBoardStore();
   const focusModeRef = useRef(showGridLines);
+  const loadedWhiteboardRef = useRef<string | null>(null);
+  const isLoadingRef = useRef(false); // Add loading state protection
 
   useEffect(() => {
     focusModeRef.current = showGridLines;
@@ -96,15 +133,16 @@ export default function useCanvas({
     const canvas = new Canvas("drawing-canvas", {
       isDrawingMode: false,
       width: window.innerWidth,
-      height: window.innerHeight - 60, // leave room for toolbar
+      height: window.innerHeight - 60,
+      renderOnAddRemove: false,
+      stateful: true,
+      enableRetinaScaling: true,
+      skipTargetFind: false,
+      skipOffscreen: false,
     });
     canvas.freeDrawingBrush = new PencilBrush(canvas);
+    canvas.preserveObjectStacking = true;
     canvasRef.current = canvas;
-
-    // Load whiteboard data if available
-    if (selectedWhiteboard && isEditMode) {
-      loadWhiteboardData(canvas, selectedWhiteboard);
-    }
 
     // Create a WeakMap to store original opacity values
     const originalOpacities = new WeakMap<object, number>();
@@ -114,6 +152,7 @@ export default function useCanvas({
 
     // Helper function to clear existing guide lines
     const clearGuideLines = () => {
+      markObjectsDirty(canvas, activeGuideLines);
       activeGuideLines.forEach((line) => canvas.remove(line));
       activeGuideLines = [];
       canvas.requestRenderAll();
@@ -228,9 +267,6 @@ export default function useCanvas({
 
       // Check if multiple objects are selected
       if (selectedObjects.length > 1) {
-        console.log(
-          `Multiple objects selected: ${selectedObjects.length} items`
-        );
         setTool(""); // Optional: clear or set specific tool for multiple selection
         return;
       }
@@ -240,12 +276,13 @@ export default function useCanvas({
       if (selectedObject) {
         updateShapeColors(selectedObject);
         if (getObjectType(selectedObject) === "drawing") {
-          console.log("pencil trigger");
           setTool("pencil");
         }
         if (getObjectType(selectedObject) === "shape") {
           setTool("shape");
-          console.log("shape");
+        }
+        if (getObjectType(selectedObject) === "image") {
+          setTool("image");
         }
       }
     };
@@ -255,6 +292,7 @@ export default function useCanvas({
       if (!target) return;
 
       clearGuideLines();
+      markDirty(canvas, target);
 
       // Only show guide lines if focus mode is enabled
       if (focusModeRef.current) {
@@ -267,6 +305,7 @@ export default function useCanvas({
             true
           );
           canvas.add(line);
+          markDirty(canvas, line);
           activeGuideLines.push(line);
         });
 
@@ -276,10 +315,9 @@ export default function useCanvas({
             false
           );
           canvas.add(line);
+          markDirty(canvas, line);
           activeGuideLines.push(line);
         });
-
-        canvas.requestRenderAll();
       }
     };
 
@@ -291,8 +329,8 @@ export default function useCanvas({
       const originalOpacity = originalOpacities.get(target);
       if (originalOpacity !== undefined) {
         target.set("opacity", originalOpacity);
+        markDirty(canvas, target);
         originalOpacities.delete(target);
-        canvas.requestRenderAll();
       }
     };
 
@@ -301,8 +339,8 @@ export default function useCanvas({
       const target = e.target;
       if (target && originalOpacities.has(target)) {
         target.set("opacity", originalOpacities.get(target)!);
+        markDirty(canvas, target);
         originalOpacities.delete(target);
-        canvas.requestRenderAll();
       }
     };
 
@@ -313,10 +351,10 @@ export default function useCanvas({
         const originalOpacity = originalOpacities.get(obj);
         if (originalOpacity !== undefined) {
           obj.set("opacity", originalOpacity);
+          markDirty(canvas, obj);
           originalOpacities.delete(obj);
         }
       });
-      canvas.requestRenderAll();
       setTool("");
     };
 
@@ -332,12 +370,12 @@ export default function useCanvas({
       if (e.key === "Delete" || e.key === "Backspace") {
         const activeObjects = canvas.getActiveObjects();
         if (activeObjects.length > 0) {
+          markObjectsDirty(canvas, activeObjects);
           activeObjects.forEach((obj) => {
             originalOpacities.delete(obj);
             canvas.remove(obj);
           });
           canvas.discardActiveObject();
-          canvas.requestRenderAll();
         }
       }
     };
@@ -359,10 +397,34 @@ export default function useCanvas({
     };
   }, []);
 
-  // Effect to handle whiteboard changes
+  // Enhanced whiteboard loading effect with better protection
   useEffect(() => {
-    if (!isEditMode) return;
-    loadWhiteboardData(canvasRef.current, selectedWhiteboard);
+    const canvas = canvasRef.current;
+    if (!isEditMode || !canvas || !selectedWhiteboard?.body) return;
+
+    const currentWhiteboardId = selectedWhiteboard.id;
+
+    // Prevent duplicate loading
+    if (
+      loadedWhiteboardRef.current === currentWhiteboardId ||
+      isLoadingRef.current
+    ) {
+      return;
+    }
+
+    isLoadingRef.current = true;
+
+    // Small delay to ensure canvas is fully initialized
+    const timeoutId = setTimeout(() => {
+      loadWhiteboardData(canvas, selectedWhiteboard);
+      loadedWhiteboardRef.current = currentWhiteboardId;
+      isLoadingRef.current = false;
+    }, 50);
+
+    return () => {
+      clearTimeout(timeoutId);
+      isLoadingRef.current = false;
+    };
   }, [selectedWhiteboard, isEditMode]);
 
   // Effect to handle lock mode changes
@@ -375,15 +437,17 @@ export default function useCanvas({
     canvas.isDrawingMode = false;
     canvas.defaultCursor = lockMode ? "not-allowed" : "default";
     setTool("");
-    
+
     // Update all objects to be non-selectable and non-editable when locked
-    canvas.getObjects().forEach((obj) => {
+    const objects = canvas.getObjects();
+    objects.forEach((obj) => {
       obj.selectable = !lockMode;
       obj.evented = !lockMode;
       if (obj instanceof IText || obj instanceof Textbox) {
         obj.editable = !lockMode;
       }
     });
+    markObjectsDirty(canvas, objects);
 
     canvas.requestRenderAll();
   }, [lockMode]);

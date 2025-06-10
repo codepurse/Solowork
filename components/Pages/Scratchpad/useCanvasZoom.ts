@@ -18,13 +18,22 @@ export default function useCanvasZoom(
       const canvas = canvasRef.current;
       const delta = e.deltaY;
       const pointer = canvas.getPointer(e);
-      const currentZoom = canvas.getZoom(); // 👈 get latest zoom directly
+      const currentZoom = canvas.getZoom();
 
       let newZoom = currentZoom * (delta > 0 ? 0.9 : 1.1);
       newZoom = Math.max(0.1, Math.min(5, newZoom));
 
+      canvas.setViewportTransform([
+        newZoom,
+        0,
+        0,
+        newZoom,
+        canvas.viewportTransform![4],
+        canvas.viewportTransform![5]
+      ]);
       canvas.zoomToPoint(new Point(pointer.x, pointer.y), newZoom);
-      setZoom(newZoom); // optional if you want to track in store
+      canvas.requestRenderAll();
+      setZoom(newZoom);
     };
 
     const handleKeyDown = (e: KeyboardEvent) => {

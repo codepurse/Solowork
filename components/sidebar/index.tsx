@@ -5,7 +5,6 @@ import { useStore } from "../../store/store";
 import BannerPremium from "./BannerPremium";
 import General from "./General";
 import ProjectList from "./ProjectList";
-import Support from "./Support";
 import Workspace from "./Workspace";
 
 export default function Sidebar() {
@@ -23,10 +22,7 @@ export default function Sidebar() {
           <ProjectList showSidebar={showSidebar} />
           <div className="sidebar-container mt-3">
             <General showSidebar={showSidebar} />
-            <hr className="faded-line" />
             <Workspace showSidebar={showSidebar} />
-            <hr className="faded-line" />
-            <Support showSidebar={showSidebar} />
           </div>
           <BannerPremium showSidebar={showSidebar} />
         </Col>
