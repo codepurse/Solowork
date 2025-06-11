@@ -47,7 +47,7 @@ export default function Whiteboard() {
 
   const { handleImageUpload } = useImageUpload({ canvasRef, setTool });
 
-  useCanvas({ canvasRef, setTool, selectedWhiteboard });
+  useCanvas({ canvasRef, setTool, whiteboardData: selectedWhiteboard });
   useEraser(canvasRef, tool);
   useCanvasZoom(canvasRef);
   useCanvasMove(canvasRef, tool);
