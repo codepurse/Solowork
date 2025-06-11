@@ -1,22 +1,16 @@
 import { ChevronDown, Squircle } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Collapse } from "react-bootstrap";
-import {
-  DATABASE_ID,
-  databases,
-  PINNED_COLLECTION_ID,
-} from "../../../constant/appwrite";
 import Space from "../../space";
+import KanbanPinned from "./KanbanPinned";
+import NotesPinned from "./NotesPinned";
+import TaskPinned from "./TaskPinned";
+import WhiteboardPinned from "./WhiteboardPinned";
 
 export default function Pinned({ showSidebar }: { showSidebar: boolean }) {
   const [expandedItems, setExpandedItems] = useState<{
     [key: string]: boolean;
   }>({});
-
-  const [tasks, setTasks] = useState<any[]>([]);
-  const [kanban, setKanban] = useState<any[]>([]);
-  const [notes, setNotes] = useState<any[]>([]);
-  const [whiteboard, setWhiteboard] = useState<any[]>([]);
 
   const toggleExpanded = (itemName: string) => {
     setExpandedItems((prev) => ({
@@ -24,33 +18,6 @@ export default function Pinned({ showSidebar }: { showSidebar: boolean }) {
       [itemName]: !prev[itemName],
     }));
   };
-
-  useEffect(() => {
-    console.log(expandedItems);
-  }, [expandedItems]);
-
-  useEffect(() => {
-    const fetchPinnedItems = async () => {
-      const pinnedItems = await databases.listDocuments(
-        DATABASE_ID,
-        PINNED_COLLECTION_ID
-      );
-      console.log(pinnedItems, "pinnedItems");
-      setTasks(
-        pinnedItems.documents.filter((item: any) => item.type === "task")
-      );
-      setKanban(
-        pinnedItems.documents.filter((item: any) => item.type === "kanban")
-      );
-      setNotes(
-        pinnedItems.documents.filter((item: any) => item.type === "note")
-      );
-      setWhiteboard(
-        pinnedItems.documents.filter((item: any) => item.type === "whiteboard")
-      );
-    };
-    fetchPinnedItems();
-  }, []);
 
   return (
     <div className="sidebar-menu mt-2">
@@ -78,27 +45,8 @@ export default function Pinned({ showSidebar }: { showSidebar: boolean }) {
           </Space>
         </div>
         <Collapse in={expandedItems.tasks}>
-          <div className="sidebar-menu-item-container">
-            <Space
-              direction="column"
-              gap={4}
-              alignItems="start"
-              className="sidebar-menu-item-container-notes"
-              style={{ borderLeft: "1px solid #3d3d3d" }}
-            >
-              {expandedItems.tasks && (
-                <Space
-                  gap={10}
-                  className="sidebar-menu-item-container-notes-item"
-                >
-                  {tasks.map((task) => (
-                    <label className="sidebar-dropdown-item" key={task.$id}>
-                      {task?.name}
-                    </label>
-                  ))}
-                </Space>
-              )}
-            </Space>
+          <div>
+            <TaskPinned />
           </div>
         </Collapse>
         <div
@@ -123,6 +71,11 @@ export default function Pinned({ showSidebar }: { showSidebar: boolean }) {
             </div>
           </Space>
         </div>
+        <Collapse in={expandedItems.kanban}>
+          <div>
+            <KanbanPinned />
+          </div>
+        </Collapse>
         <div
           className="sidebar-menu-item"
           style={{ marginTop: "-7px" }}
@@ -149,27 +102,8 @@ export default function Pinned({ showSidebar }: { showSidebar: boolean }) {
           </Space>
         </div>
         <Collapse in={expandedItems.notes}>
-          <div className="sidebar-menu-item-container">
-            <Space
-              direction="column"
-              gap={4}
-              alignItems="start"
-              className="sidebar-menu-item-container-notes"
-              style={{ borderLeft: "1px solid #3d3d3d" }}
-            >
-              {expandedItems.notes && (
-                <Space
-                  gap={10}
-                  className="sidebar-menu-item-container-notes-item"
-                >
-                  {notes.map((note) => (
-                    <label className="sidebar-dropdown-item" key={note.$id}>
-                      {note?.name}
-                    </label>
-                  ))}
-                </Space>
-              )}
-            </Space>
+          <div>
+            <NotesPinned />
           </div>
         </Collapse>
         <div
@@ -199,6 +133,11 @@ export default function Pinned({ showSidebar }: { showSidebar: boolean }) {
             </div>
           </Space>
         </div>
+        <Collapse in={expandedItems.whiteboard}>
+          <div>
+            <WhiteboardPinned />
+          </div>
+        </Collapse>
       </div>
     </div>
   );

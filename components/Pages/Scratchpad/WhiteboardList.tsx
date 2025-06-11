@@ -1,5 +1,6 @@
 import { Query } from "appwrite";
 import { Maximize2, X } from "lucide-react";
+import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { Col, Container, Row } from "react-bootstrap";
 import Modal from "react-bootstrap/Modal";
@@ -20,6 +21,7 @@ export default function WhiteboardList() {
   const { user } = useStoreUser();
   const { setSelectedWhiteboard, setIsEditMode } = useWhiteBoardStore();
   const [showModal, setShowModal] = useState(false);
+  const router = useRouter();
 
   const fetchWhiteboards = async () => {
     const whiteboards = await databases.listDocuments(
@@ -58,7 +60,10 @@ export default function WhiteboardList() {
               <div
                 key={whiteboard.$id}
                 className="whiteboard-list-item-card"
-                onClick={() => handleWhiteboardClick(whiteboard)}
+                onClick={() => {
+                  handleWhiteboardClick(whiteboard);
+                  router.push(`/whiteboard/${whiteboard.$id}?name=${whiteboard.name}`);
+                }}
               >
                 <div className="whiteboard-header">
                   <Space gap={10} align="evenly">

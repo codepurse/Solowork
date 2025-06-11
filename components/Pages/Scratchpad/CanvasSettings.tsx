@@ -1,5 +1,13 @@
 import { ID } from "appwrite";
-import { Download, Image, Lock, Save, Settings, Telescope } from "lucide-react";
+import {
+  Download,
+  Image,
+  Lock,
+  Pin,
+  Save,
+  Settings,
+  Telescope,
+} from "lucide-react";
 import LZString from "lz-string";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { mutate } from "swr";
@@ -38,6 +46,8 @@ export default function CanvasSettings({
   const { user } = useStoreUser();
   const { setShowToast, setToastTitle, setToastMessage } = useStoreToast();
   const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const [pinMode, setPinMode] = useState(false);
+  const [isPinning, setIsPinning] = useState(false);
 
   const handleDownload = () => {
     const canvas = canvasRef.current;
@@ -95,83 +105,83 @@ export default function CanvasSettings({
 
   const generateThumbnail = useCallback(() => {
     if (!canvasRef.current) return null;
-    
+
     // Store current dimensions and viewport transform
     const currentWidth = canvasRef.current.width;
     const currentHeight = canvasRef.current.height;
     const currentViewportTransform = [...canvasRef.current.viewportTransform];
     const currentZoom = canvasRef.current.getZoom();
-    
+
     try {
       // Reset viewport transform and ensure all objects are visible
       canvasRef.current.setViewportTransform([1, 0, 0, 1, 0, 0]);
       canvasRef.current.setDimensions({
         width: 300,
-        height: 200
+        height: 200,
       });
-      
+
       // Get the bounding box of all objects
       const objects = canvasRef.current.getObjects();
       if (objects.length > 0) {
-        const bounds = canvasRef.current.getObjects().reduce((acc, obj) => {
-          const objBounds = obj.getBoundingRect();
-          return {
-            left: Math.min(acc.left, objBounds.left),
-            top: Math.min(acc.top, objBounds.top),
-            right: Math.max(acc.right, objBounds.left + objBounds.width),
-            bottom: Math.max(acc.bottom, objBounds.top + objBounds.height)
-          };
-        }, { left: Infinity, top: Infinity, right: -Infinity, bottom: -Infinity });
-        
+        const bounds = canvasRef.current.getObjects().reduce(
+          (acc, obj) => {
+            const objBounds = obj.getBoundingRect();
+            return {
+              left: Math.min(acc.left, objBounds.left),
+              top: Math.min(acc.top, objBounds.top),
+              right: Math.max(acc.right, objBounds.left + objBounds.width),
+              bottom: Math.max(acc.bottom, objBounds.top + objBounds.height),
+            };
+          },
+          { left: Infinity, top: Infinity, right: -Infinity, bottom: -Infinity }
+        );
+
         // Calculate scale to fit content
         const contentWidth = bounds.right - bounds.left;
         const contentHeight = bounds.bottom - bounds.top;
-        const scale = Math.min(
-          280 / contentWidth,
-          180 / contentHeight
-        );
-        
+        const scale = Math.min(280 / contentWidth, 180 / contentHeight);
+
         // Apply zoom and center content
         canvasRef.current.setZoom(scale);
         canvasRef.current.absolutePan({
           x: -bounds.left * scale + (300 - contentWidth * scale) / 2,
-          y: -bounds.top * scale + (200 - contentHeight * scale) / 2
+          y: -bounds.top * scale + (200 - contentHeight * scale) / 2,
         });
       }
-      
+
       // Force a render and wait for it to complete
       canvasRef.current.renderAll();
-      
+
       // Generate thumbnail
       const thumbnail = canvasRef.current.toDataURL({
-        format: 'webp',
+        format: "webp",
         quality: 0.2,
         multiplier: 1,
-        enableRetinaScaling: true
+        enableRetinaScaling: true,
       });
-      
+
       // Restore original state
       canvasRef.current.setDimensions({
         width: currentWidth,
-        height: currentHeight
+        height: currentHeight,
       });
       canvasRef.current.setViewportTransform(currentViewportTransform);
       canvasRef.current.setZoom(currentZoom);
       canvasRef.current.renderAll();
-      
+
       return thumbnail;
     } catch (error) {
-      console.error('Error generating thumbnail:', error);
-      
+      console.error("Error generating thumbnail:", error);
+
       // Restore original state in case of error
       canvasRef.current.setDimensions({
         width: currentWidth,
-        height: currentHeight
+        height: currentHeight,
       });
       canvasRef.current.setViewportTransform(currentViewportTransform);
       canvasRef.current.setZoom(currentZoom);
       canvasRef.current.renderAll();
-      
+
       return null;
     }
   }, [canvasRef]);
@@ -191,7 +201,7 @@ export default function CanvasSettings({
 
           const payload = {
             body: LZString.compressToUTF16(JSON.stringify(state)),
-            image: thumbnail
+            image: thumbnail,
           };
 
           if (!isEditMode) {
@@ -203,7 +213,7 @@ export default function CanvasSettings({
                 name: "Untitled",
                 description: "Untitled",
                 userId: user.$id,
-                ...payload
+                ...payload,
               }
             );
           } else {
@@ -240,13 +250,8 @@ export default function CanvasSettings({
   }, []);
 
   const handleSave = async () => {
-    const essentialProps = [
-      "type",
-      "version",
-      "objects",
-      "background"
-    ];
-    
+    const essentialProps = ["type", "version", "objects", "background"];
+
     const lightState = canvasRef.current.toDatalessJSON(essentialProps);
     await debouncedSave(lightState);
   };
@@ -254,6 +259,30 @@ export default function CanvasSettings({
   const style = {
     top: focusMode ? "10px" : "70px",
   };
+
+  const handlePin = async () => {
+    setIsPinning(true);
+
+    try {
+      await databases.updateDocument(
+        DATABASE_ID,
+        WHITEBOARD_COLLECTION_ID,
+        selectedWhiteboard.$id,
+        { pinned: !pinMode }
+      );
+      setPinMode(!pinMode);
+    } catch (error) {
+      console.error("Error pinning canvas:", error);
+    } finally {
+      setIsPinning(false);
+    }
+  };
+
+  useEffect(() => {
+    if (selectedWhiteboard) {
+      setPinMode(selectedWhiteboard.pinned);
+    }
+  }, [selectedWhiteboard]);
 
   return (
     <div
@@ -325,6 +354,20 @@ export default function CanvasSettings({
                   checked={lockMode}
                   onChange={() => setLockMode(!lockMode)}
                   size="x-small"
+                />
+              </Space>
+              <Space gap={8} className="mt-1" align="evenly">
+                <Space gap={8}>
+                  <i>
+                    <Pin size={17} />
+                  </i>
+                  <span className="canvas-settings-item-content-text">Pin</span>
+                </Space>
+                <Switch
+                  checked={pinMode}
+                  onChange={handlePin}
+                  size="x-small"
+                  disabled={isPinning}
                 />
               </Space>
               <Space gap={8} className="mt-1" align="evenly">

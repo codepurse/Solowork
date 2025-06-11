@@ -1,4 +1,3 @@
-import { ID } from "appwrite";
 import {
   ClipboardList,
   Image,
@@ -15,9 +14,8 @@ import {
   DATABASE_ID,
   databases,
   KANBAN_COLLECTION_ID,
-  PINNED_COLLECTION_ID,
   storage,
-  TASKS_ATTACHMENTS_BUCKET_ID,
+  TASKS_ATTACHMENTS_BUCKET_ID
 } from "../../../../constant/appwrite";
 import { useStore } from "../../../../store/store";
 import {
@@ -38,6 +36,9 @@ export default function DrawerInfo() {
   const [loading, setLoading] = useState(false);
   const [checklist, setChecklist] = useState([]);
   const [showAddTaskModal, setShowAddTaskModal] = useState(false);
+  const [pinned, setPinned] = useState(false);
+  const [isPinning, setIsPinning] = useState(false);
+  
 
   useEffect(() => {
     if (drawerInfo?.checklist) {
@@ -115,24 +116,40 @@ export default function DrawerInfo() {
   };
 
   const handlePinTask = async () => {
-    console.log(drawerInfo);
+    // Prevent multiple API calls
+    if (isPinning) return;
+    
+    setIsPinning(true);
+    const newPinnedState = !pinned;
+    
     try {
-      await databases.createDocument(
+      // Optimistic update for better UX
+      setPinned(newPinnedState);
+      
+      await databases.updateDocument(
         DATABASE_ID,
-        PINNED_COLLECTION_ID,
-        ID.unique(),
+        KANBAN_COLLECTION_ID,
+        drawerInfo?.$id,
         {
-          name: drawerInfo?.title,
-          type: "task",
-          id: drawerInfo?.$id,
-          parentId: drawerInfo?.kanbanId,
+          pinned: newPinnedState,
         }
       );
+      
+      // Optionally refresh the kanban data
+      mutate(["kanban_tasks", drawerInfo?.kanbanId]);
       console.log("Task pinned successfully");
     } catch (err) {
+      // Revert optimistic update on error
+      setPinned(!newPinnedState);
       console.error("Error pinning task", err);
+    } finally {
+      setIsPinning(false);
     }
   };
+
+  useEffect(() => {
+    setPinned(drawerInfo?.pinned);
+  }, [drawerInfo]);
 
   return (
     <div className="drawer-info animate__animated animate__slideInRight">
@@ -141,7 +158,13 @@ export default function DrawerInfo() {
           <i onClick={() => setShowModal(true)}>
             <Trash size={15} />
           </i>
-          <i onClick={handlePinTask}>
+          <i 
+            onClick={handlePinTask}
+            style={{ 
+              cursor: isPinning ? 'not-allowed' : 'pointer',
+              color: pinned ? '#ffd700' : '#888'
+            }}
+          >
             <Pin size={15} />
           </i>
           <i>

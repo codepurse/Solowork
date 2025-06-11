@@ -208,6 +208,7 @@ export default function AddTask({
         tags,
         checklist: JSON.stringify(checklist),
         fileId: [...existingFileIds, ...uploadedFileIds],
+        userID: user.$id,
       };
 
       if (editTask && data.$id) {

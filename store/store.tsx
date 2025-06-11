@@ -7,7 +7,7 @@ interface NotesStore {
   setHideSideNotes: (hide: boolean) => void;
   editMode: boolean;
   setEditMode: (edit: boolean) => void;
-  notesFolders: any[];
+  notesFolders: any[] ;
   setNotesFolders: (folders: any[]) => void;
   sortBy: string;
   setSortBy: (sortBy: string) => void;
@@ -22,6 +22,8 @@ interface KanbanStore {
   setSelectedKanbanId: (kanbanId: string) => void;
   drawerInfo: any;
   setDrawerInfo: (info: any) => void;
+  kanbanList: null;
+  setKanbanList: (kanbanList: any[]) => void;
 }
 
 interface ProjectsStore {
@@ -90,6 +92,8 @@ const useStoreKanban = create<KanbanStore>((set) => ({
   setShowDrawerInfo: (show: boolean) => set({ showDrawerInfo: show }),
   drawerInfo: null,
   setDrawerInfo: (info: any) => set({ drawerInfo: info }),
+  kanbanList: null,
+  setKanbanList: (kanbanList: any) => set({ kanbanList: kanbanList }),
 }));
 
 const useStoreProjects = create<ProjectsStore>((set) => ({

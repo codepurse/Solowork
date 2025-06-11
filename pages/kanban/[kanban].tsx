@@ -1,7 +1,7 @@
 import { Query } from "appwrite";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useRouter } from "next/router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Col, Container, Row } from "react-bootstrap";
 import useSWR from "swr";
 import DrawerInfo from "../../components/Pages/Kanban/DrawerInfo";
@@ -14,6 +14,7 @@ import {
   DATABASE_ID,
   databases,
   KANBAN_COLLECTION_ID,
+  KANBAN_FOLDER_ID,
 } from "../../constant/appwrite";
 import { useStore } from "../../store/store";
 
@@ -23,6 +24,7 @@ export default function KanbanPage() {
   const { tasks, setTasks } = useStoreTasks();
   const router = useRouter();
   const { kanban } = router.query;
+  const [kanbanDetails, setKanbanDetails] = useState<any>(null);
 
   // Convert to string if it's an array
   const kanbanId = Array.isArray(kanban) ? kanban[0] : kanban;
@@ -35,6 +37,18 @@ export default function KanbanPage() {
     );
     return tasks;
   };
+
+  useEffect(() => {
+    const fetchPinnedKanban = async () => {
+      const kanbanDetails = await databases.listDocuments(
+        DATABASE_ID,
+        KANBAN_FOLDER_ID,
+        [Query.equal("$id", kanbanId)]
+      );
+      setKanbanDetails(kanbanDetails?.documents[0]);
+    };
+    fetchPinnedKanban();
+  }, [kanbanId]);
 
   const { data } = useSWR(kanbanId ? ["kanban_tasks", kanbanId] : null, () =>
     fetchTasks(kanbanId!)
@@ -69,7 +83,7 @@ export default function KanbanPage() {
       </Row>
       <Row>
         <Col>
-          <HeaderTabs />
+          <HeaderTabs kanbanId={kanbanId} kanbanDetails={kanbanDetails} />
           <hr className="not-faded-line" style={{ marginTop: "-13px" }} />
         </Col>
       </Row>

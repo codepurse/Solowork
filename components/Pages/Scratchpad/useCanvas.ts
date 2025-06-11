@@ -32,7 +32,7 @@ type UseCanvasProps = {
   setTool: (tool: string) => void;
   setShapeFill?: (fill: string) => void;
   setShapeStroke?: (stroke: string) => void;
-  selectedWhiteboard: any;
+  whiteboardData: any;
 };
 
 // Alignment guide configuration
@@ -115,9 +115,9 @@ const loadWhiteboardData = (canvas: Canvas | null, whiteboard: any) => {
 export default function useCanvas({
   canvasRef,
   setTool,
+  whiteboardData,
   setShapeFill,
   setShapeStroke,
-  selectedWhiteboard,
 }: Readonly<UseCanvasProps>) {
   const { showGridLines, lockMode, isEditMode } = useWhiteBoardStore();
   const focusModeRef = useRef(showGridLines);
@@ -129,6 +129,7 @@ export default function useCanvas({
   }, [showGridLines]);
 
   useEffect(() => {
+    console.log(whiteboardData, "whiteboardData");
     // Initialize Fabric.js canvas
     const canvas = new Canvas("drawing-canvas", {
       isDrawingMode: false,
@@ -400,32 +401,52 @@ export default function useCanvas({
   // Enhanced whiteboard loading effect with better protection
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (!isEditMode || !canvas || !selectedWhiteboard?.body) return;
+    console.log("useCanvas effect triggered with:", {
+      isEditMode,
+      hasCanvas: !!canvas,
+      whiteboardData: whiteboardData?.body ? "has body" : "no body",
+      currentId: whiteboardData?.id,
+    });
 
-    const currentWhiteboardId = selectedWhiteboard.id;
+    if (!isEditMode || !canvas || !whiteboardData?.body) {
+      console.log("Loading conditions not met:", {
+        isEditMode,
+        hasCanvas: !!canvas,
+        hasWhiteboardBody: !!whiteboardData?.body,
+      });
+      return;
+    }
+
+    const currentWhiteboardId = whiteboardData.id;
 
     // Prevent duplicate loading
     if (
       loadedWhiteboardRef.current === currentWhiteboardId ||
       isLoadingRef.current
     ) {
+      console.log("Skipping load - already loaded or loading in progress");
       return;
     }
 
     isLoadingRef.current = true;
+    console.log(
+      "Starting whiteboard load process for ID:",
+      currentWhiteboardId
+    );
 
     // Small delay to ensure canvas is fully initialized
     const timeoutId = setTimeout(() => {
-      loadWhiteboardData(canvas, selectedWhiteboard);
+      loadWhiteboardData(canvas, whiteboardData);
       loadedWhiteboardRef.current = currentWhiteboardId;
       isLoadingRef.current = false;
+      console.log("Whiteboard load completed for ID:", currentWhiteboardId);
     }, 50);
 
     return () => {
       clearTimeout(timeoutId);
       isLoadingRef.current = false;
     };
-  }, [selectedWhiteboard, isEditMode]);
+  }, [whiteboardData, isEditMode]);
 
   // Effect to handle lock mode changes
   useEffect(() => {

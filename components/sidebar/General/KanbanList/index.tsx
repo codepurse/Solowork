@@ -1,6 +1,7 @@
 import { Query } from "appwrite";
 import { Folders } from "lucide-react";
 import { useRouter } from "next/router";
+import { useEffect } from "react";
 import useSWR from "swr";
 import {
   DATABASE_ID,
@@ -11,10 +12,11 @@ import { useStore } from "../../../../store/store";
 import Space from "../../../space";
 
 export default function KanbanList() {
-  const { useStoreUser, useSidebar } = useStore();
+  const { useStoreUser, useSidebar, useStoreKanban } = useStore();
   const router = useRouter();
   const { user } = useStoreUser();
   const { setSidebarSelected, sidebarSelected } = useSidebar();
+  const { setKanbanList } = useStoreKanban();
 
   const fetchKanban = async () => {
     const res = await databases.listDocuments(DATABASE_ID, KANBAN_FOLDER_ID, [
@@ -24,6 +26,13 @@ export default function KanbanList() {
   };
 
   const { data } = useSWR("kanban", fetchKanban);
+
+  useEffect(() => {
+    if (data) {
+      console.log(data, "data");
+      setKanbanList(data);
+    }
+  }, [data]);
 
   const handleKanbanClick = (kanbanId: string, kanbanName: string) => {
     router.push(`/kanban/${kanbanId}?name=${kanbanName}`);
@@ -52,6 +61,7 @@ export default function KanbanList() {
             fill
             id={kanban.$id === sidebarSelected ? "selectedNote" : ""}
             onClick={() => {
+              console.log(kanban, "kanban");
               handleKanbanClick(kanban.$id, kanban.name);
               setSidebarSelected(kanban.$id);
             }}
