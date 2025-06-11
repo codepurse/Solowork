@@ -1,4 +1,5 @@
 import { Query } from "appwrite";
+import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import client, {
   DATABASE_ID,
@@ -9,9 +10,11 @@ import { useStore } from "../../../store/store";
 import Space from "../../space";
 
 export default function KanbanPinned() {
-  const { useStoreUser } = useStore();
+  const { useStoreUser, useStoreNotes } = useStore();
   const { user } = useStoreUser();
+  const { setSelectedNotes } = useStoreNotes();
   const [notes, setNotes] = useState<any[]>([]);
+  const router = useRouter();
 
   useEffect(() => {
     const fetchKanban = async () => {
@@ -85,7 +88,15 @@ export default function KanbanPinned() {
         style={{ borderLeft: "1px solid #3d3d3d" }}
       >
         {notes.map((note, index) => (
-          <div key={index} className="sidebar-menu-item-container-notes-item">
+          <div
+            key={index}
+            className="sidebar-menu-item-container-notes-item"
+            onClick={() => {
+              console.log(note, "note");
+              router.push(`/notes/${note?.folderId}`);
+              setSelectedNotes(note);
+            }}
+          >
             <label className="sidebar-dropdown-item">{note?.title}</label>
           </div>
         ))}

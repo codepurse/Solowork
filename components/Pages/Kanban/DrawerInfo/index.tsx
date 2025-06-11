@@ -15,7 +15,7 @@ import {
   databases,
   KANBAN_COLLECTION_ID,
   storage,
-  TASKS_ATTACHMENTS_BUCKET_ID
+  TASKS_ATTACHMENTS_BUCKET_ID,
 } from "../../../../constant/appwrite";
 import { useStore } from "../../../../store/store";
 import {
@@ -38,7 +38,6 @@ export default function DrawerInfo() {
   const [showAddTaskModal, setShowAddTaskModal] = useState(false);
   const [pinned, setPinned] = useState(false);
   const [isPinning, setIsPinning] = useState(false);
-  
 
   useEffect(() => {
     if (drawerInfo?.checklist) {
@@ -118,14 +117,14 @@ export default function DrawerInfo() {
   const handlePinTask = async () => {
     // Prevent multiple API calls
     if (isPinning) return;
-    
+
     setIsPinning(true);
     const newPinnedState = !pinned;
-    
+
     try {
       // Optimistic update for better UX
       setPinned(newPinnedState);
-      
+
       await databases.updateDocument(
         DATABASE_ID,
         KANBAN_COLLECTION_ID,
@@ -134,7 +133,7 @@ export default function DrawerInfo() {
           pinned: newPinnedState,
         }
       );
-      
+
       // Optionally refresh the kanban data
       mutate(["kanban_tasks", drawerInfo?.kanbanId]);
       console.log("Task pinned successfully");
@@ -158,11 +157,11 @@ export default function DrawerInfo() {
           <i onClick={() => setShowModal(true)}>
             <Trash size={15} />
           </i>
-          <i 
+          <i
             onClick={handlePinTask}
-            style={{ 
-              cursor: isPinning ? 'not-allowed' : 'pointer',
-              color: pinned ? '#ffd700' : '#888'
+            style={{
+              cursor: isPinning ? "not-allowed" : "pointer",
+              color: pinned ? "#ffd700" : "#888",
             }}
           >
             <Pin size={15} />

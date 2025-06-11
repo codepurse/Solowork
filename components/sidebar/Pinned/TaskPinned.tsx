@@ -1,4 +1,5 @@
 import { Query } from "appwrite";
+import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import client, {
   DATABASE_ID,
@@ -13,12 +14,15 @@ interface Task {
   userID: string;
   title: string;
   pinned: boolean;
+  kanbanId: string;
 }
 
 export default function TaskPinned() {
-  const { useStoreUser } = useStore();
+  const { useStoreUser, useStoreKanban } = useStore();
   const { user } = useStoreUser();
+  const { setDrawerInfo, setShowDrawerInfo } = useStoreKanban();
   const [tasks, setTasks] = useState<Task[]>([]);
+  const router = useRouter();
 
   useEffect(() => {
     const fetchKanban = async () => {
@@ -99,6 +103,12 @@ export default function TaskPinned() {
           <div
             key={task.$id || index}
             className="sidebar-menu-item-container-notes-item"
+            onClick={() => {
+              console.log(task, "task");
+              router.push(`/kanban/${task?.kanbanId}`);
+              setDrawerInfo(task);
+              setShowDrawerInfo(true);
+            }}
           >
             <label className="sidebar-dropdown-item">{task?.title}</label>
           </div>

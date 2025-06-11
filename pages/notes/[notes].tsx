@@ -18,14 +18,10 @@ import { useStore } from "../../store/store";
 
 export default function Notes() {
   const { useStoreNotes } = useStore();
-  const { hideSideNotes, selectedNotes, sortBy, setSortBy } = useStoreNotes();
+  const { hideSideNotes, selectedNotes, sortBy } = useStoreNotes();
   const router = useRouter();
   const { notes } = router.query;
   const [notesList, setNotesList] = useState<any[]>([]);
-
-  // ... existing code ...
-
-  // ... existing code ...
 
   const fetchSelectedNote = async (noteId: string) => {
     try {
@@ -78,14 +74,9 @@ export default function Notes() {
 
   useEffect(() => {
     if (data) {
-      console.log("data", data);
       setNotesList(data);
     }
   }, [data]);
-
-  useEffect(() => {
-    console.log("sortBy", sortBy);
-  }, [sortBy]);
 
   return (
     <Container fluid className="notes-container">

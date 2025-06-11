@@ -59,7 +59,7 @@ function HeaderTabs({ kanbanId, kanbanDetails }) {
       <div className="kanban-board-header">
         <Space align="evenly">
           <Space gap={10}>
-            <p className="kanban-board-title mb-0">{name}</p>
+            <p className="kanban-board-title mb-0">{kanbanDetails?.name}</p>
             <i>
               <Pin
                 size={18}

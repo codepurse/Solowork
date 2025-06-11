@@ -1,4 +1,4 @@
-import { ChevronDown, File, LoaderPinwheel, Pencil } from "lucide-react";
+import { ChevronDown, LoaderPinwheel, Pencil } from "lucide-react";
 import { useRouter } from "next/router";
 import { useStore } from "../../../store/store";
 import Space from "../../space";
@@ -9,13 +9,6 @@ export default function Workspace({ showSidebar }: { showSidebar: boolean }) {
   const { setSidebarSelected, sidebarSelected } = useSidebar();
 
   const menuItems = [
-    {
-      id: 1,
-      name: "Documents",
-      icon: <File size={17} color="gray" />,
-      collapsed: true,
-      onClick: () => router.push("/files"),
-    },
     {
       id: 2,
       name: "Focus Mode",
