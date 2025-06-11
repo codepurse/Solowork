@@ -1,4 +1,5 @@
 import { Query } from "appwrite";
+import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import client, {
   DATABASE_ID,
@@ -12,6 +13,7 @@ export default function WhiteboardPinned() {
   const { useStoreUser } = useStore();
   const { user } = useStoreUser();
   const [whiteboards, setWhiteboards] = useState<any[]>([]);
+  const router = useRouter();
 
   useEffect(() => {
     const fetchKanban = async () => {
@@ -75,6 +77,10 @@ export default function WhiteboardPinned() {
     };
   }, [user?.$id, DATABASE_ID, WHITEBOARD_COLLECTION_ID]);
 
+  const handleClick = (whiteboard: any) => {
+    router.push(`/whiteboard/${whiteboard?.$id}`);
+  };
+
   return (
     <div className="sidebar-menu-item-container">
       <Space
@@ -85,7 +91,11 @@ export default function WhiteboardPinned() {
         style={{ borderLeft: "1px solid #3d3d3d" }}
       >
         {whiteboards.map((whiteboard, index) => (
-          <div key={index} className="sidebar-menu-item-container-notes-item">
+          <div
+            onClick={() => handleClick(whiteboard)}
+            key={index}
+            className="sidebar-menu-item-container-notes-item"
+          >
             <label className="sidebar-dropdown-item">{whiteboard?.name}</label>
           </div>
         ))}
