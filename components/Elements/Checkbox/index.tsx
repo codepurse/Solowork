@@ -6,6 +6,7 @@ interface CheckboxProps {
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   style?: React.CSSProperties;
 }
+
 export default function Checkbox({
   label,
   id,
@@ -15,31 +16,19 @@ export default function Checkbox({
   style,
 }: Readonly<CheckboxProps>) {
   return (
-    <div
-      className="checkbox-wrapper-4"
-      onClick={(e) => e.stopPropagation()}
-      style={style}
-    >
+    <div className="modern-checkbox" style={style}>
       <input
-        className="inp-cbx"
-        id={id}
         type="checkbox"
+        id={id}
         checked={checked}
         onChange={onChange}
       />
-      <label className="cbx mb-0 pb-0 pt-0" htmlFor={id}>
-        <span>
-          <svg width="12px" height="10px">
-            <use xlinkHref="#check-4"></use>
-          </svg>
+      <label htmlFor={id}>
+        <span className="checkbox-icon"></span>
+        <span className={`checkbox-text ${ellipsis ? "ellipsis" : ""}`}>
+          {label}
         </span>
-        <span className={ellipsis ? "ellipsis" : ""}>{label} </span>
       </label>
-      <svg className="inline-svg">
-        <symbol id="check-4" viewBox="0 0 12 10">
-          <polyline points="1.5 6 4.5 9 10.5 1"></polyline>
-        </symbol>
-      </svg>
     </div>
   );
 }

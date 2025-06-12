@@ -1,10 +1,13 @@
 import dayjs from "dayjs";
-import { ChevronDown, Trash2 } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import isBetween from "dayjs/plugin/isBetween";
+import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
+import { ChevronDown, Edit2, Trash2 } from "lucide-react";
+import { Fragment, useEffect, useMemo, useRef, useState } from "react";
 import { Col, Container, Modal, Row } from "react-bootstrap";
 import Space from "../components/space";
 
 import { Models, Query } from "appwrite";
+import { useInView } from 'react-intersection-observer';
 import useSWR, { mutate } from "swr";
 import Button from "../components/Elements/Button";
 import Checkbox from "../components/Elements/Checkbox";
@@ -16,11 +19,16 @@ import {
   databases,
 } from "../constant/appwrite";
 
+dayjs.extend(isBetween);
+dayjs.extend(isSameOrBefore);
+
 type ListItem = {
   name: string;
   description?: string;
   done: boolean;
   dateSched: string;
+  repeat?: "daily" | "weekly" | "monthly";
+  completedDates?: string[]; // Store dates when recurring task was completed
 } & Models.Document;
 
 const arrColor = ["#1ABC9C", "#2ECC71", "#3498DB", "#9B59B6"];
@@ -30,22 +38,39 @@ export default function List() {
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const pendingUpdates = useRef<Record<string, NodeJS.Timeout>>({});
+  const { ref, inView } = useInView({
+    threshold: 0.5
+  });
+  const [dateRange, setDateRange] = useState({
+    start: dayjs().startOf("day"),
+    end: dayjs().add(6, "day").endOf("day")
+  });
+  const [offset, setOffset] = useState(0);
+  const [hasMore, setHasMore] = useState(true);
 
   const fetchList = async () => {
-    const today = dayjs().startOf("day").toISOString();
-    const next7 = dayjs().add(6, "day").endOf("day").toISOString();
-
     try {
       const result = await databases.listDocuments(
         DATABASE_ID,
         LIST_COLLECTION_ID,
         [
-          Query.greaterThanEqual("dateSched", today),
-          Query.lessThanEqual("dateSched", next7),
           Query.orderAsc("dateSched"),
+          Query.greaterThanEqual("dateSched", dateRange.start.toISOString()),
+          Query.limit(100),
+          Query.offset(offset)
         ]
       );
-      return result.documents as ListItem[];
+      
+      if (result.documents.length < 100) {
+        setHasMore(false);
+      }
+      
+      const processedDocs = processRecurringTasks(
+        result.documents as ListItem[],
+        dateRange.start.toISOString(),
+        dateRange.end.toISOString()
+      );
+      return processedDocs;
     } catch (err) {
       console.error("Failed to fetch list:", err);
       return [];
@@ -68,16 +93,30 @@ export default function List() {
     }
   }, [data]);
 
+  // Add effect to load more dates when scrolling
+  useEffect(() => {
+    if (inView) {
+      setDateRange(prev => ({
+        start: prev.start,
+        end: dayjs(prev.end).add(7, "day").endOf("day")
+      }));
+    }
+  }, [inView]);
+
   const groupByDateWithPadding = (items: ListItem[]) => {
     const days: Record<string, ListItem[]> = {};
-    for (let i = 0; i < 7; i++) {
-      const date = dayjs().add(i, "day").format("YYYY-MM-DD");
-      days[date] = [];
+    let current = dateRange.start;
+    
+    while (current.isSameOrBefore(dateRange.end, 'day')) {
+      days[current.format('YYYY-MM-DD')] = [];
+      current = current.add(1, 'day');
     }
+
     items.forEach((item) => {
       const date = dayjs(item.dateSched).format("YYYY-MM-DD");
-      if (!days[date]) days[date] = [];
-      days[date].push(item);
+      if (days[date]) {
+        days[date].push(item);
+      }
     });
     return days;
   };
@@ -103,21 +142,48 @@ export default function List() {
       clearTimeout(pendingUpdates.current[id]);
     }
 
+    // Handle recurring task instances
+    const [originalId, dateStr] = id.split("_");
+    const isRecurringInstance = dateStr !== undefined;
+
     // Optimistically update the local state
     setList((prevList) =>
-      prevList.map((item) =>
-        item.$id === id ? { ...item, done } : item
-      )
+      prevList.map((item) => (item.$id === id ? { ...item, done } : item))
     );
 
     // Set a new debounced update
     pendingUpdates.current[id] = setTimeout(async () => {
       try {
-        await databases.updateDocument(DATABASE_ID, LIST_COLLECTION_ID, id, {
-          done,
-        });
+        if (isRecurringInstance) {
+          // For recurring tasks, update the completedDates array
+          const originalTask = list.find((item) => item.$id === originalId);
+          const completedDates = new Set(originalTask?.completedDates || []);
+
+          if (done) {
+            completedDates.add(dateStr);
+          } else {
+            completedDates.delete(dateStr);
+          }
+
+          await databases.updateDocument(
+            DATABASE_ID,
+            LIST_COLLECTION_ID,
+            originalId,
+            {
+              completedDates: Array.from(completedDates),
+            }
+          );
+        } else {
+          // For regular tasks, update as before
+          await databases.updateDocument(DATABASE_ID, LIST_COLLECTION_ID, id, {
+            done,
+          });
+        }
+
         // Remove the pending update after success
         delete pendingUpdates.current[id];
+        // Refresh the list to get updated data
+        mutate("list");
       } catch (error) {
         console.error("Failed to update task:", error);
         // Revert the optimistic update on error
@@ -126,24 +192,95 @@ export default function List() {
             item.$id === id ? { ...item, done: !done } : item
           )
         );
-        // Remove the pending update after error
         delete pendingUpdates.current[id];
       }
-    }, 500); // Wait 500ms before making the API call
+    }, 500);
   };
 
   // Cleanup pending updates on unmount
   useEffect(() => {
     return () => {
-      Object.values(pendingUpdates.current).forEach(timeout => clearTimeout(timeout));
+      Object.values(pendingUpdates.current).forEach((timeout) =>
+        clearTimeout(timeout)
+      );
     };
   }, []);
 
+  const DiverMemo = useMemo(() => {
+    return function DiverComponent({ index }: { index: number }) {
+      return (
+        <ListDivider color={arrColor[index % arrColor.length]} index={index} />
+      );
+    };
+  }, []);
+
+  // Function to process recurring tasks
+  const processRecurringTasks = (
+    tasks: ListItem[],
+    startDate: string,
+    endDate: string
+  ) => {
+    const processedTasks: ListItem[] = [];
+
+    tasks.forEach((task) => {
+      if (!task.repeat) {
+        // If it's a regular task within our date range, include it
+        if (dayjs(task.dateSched).isBetween(startDate, endDate, "day", "[]")) {
+          processedTasks.push(task);
+        }
+        return;
+      }
+
+      // Handle recurring tasks
+      let currentDate = dayjs(startDate);
+      const endDateTime = dayjs(endDate);
+
+      while (currentDate.isSameOrBefore(endDateTime, "day")) {
+        const originalTaskDate = dayjs(task.dateSched);
+        let shouldInclude = false;
+
+        switch (task.repeat) {
+          case "daily":
+            shouldInclude = true;
+            break;
+          case "weekly":
+            shouldInclude = currentDate.day() === originalTaskDate.day();
+            break;
+          case "monthly":
+            shouldInclude = currentDate.date() === originalTaskDate.date();
+            break;
+        }
+
+        if (shouldInclude) {
+          const dateStr = currentDate.format("YYYY-MM-DD");
+          processedTasks.push({
+            ...task,
+            dateSched: currentDate.toISOString(),
+            done: task.completedDates?.includes(dateStr) ?? false,
+            // Add a virtual ID for recurring instances
+            $id: `${task.$id}_${dateStr}`,
+            isRecurringInstance: true,
+            originalTaskId: task.$id,
+          });
+        }
+
+        currentDate = currentDate.add(1, "day");
+      }
+    });
+
+    return processedTasks.sort(
+      (a, b) => dayjs(a.dateSched).valueOf() - dayjs(b.dateSched).valueOf()
+    );
+  };
+
   return (
-    <Container className="list-container">
+    <Container fluid className="list-container">
       <Row>
         <Col lg={12}>
-          <div className="header-container">
+          <div
+            className="header-container"
+            style={{ maxWidth: "1200px", margin: "0 auto" }}
+          >
             <Space gap={10} align="evenly">
               <p className="header-title">Stay on Track This Week</p>
               <Button onClick={() => setShowModal(true)}>Add Task</Button>
@@ -152,58 +289,74 @@ export default function List() {
           {loading ? (
             <p>Loading...</p>
           ) : (
-            Object.entries(grouped).map(([date, items], index) => (
-              <div key={date} className="mb-2">
+            Object.entries(grouped).map(([date, items], index, array) => (
+              <div
+                key={date}
+                className="mb-2"
+                style={{ maxWidth: "1200px", margin: "0 auto" }}
+                ref={index === array.length - 1 ? ref : undefined}
+              >
                 <div className="list-container-header">
                   <Space gap={7}>
                     <p className="list-date">
                       {dayjs(date).format("ddd, MMM D")}
                     </p>
-                    <ListDivider color={arrColor[index % arrColor.length]} />
+                    <DiverMemo index={index} />
                     <i>
                       <ChevronDown size={16} />
                     </i>
                   </Space>
                 </div>
-                <div className="list-container-body">
-                  {items.length === 0 ? (
+
+                {items.length === 0 ? (
+                  <div
+                    className="list-container-body"
+                    style={{ padding: "10px" }}
+                  >
                     <p className="empty-list-text">No items for this day.</p>
-                  ) : (
-                    items.map((item) => (
-                      <Space
-                        fill
-                        gap={10}
-                        align="evenly"
-                        alignItems="start"
-                        key={item.$id}
-                        className="mb-2"
-                      >
-                        <div>
-                          <Checkbox
-                            key={item.$id}
-                            label={item.name}
-                            id={item.$id}
-                            checked={item.done}
-                            onChange={(e) =>
-                              handleUpdateTask(item.$id, e.target.checked)
-                            }
-                          />
-                          {item.description && (
-                            <p className="list-item-description">
-                              {item.description}
-                            </p>
-                          )}
+                  </div>
+                ) : (
+                  <Fragment>
+                    {items.map((item) => (
+                      <Space key={item.$id} gap={20} alignItems="start">
+                        <p className="list-item-time">
+                          {dayjs(item.dateSched).format("HH:mm")}
+                        </p>
+                        <div className="list-container-body">
+                          <Space fill gap={10} align="evenly" className="mb-2">
+                            <div>
+                              <Checkbox
+                                key={item.$id}
+                                label={item.name}
+                                id={item.$id}
+                                checked={item.done}
+                                onChange={(e) =>
+                                  handleUpdateTask(item.$id, e.target.checked)
+                                }
+                              />
+                              {item.description && (
+                                <p className="list-item-description">
+                                  {item.description}
+                                </p>
+                              )}
+                            </div>
+                            <Space gap={15}>
+                              <i className="delete-icon">
+                                <Edit2 size={15} />
+                              </i>
+                              <i
+                                className="delete-icon"
+                                onClick={() => deleteTask(item.$id)}
+                              >
+                                <Trash2 size={16} />
+                              </i>
+                            </Space>
+                          </Space>
                         </div>
-                        <i
-                          className="delete-icon"
-                          onClick={() => deleteTask(item.$id)}
-                        >
-                          <Trash2 size={16} />
-                        </i>
                       </Space>
-                    ))
-                  )}
-                </div>
+                    ))}
+                  </Fragment>
+                )}
               </div>
             ))
           )}

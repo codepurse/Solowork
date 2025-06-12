@@ -1,20 +1,75 @@
-// components/ListDivider.tsx
-import React from "react";
+import React, { useMemo } from "react";
 
-export const ListDivider: React.FC<{ color: string }> = ({ color }) => {
+type DividerVariant = 'wave' | 'zigzag' | 'curve' | 'mountains';
+
+interface ListDividerProps {
+  color: string;
+  variant?: DividerVariant;
+  index?: number;
+}
+
+const variants: DividerVariant[] = ['wave', 'zigzag', 'curve', 'mountains'];
+
+export const ListDivider: React.FC<ListDividerProps> = ({ color, variant, index = 0 }) => {
   const encodedColor = encodeURIComponent(color);
 
-  const beforeSVG = `url("data:image/svg+xml,%3Csvg width='100' height='3' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0,1.5 Q5,0.5 10,1.5 T20,1.5 T30,1.5 T40,1.5 T50,1.5 T60,1.5 T70,1.5 T80,1.5 T90,1.5 T100,1.5' stroke='${encodedColor}' stroke-width='2' fill='none' stroke-linecap='round' stroke-linejoin='round' opacity='1'/%3E%3C/svg%3E")`;
+  // Use useMemo to keep the variant consistent for this instance
+  const actualVariant = useMemo(() => {
+    if (variant) return variant;
+    // Use index to determine variant, making it consistent for each divider
+    return variants[index % variants.length];
+  }, [variant, index]);
 
-  const afterSVG = `url("data:image/svg+xml,%3Csvg width='120' height='2' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0,1 Q3,0.3 6,1 T12,1 Q15,1.7 18,1 T24,1 Q27,0.3 30,1 T36,1 Q39,1.7 42,1 T48,1 Q51,0.3 54,1 T60,1 Q63,1.7 66,1 T72,1 Q75,0.3 78,1 T84,1 Q87,1.7 90,1 T96,1 Q99,0.3 102,1 T108,1 Q111,1.7 114,1 T120,1' stroke='${encodedColor}' stroke-width='1.5' fill='none' stroke-linecap='round' opacity='0.8'/%3E%3C/svg%3E")`;
+  const getSVGPath = (variant: DividerVariant) => {
+    switch (variant) {
+      case 'wave':
+        return {
+          width: 120,
+          height: 4,
+          path: 'M0,2 C20,1 20,3 40,2 C60,1 60,3 80,2 C100,1 100,3 120,2',
+          strokeWidth: 1.5,
+          opacity: 0.9
+        };
+      case 'zigzag':
+        return {
+          width: 100,
+          height: 6,
+          path: 'M0,3 L20,1 L40,5 L60,1 L80,5 L100,3',
+          strokeWidth: 1.5,
+          opacity: 0.9
+        };
+      case 'curve':
+        return {
+          width: 120,
+          height: 6,
+          path: 'M0,3 C30,1 30,5 60,3 C90,1 90,5 120,3',
+          strokeWidth: 1.5,
+          opacity: 0.9
+        };
+      case 'mountains':
+        return {
+          width: 100,
+          height: 8,
+          path: 'M0,6 C10,6 15,1 25,6 C35,6 40,2 50,6 C60,6 65,1 75,6 C85,6 90,2 100,6',
+          strokeWidth: 1.5,
+          opacity: 0.85
+        };
+    }
+  };
+
+  const createSVGUrl = (variant: DividerVariant) => {
+    const { width, height, path, strokeWidth, opacity } = getSVGPath(variant);
+    return `url("data:image/svg+xml,%3Csvg width='${width}' height='${height}' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='${path}' stroke='${encodedColor}' stroke-width='${strokeWidth}' fill='none' stroke-linecap='round' stroke-linejoin='round' opacity='${opacity}'/%3E%3C/svg%3E")`;
+  };
+
+  const dividerSVG = createSVGUrl(actualVariant);
 
   return (
     <div
-      className="list-divider"
+      className={`list-divider list-divider-${actualVariant}`}
       style={
         {
-          "--before-bg": beforeSVG,
-          "--after-bg": afterSVG,
+          "--divider-bg": dividerSVG,
         } as React.CSSProperties
       }
     />

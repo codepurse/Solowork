@@ -3,12 +3,15 @@ import dayjs from "dayjs";
 import { X } from "lucide-react";
 import { useState } from "react";
 import { Col, Container, Row } from "react-bootstrap";
+import { mutate } from "swr";
 import {
-    DATABASE_ID,
-    databases,
-    LIST_COLLECTION_ID,
+  DATABASE_ID,
+  databases,
+  LIST_COLLECTION_ID,
 } from "../../../constant/appwrite";
 import Button from "../../Elements/Button";
+import DatePicker from "../../Elements/DatePicker";
+import Dropdown from "../../Elements/Dropdown";
 import Text from "../../Elements/Text";
 import TextArea from "../../Elements/TextArea";
 import Space from "../../space";
@@ -18,10 +21,21 @@ interface ModalAddListProps {
   onHide: () => void;
 }
 
+const repeatOptions = [
+  { label: "None", value: "none" },
+  { label: "Daily", value: "daily" },
+  { label: "Weekly", value: "weekly" },
+  { label: "Monthly", value: "monthly" },
+  { label: "Yearly", value: "yearly" },
+];
+
 export default function ModalAddList({ show, onHide }: ModalAddListProps) {
   const [taskName, setTaskName] = useState("");
   const [description, setDescription] = useState("");
-  const [dateSched, setDateSched] = useState("");
+  const [dateSched, setDateSched] = useState<Date | null>(new Date());
+  const [repeat, setRepeat] = useState<{ label: string; value: string } | null>(
+    null
+  );
   const [loading, setLoading] = useState(false);
 
   const handleSaveTask = async () => {
@@ -34,11 +48,13 @@ export default function ModalAddList({ show, onHide }: ModalAddListProps) {
         {
           name: taskName,
           description: description,
-          dateSched: dayjs().toISOString(),
+          dateSched: dayjs(dateSched).toISOString(),
           done: false,
+          repeat: repeat?.value,
         }
       );
-      console.log("sucess");
+      mutate(`list`);
+      onHide();
     } catch (error) {
       console.log(error);
     } finally {
@@ -73,6 +89,29 @@ export default function ModalAddList({ show, onHide }: ModalAddListProps) {
                 setTaskName(e.target.value);
               }}
             />
+          </Col>
+          <Col lg={6}>
+            <p className="modal-form-title">Date</p>
+            <DatePicker
+              withTime={false}
+              timeZone="Asia/Manila"
+              value={dateSched}
+              onChange={(newDate) => {
+                if (!dayjs(newDate).isBefore(dayjs())) {
+                  setDateSched(newDate);
+                }
+              }}
+            />
+          </Col>
+          <Col lg={6}>
+            <p className="modal-form-title">Repeat</p>
+            <Dropdown
+              options={repeatOptions}
+              onChange={(e) => setRepeat(e)}
+              value={repeat}
+            />
+          </Col>
+          <Col lg={12}>
             <p className="modal-form-title">Description</p>
             <TextArea
               rows={5}

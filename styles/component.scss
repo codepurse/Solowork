@@ -1739,3 +1739,27 @@ div.svg-wrap {
     opacity: 1;
   }
 }
+
+.list-divider {
+  position: relative;
+  width: 100%;
+  background-repeat: repeat-x;
+  background-position: center;
+  background-image: var(--divider-bg);
+}
+
+.list-divider-wave {
+  height: 3px;
+}
+
+.list-divider-zigzag {
+  height: 6px;
+}
+
+.list-divider-curve {
+  height: 8px;
+}
+
+.list-divider-mountains {
+  height: 10px;
+}
