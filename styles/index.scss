@@ -26,6 +26,7 @@ body,
 #root {
   height: 100%;
   width: 100%;
+  background-color: #040019 !important;
 }
 
 $primary-color: #7c4dff;
@@ -55,6 +56,7 @@ body {
 main {
   height: 100vh;
   width: 100%;
+  background-color: #040019;
 }
 
 .rotated {
@@ -3888,4 +3890,113 @@ main {
 }
 
 .modal-whiteboard {
+}
+
+.list-container {
+  padding-top: 80px;
+  .list-container-header {
+    .list-date {
+      font-size: 14px;
+      font-weight: 400;
+      color: #fbfbfb;
+      margin-bottom: 0px;
+      width: max-content;
+      min-width: max-content;
+      padding-right: 10px;
+    }
+    .list-divider {
+      width: 100%;
+      height: 20px;
+      position: relative;
+      margin: 5px 0;
+      overflow: hidden;
+
+      &::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: -2%;
+        width: 104%;
+        height: 3px;
+        background-image: var(--before-bg);
+        background-repeat: repeat-x;
+        background-size: 100px 3px;
+        transform: translateY(-50%);
+        filter: contrast(1.2);
+      }
+
+      &::after {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: -1%;
+        width: 102%;
+        height: 2px;
+        background-image: var(--after-bg);
+        background-repeat: repeat-x;
+        background-size: 120px 2px;
+        transform: translateY(-50%) translateX(10px);
+        opacity: 0.7;
+      }
+    }
+
+    i {
+      min-width: 40px;
+      max-width: 40px;
+      width: 40px;
+      color: white;
+      cursor: pointer;
+      transition: all 0.2s ease-in-out;
+      text-align: center;
+      &:hover {
+        color: $primary-color;
+      }
+    }
+  }
+  .list-container-body {
+    width: 100%;
+    height: max-content;
+    padding: 10px;
+    margin-top: 10px;
+    background-color: #110d28;
+    border: 1px solid #252525;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+  .header-container {
+    position: sticky;
+    top: 80px;
+    z-index: 1000;
+    background-color: #040019;
+    margin-bottom: 20px;
+    .header-title {
+      font-size: 20px;
+      font-weight: 400;
+      color: #fbfbfb;
+      margin-bottom: 0px;
+    }
+  }
+  .empty-list-text {
+    font-size: 14px;
+    font-weight: 400;
+    color: #888;
+    margin-bottom: 0px;
+    text-align: center;
+  }
+  .list-item-description {
+    font-size: 14px;
+    font-weight: 400;
+    color: #888;
+    margin-bottom: 0px;
+    margin-left: 35px;
+    margin-top: -5px;
+  }
+  .delete-icon {
+    color: white;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    &:hover {
+      color: $primary-color;
+    }
+  }
 }

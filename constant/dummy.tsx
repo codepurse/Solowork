@@ -267,3 +267,16 @@ export const UPLOAD_FILES = [
     type: "presentation",
   },
 ];
+
+export const DUMMY_LIST = [
+  {
+    id: "1",
+    name: "Making my own SASS",
+    description:
+      "I want to make my own SASS, that will be used for my portfolio website",
+    dateScheduled: "2025-06-12",
+    dateCompleted: "2025-06-12",
+    dateCancelled: "2025-06-12",
+    dateInprogress: "2025-06-12",
+  },
+];

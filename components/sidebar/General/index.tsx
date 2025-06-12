@@ -1,4 +1,4 @@
-import { File, Folder, LayoutDashboard } from "lucide-react";
+import { CheckCircle, File, Folder, LayoutDashboard } from "lucide-react";
 import { useRouter } from "next/router";
 import GeneralList from "./GeneralList";
 
@@ -24,6 +24,12 @@ export default function General({ showSidebar }: { showSidebar: boolean }) {
       icon: <File size={17} color="gray" />,
       collapsed: true,
       onClick: () => {},
+    },
+    {
+      id: 5,
+      name: "List",
+      icon: <CheckCircle size={17} color="gray" />,
+      onClick: () => router.push("/list"),
     },
   ];
 
