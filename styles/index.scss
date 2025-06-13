@@ -3993,9 +3993,18 @@ main {
     background-color: #040019;
     .header-title {
       font-size: 20px;
-      font-weight: 400;
+      font-weight: 500;
       color: #fbfbfb;
       margin-bottom: 0px;
+    }
+    .header-subtitle {
+      font-size: 22px;
+      font-weight: 500;
+      background-image: linear-gradient(120deg, #a6c0fe 0%, #f68084 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 0px;
+      background-clip: text;
     }
   }
   .empty-list-text {
@@ -4100,6 +4109,46 @@ main {
       background-color: #110d28;
       border: 1px solid $primary-color;
       border-radius: 8px;
+    }
+  }
+}
+
+.statistics-wrapper {
+  padding: 5px 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  .statistics-container {
+    position: relative;
+
+    margin-bottom: 2rem;
+
+    canvas {
+      filter: drop-shadow(0 0 10px rgba(0, 157, 255, 0.2))
+        drop-shadow(0 0 15px rgba(255, 122, 0, 0.2))
+        drop-shadow(0 0 20px rgba(138, 43, 226, 0.2));
+    }
+  }
+
+  .statistics-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+
+    .statistics-amount {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: white;
+      text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+    }
+
+    .statistics-label {
+      font-size: 14px;
+      color: white;
+      font-weight: 400;
+      opacity: 0.8;
     }
   }
 }

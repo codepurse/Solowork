@@ -1,19 +1,20 @@
 import dayjs from "dayjs";
 import isBetween from "dayjs/plugin/isBetween";
 import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
-import { ChevronDown, ListFilterPlus, Trash2 } from "lucide-react";
+import { ChevronDown, Kanban, ListCheck, Trash2 } from "lucide-react";
 import { Fragment, useEffect, useMemo, useRef, useState } from "react";
-import { Col, Container, Modal, Row } from "react-bootstrap";
+import { Col, Container, Row } from "react-bootstrap";
 import Space from "../components/space";
 
 import { Models, Query } from "appwrite";
 import { useInView } from "react-intersection-observer";
 import useSWR, { mutate } from "swr";
-import Button from "../components/Elements/Button";
 import Checkbox from "../components/Elements/Checkbox";
+import { Tabs } from "../components/Elements/Tab/Tab";
 import CalendarList from "../components/Pages/List/CalendarList";
 import { ListDivider } from "../components/Pages/List/ListDivider";
-import ModalAddList from "../components/Pages/List/ModalAddList";
+import ListHeader from "../components/Pages/List/ListHeader";
+import ListStatistics from "../components/Pages/List/ListStatistics";
 import { StarButton } from "../components/Pages/Notes/StarNotes";
 import {
   DATABASE_ID,
@@ -324,9 +325,14 @@ export default function List() {
     // Set a new debounced update
     pendingUpdates.current[id] = setTimeout(async () => {
       try {
-        await databases.updateDocument(DATABASE_ID, LIST_COLLECTION_ID, updateId, {
-          starred: !isStarred,
-        });
+        await databases.updateDocument(
+          DATABASE_ID,
+          LIST_COLLECTION_ID,
+          updateId,
+          {
+            starred: !isStarred,
+          }
+        );
 
         // Remove the pending update after success
         delete pendingUpdates.current[id];
@@ -355,136 +361,133 @@ export default function List() {
     }, 500);
   };
 
+  const tabs = [
+    { id: "List", label: "Kanban", icon: <ListCheck size={15} /> },
+    { id: "Kanban", label: "Table", icon: <Kanban size={15} /> },
+  ];
+
+  const [activeTab, setActiveTab] = useState("List");
+
   return (
     <Fragment>
-      <Container className="list-container" style={{ paddingTop: "55px" }}>
-        <Row>
-          <Col lg={12}>
-            <div className="header-container">
-              <Space gap={10} align="evenly">
-                <p className="header-title">Stay on Track This Week</p>
-                <Space gap={10}>
-                  <button className="filter-button">
-                    <i>
-                      <ListFilterPlus size={15} />
-                    </i>
-                    <span>Filter</span>
-                  </button>
-                  <Button onClick={() => setShowModal(true)}>Add Task</Button>
-                </Space>
-              </Space>
-            </div>
-          </Col>
-        </Row>
-      </Container>
+      <ListHeader />
       <Container className="list-container">
-        <Row>
-          <Col>
-            {loading ? (
-              <p>Loading...</p>
-            ) : (
-              Object.entries(grouped).map(([date, items], index, array) => (
-                <div
-                  key={date}
-                  className="mb-2"
-                  style={{ maxWidth: "1200px", margin: "0 auto" }}
-                  ref={index === array.length - 1 ? ref : undefined}
-                >
-                  <div className="list-container-header">
-                    <Space gap={7}>
-                      <p className="list-date">
-                        {dayjs(date).format("ddd, MMM D")}
-                      </p>
-                      <DiverMemo index={index} />
-                      <i>
-                        <ChevronDown size={16} />
-                      </i>
-                    </Space>
-                  </div>
-
-                  {items.length === 0 ? (
-                    <div
-                      className="list-container-body"
-                      style={{ padding: "10px" }}
-                    >
-                      <p className="empty-list-text">No items for this day.</p>
+        <div style={{ marginTop: "-10px", marginBottom: "10px" }}>
+          <Tabs
+            tabs={tabs}
+            activeTab={activeTab}
+            onTabChange={(tab) => setActiveTab(tab)}
+          />
+        </div>
+        {activeTab === "List" && (
+          <Row>
+            <Col>
+              {loading ? (
+                <p>Loading...</p>
+              ) : (
+                Object.entries(grouped).map(([date, items], index, array) => (
+                  <div
+                    key={date}
+                    className="mb-2"
+                    style={{ maxWidth: "1200px", margin: "0 auto" }}
+                    ref={index === array.length - 1 ? ref : undefined}
+                  >
+                    <div className="list-container-header">
+                      <Space gap={7}>
+                        <p className="list-date">
+                          {dayjs(date).format("ddd, MMM D")}
+                        </p>
+                        <DiverMemo index={index} />
+                        <i>
+                          <ChevronDown size={16} />
+                        </i>
+                      </Space>
                     </div>
-                  ) : (
-                    <Fragment>
-                      {items.map((item) => (
-                        <Space key={item.$id} gap={20} alignItems="start">
-                          <p className="list-item-time">
-                            {dayjs(item.dateSched).format("HH:mm")}
-                          </p>
-                          <div className="list-container-body">
-                            <Space
-                              fill
-                              gap={10}
-                              align="evenly"
-                              className="mb-2"
-                            >
-                              <div>
-                                <Checkbox
-                                  key={item.$id}
-                                  label={item.name}
-                                  id={item.$id}
-                                  checked={item.done}
-                                  onChange={(e) =>
-                                    handleUpdateTask(item.$id, e.target.checked)
-                                  }
-                                />
-                                {item.description && (
-                                  <p className="list-item-description">
-                                    {item.description}
-                                  </p>
-                                )}
-                              </div>
-                              <Space gap={10}>
-                                <div style={{ marginTop: "-2px" }}>
-                                  <StarButton
-                                    isStarred={item?.starred}
-                                    onToggle={() => {
-                                      console.log(item);
-                                      handleStarToggle(
-                                        item?.$id,
-                                        item.starred
-                                      );
-                                    }}
-                                    size={20}
+
+                    {items.length === 0 ? (
+                      <div
+                        className="list-container-body"
+                        style={{ padding: "10px" }}
+                      >
+                        <p className="empty-list-text">
+                          No items for this day.
+                        </p>
+                      </div>
+                    ) : (
+                      <Fragment>
+                        {items.map((item) => (
+                          <Space key={item.$id} gap={20} alignItems="start">
+                            <p className="list-item-time">
+                              {dayjs(item.dateSched).format("HH:mm")}
+                            </p>
+                            <div className="list-container-body">
+                              <Space
+                                fill
+                                gap={10}
+                                align="evenly"
+                                className="mb-2"
+                              >
+                                <div>
+                                  <Checkbox
+                                    key={item.$id}
+                                    label={item.name}
+                                    id={item.$id}
+                                    checked={item.done}
+                                    onChange={(e) =>
+                                      handleUpdateTask(
+                                        item.$id,
+                                        e.target.checked
+                                      )
+                                    }
                                   />
+                                  {item.description && (
+                                    <p className="list-item-description">
+                                      {item.description}
+                                    </p>
+                                  )}
                                 </div>
-                                <i
-                                  className="delete-icon"
-                                  onClick={() => deleteTask(item.$id)}
-                                >
-                                  <Trash2 size={16} />
-                                </i>
+                                <Space gap={10}>
+                                  <div style={{ marginTop: "-2px" }}>
+                                    <StarButton
+                                      isStarred={item?.starred}
+                                      onToggle={() => {
+                                        console.log(item);
+                                        handleStarToggle(
+                                          item?.$id,
+                                          item.starred
+                                        );
+                                      }}
+                                      size={20}
+                                    />
+                                  </div>
+                                  <i
+                                    className="delete-icon"
+                                    onClick={() => deleteTask(item.$id)}
+                                  >
+                                    <Trash2 size={16} />
+                                  </i>
+                                </Space>
                               </Space>
-                            </Space>
-                          </div>
-                        </Space>
-                      ))}
-                    </Fragment>
-                  )}
-                </div>
-              ))
-            )}
-          </Col>
-          <Col className="list-sidepanel">
-            <CalendarList
-              onDateSelect={setDateSelected}
-              selectedDate={dateSelected}
-            />
-          </Col>
-        </Row>
-        <Modal
-          show={showModal}
-          onHide={() => setShowModal(false)}
-          className="modal-container"
-          centered
-        >
-          <ModalAddList onHide={() => setShowModal(false)} show={showModal} />
-        </Modal>
+                            </div>
+                          </Space>
+                        ))}
+                      </Fragment>
+                    )}
+                  </div>
+                ))
+              )}
+            </Col>
+            <Col className="list-sidepanel">
+              <CalendarList
+                onDateSelect={setDateSelected}
+                selectedDate={dateSelected}
+              />
+              <div>
+                <ListStatistics />
+              </div>
+            </Col>
+          </Row>
+        )}
       </Container>
     </Fragment>
   );
