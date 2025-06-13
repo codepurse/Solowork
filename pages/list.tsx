@@ -1,18 +1,20 @@
 import dayjs from "dayjs";
 import isBetween from "dayjs/plugin/isBetween";
 import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
-import { ChevronDown, Edit2, Trash2 } from "lucide-react";
+import { ChevronDown, ListFilterPlus, Trash2 } from "lucide-react";
 import { Fragment, useEffect, useMemo, useRef, useState } from "react";
 import { Col, Container, Modal, Row } from "react-bootstrap";
 import Space from "../components/space";
 
 import { Models, Query } from "appwrite";
-import { useInView } from 'react-intersection-observer';
+import { useInView } from "react-intersection-observer";
 import useSWR, { mutate } from "swr";
 import Button from "../components/Elements/Button";
 import Checkbox from "../components/Elements/Checkbox";
+import CalendarList from "../components/Pages/List/CalendarList";
 import { ListDivider } from "../components/Pages/List/ListDivider";
 import ModalAddList from "../components/Pages/List/ModalAddList";
+import { StarButton } from "../components/Pages/Notes/StarNotes";
 import {
   DATABASE_ID,
   LIST_COLLECTION_ID,
@@ -39,14 +41,25 @@ export default function List() {
   const [showModal, setShowModal] = useState(false);
   const pendingUpdates = useRef<Record<string, NodeJS.Timeout>>({});
   const { ref, inView } = useInView({
-    threshold: 0.5
+    threshold: 0.5,
   });
   const [dateRange, setDateRange] = useState({
     start: dayjs().startOf("day"),
-    end: dayjs().add(6, "day").endOf("day")
+    end: dayjs().add(6, "day").endOf("day"),
   });
   const [offset, setOffset] = useState(0);
   const [hasMore, setHasMore] = useState(true);
+  const [dateSelected, setDateSelected] = useState(dayjs());
+
+  // Add effect to update dateRange when dateSelected changes
+  useEffect(() => {
+    setDateRange({
+      start: dateSelected.startOf("day"),
+      end: dateSelected.add(6, "day").endOf("day"),
+    });
+    setOffset(0); // Reset offset when changing dates
+    setHasMore(true); // Reset hasMore when changing dates
+  }, [dateSelected]);
 
   const fetchList = async () => {
     try {
@@ -56,15 +69,16 @@ export default function List() {
         [
           Query.orderAsc("dateSched"),
           Query.greaterThanEqual("dateSched", dateRange.start.toISOString()),
+          Query.lessThanEqual("dateSched", dateRange.end.toISOString()),
           Query.limit(100),
-          Query.offset(offset)
+          Query.offset(offset),
         ]
       );
-      
+
       if (result.documents.length < 100) {
         setHasMore(false);
       }
-      
+
       const processedDocs = processRecurringTasks(
         result.documents as ListItem[],
         dateRange.start.toISOString(),
@@ -77,9 +91,13 @@ export default function List() {
     }
   };
 
-  const { data, error } = useSWR("list", fetchList, {
-    revalidateOnFocus: false,
-  });
+  const { data, error } = useSWR(
+    [`list`, dateRange.start.toISOString(), dateRange.end.toISOString()],
+    fetchList,
+    {
+      revalidateOnFocus: false,
+    }
+  );
 
   useEffect(() => {
     if (error) {
@@ -96,9 +114,9 @@ export default function List() {
   // Add effect to load more dates when scrolling
   useEffect(() => {
     if (inView) {
-      setDateRange(prev => ({
+      setDateRange((prev) => ({
         start: prev.start,
-        end: dayjs(prev.end).add(7, "day").endOf("day")
+        end: dayjs(prev.end).add(7, "day").endOf("day"),
       }));
     }
   }, [inView]);
@@ -106,10 +124,10 @@ export default function List() {
   const groupByDateWithPadding = (items: ListItem[]) => {
     const days: Record<string, ListItem[]> = {};
     let current = dateRange.start;
-    
-    while (current.isSameOrBefore(dateRange.end, 'day')) {
-      days[current.format('YYYY-MM-DD')] = [];
-      current = current.add(1, 'day');
+
+    while (current.isSameOrBefore(dateRange.end, "day")) {
+      days[current.format("YYYY-MM-DD")] = [];
+      current = current.add(1, "day");
     }
 
     items.forEach((item) => {
@@ -273,103 +291,201 @@ export default function List() {
     );
   };
 
-  return (
-    <Container fluid className="list-container">
-      <Row>
-        <Col lg={12}>
-          <div
-            className="header-container"
-            style={{ maxWidth: "1200px", margin: "0 auto" }}
-          >
-            <Space gap={10} align="evenly">
-              <p className="header-title">Stay on Track This Week</p>
-              <Button onClick={() => setShowModal(true)}>Add Task</Button>
-            </Space>
-          </div>
-          {loading ? (
-            <p>Loading...</p>
-          ) : (
-            Object.entries(grouped).map(([date, items], index, array) => (
-              <div
-                key={date}
-                className="mb-2"
-                style={{ maxWidth: "1200px", margin: "0 auto" }}
-                ref={index === array.length - 1 ? ref : undefined}
-              >
-                <div className="list-container-header">
-                  <Space gap={7}>
-                    <p className="list-date">
-                      {dayjs(date).format("ddd, MMM D")}
-                    </p>
-                    <DiverMemo index={index} />
-                    <i>
-                      <ChevronDown size={16} />
-                    </i>
-                  </Space>
-                </div>
+  const handleStarToggle = async (id: string, isStarred: boolean) => {
+    // Clear any pending update for this task
+    if (pendingUpdates.current[id]) {
+      clearTimeout(pendingUpdates.current[id]);
+    }
 
-                {items.length === 0 ? (
-                  <div
-                    className="list-container-body"
-                    style={{ padding: "10px" }}
-                  >
-                    <p className="empty-list-text">No items for this day.</p>
+    // Handle recurring task instances
+    const [originalId, dateStr] = id.split("_");
+    const isRecurringInstance = dateStr !== undefined;
+
+    // Get the actual ID to update
+    const updateId = isRecurringInstance ? originalId : id;
+
+    // Optimistically update the local state
+    setList((prevList) =>
+      prevList.map((item) => {
+        // For recurring tasks, update all instances
+        if (isRecurringInstance) {
+          const [itemOriginalId] = item.$id.split("_");
+          if (itemOriginalId === originalId) {
+            return { ...item, starred: !isStarred };
+          }
+        } else if (item.$id === id) {
+          // For non-recurring tasks, just update the specific item
+          return { ...item, starred: !isStarred };
+        }
+        return item;
+      })
+    );
+
+    // Set a new debounced update
+    pendingUpdates.current[id] = setTimeout(async () => {
+      try {
+        await databases.updateDocument(DATABASE_ID, LIST_COLLECTION_ID, updateId, {
+          starred: !isStarred,
+        });
+
+        // Remove the pending update after success
+        delete pendingUpdates.current[id];
+        // Refresh the list to get updated data
+        mutate("list");
+      } catch (error) {
+        console.error("Failed to update task:", error);
+        // Revert the optimistic update on error
+        setList((prevList) =>
+          prevList.map((item) => {
+            // For recurring tasks, revert all instances
+            if (isRecurringInstance) {
+              const [itemOriginalId] = item.$id.split("_");
+              if (itemOriginalId === originalId) {
+                return { ...item, starred: isStarred };
+              }
+            } else if (item.$id === id) {
+              // For non-recurring tasks, just revert the specific item
+              return { ...item, starred: isStarred };
+            }
+            return item;
+          })
+        );
+        delete pendingUpdates.current[id];
+      }
+    }, 500);
+  };
+
+  return (
+    <Fragment>
+      <Container className="list-container" style={{ paddingTop: "55px" }}>
+        <Row>
+          <Col lg={12}>
+            <div className="header-container">
+              <Space gap={10} align="evenly">
+                <p className="header-title">Stay on Track This Week</p>
+                <Space gap={10}>
+                  <button className="filter-button">
+                    <i>
+                      <ListFilterPlus size={15} />
+                    </i>
+                    <span>Filter</span>
+                  </button>
+                  <Button onClick={() => setShowModal(true)}>Add Task</Button>
+                </Space>
+              </Space>
+            </div>
+          </Col>
+        </Row>
+      </Container>
+      <Container className="list-container">
+        <Row>
+          <Col>
+            {loading ? (
+              <p>Loading...</p>
+            ) : (
+              Object.entries(grouped).map(([date, items], index, array) => (
+                <div
+                  key={date}
+                  className="mb-2"
+                  style={{ maxWidth: "1200px", margin: "0 auto" }}
+                  ref={index === array.length - 1 ? ref : undefined}
+                >
+                  <div className="list-container-header">
+                    <Space gap={7}>
+                      <p className="list-date">
+                        {dayjs(date).format("ddd, MMM D")}
+                      </p>
+                      <DiverMemo index={index} />
+                      <i>
+                        <ChevronDown size={16} />
+                      </i>
+                    </Space>
                   </div>
-                ) : (
-                  <Fragment>
-                    {items.map((item) => (
-                      <Space key={item.$id} gap={20} alignItems="start">
-                        <p className="list-item-time">
-                          {dayjs(item.dateSched).format("HH:mm")}
-                        </p>
-                        <div className="list-container-body">
-                          <Space fill gap={10} align="evenly" className="mb-2">
-                            <div>
-                              <Checkbox
-                                key={item.$id}
-                                label={item.name}
-                                id={item.$id}
-                                checked={item.done}
-                                onChange={(e) =>
-                                  handleUpdateTask(item.$id, e.target.checked)
-                                }
-                              />
-                              {item.description && (
-                                <p className="list-item-description">
-                                  {item.description}
-                                </p>
-                              )}
-                            </div>
-                            <Space gap={15}>
-                              <i className="delete-icon">
-                                <Edit2 size={15} />
-                              </i>
-                              <i
-                                className="delete-icon"
-                                onClick={() => deleteTask(item.$id)}
-                              >
-                                <Trash2 size={16} />
-                              </i>
+
+                  {items.length === 0 ? (
+                    <div
+                      className="list-container-body"
+                      style={{ padding: "10px" }}
+                    >
+                      <p className="empty-list-text">No items for this day.</p>
+                    </div>
+                  ) : (
+                    <Fragment>
+                      {items.map((item) => (
+                        <Space key={item.$id} gap={20} alignItems="start">
+                          <p className="list-item-time">
+                            {dayjs(item.dateSched).format("HH:mm")}
+                          </p>
+                          <div className="list-container-body">
+                            <Space
+                              fill
+                              gap={10}
+                              align="evenly"
+                              className="mb-2"
+                            >
+                              <div>
+                                <Checkbox
+                                  key={item.$id}
+                                  label={item.name}
+                                  id={item.$id}
+                                  checked={item.done}
+                                  onChange={(e) =>
+                                    handleUpdateTask(item.$id, e.target.checked)
+                                  }
+                                />
+                                {item.description && (
+                                  <p className="list-item-description">
+                                    {item.description}
+                                  </p>
+                                )}
+                              </div>
+                              <Space gap={10}>
+                                <div style={{ marginTop: "-2px" }}>
+                                  <StarButton
+                                    isStarred={item?.starred}
+                                    onToggle={() => {
+                                      console.log(item);
+                                      handleStarToggle(
+                                        item?.$id,
+                                        item.starred
+                                      );
+                                    }}
+                                    size={20}
+                                  />
+                                </div>
+                                <i
+                                  className="delete-icon"
+                                  onClick={() => deleteTask(item.$id)}
+                                >
+                                  <Trash2 size={16} />
+                                </i>
+                              </Space>
                             </Space>
-                          </Space>
-                        </div>
-                      </Space>
-                    ))}
-                  </Fragment>
-                )}
-              </div>
-            ))
-          )}
-        </Col>
-      </Row>
-      <Modal
-        show={showModal}
-        onHide={() => setShowModal(false)}
-        className="modal-container"
-        centered
-      >
-        <ModalAddList onHide={() => setShowModal(false)} show={showModal} />
-      </Modal>
-    </Container>
+                          </div>
+                        </Space>
+                      ))}
+                    </Fragment>
+                  )}
+                </div>
+              ))
+            )}
+          </Col>
+          <Col className="list-sidepanel">
+            <CalendarList
+              onDateSelect={setDateSelected}
+              selectedDate={dateSelected}
+            />
+          </Col>
+        </Row>
+        <Modal
+          show={showModal}
+          onHide={() => setShowModal(false)}
+          className="modal-container"
+          centered
+        >
+          <ModalAddList onHide={() => setShowModal(false)} show={showModal} />
+        </Modal>
+      </Container>
+    </Fragment>
   );
 }

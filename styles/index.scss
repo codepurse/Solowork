@@ -3889,7 +3889,34 @@ main {
 }
 
 .list-container {
-  padding-top: 50px;
+  .filter-button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background-color: transparent;
+    border: 1px solid $primary-color;
+    border-radius: 5px;
+    padding: 4px 10px;
+    margin-top: 1px;
+    cursor: pointer;
+    i {
+      color: #eee;
+      transition: all 0.2s ease-in-out;
+      margin-top: -2px;
+      &:hover {
+        color: $primary-color;
+      }
+    }
+    span {
+      font-size: 13px;
+      font-weight: 400;
+      color: #eee;
+      transition: all 0.2s ease-in-out;
+      &:hover {
+        color: $primary-color;
+      }
+    }
+  }
   .list-container-header {
     .list-date {
       font-size: 14px;
@@ -3979,10 +4006,10 @@ main {
     text-align: center;
   }
   .list-item-description {
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 400;
     color: #888;
-    margin-bottom: -2px;
+    margin-bottom: -8px;
     margin-left: 27px;
     margin-top: -5px;
   }
@@ -4000,5 +4027,79 @@ main {
     color: #888;
     margin-bottom: 0px;
     margin-top: 10px;
+  }
+  .list-sidepanel {
+    width: 300px;
+    max-width: 300px;
+    border-radius: 8px;
+  }
+}
+
+.calendar-list {
+  padding: 10px;
+  .calendar-list-header {
+    padding: 0px 5px;
+    .calendar-list-header-title {
+      font-size: 14px;
+      font-weight: 400;
+      color: #fbfbfb;
+      margin-bottom: 0px;
+    }
+    .calendar-list-header-icon {
+      color: #fbfbfb;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.2s ease-in-out;
+      &:hover {
+        color: $primary-color;
+      }
+    }
+  }
+  .calendar-list-body {
+    margin-top: 5px;
+    .calendar-list-body-week {
+      display: flex;
+      flex-wrap: wrap;
+      width: 100%;
+      margin-bottom: -10px;
+      .calendar-list-body-week-day {
+        width: calc(100% / 7);
+        text-align: center;
+        padding: 6px 0px;
+        font-size: 12px;
+        color: #fff;
+      }
+    }
+  }
+  .calendar-list-body-days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 2px;
+    .calendar-list-body-day {
+      aspect-ratio: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      border-radius: 4px;
+      transition: background-color 0.2s;
+      font-size: 14px;
+      font-weight: 400;
+      color: #fbfbfb;
+      &:hover {
+        background-color: rgba(0, 0, 0, 0.05);
+      }
+      &.selected-date {
+        background-color: rgba(124, 77, 255, 0.4);
+        color: white;
+        font-weight: 500;
+        border: 1px solid $primary-color;
+      }
+    }
+    .today {
+      background-color: #110d28;
+      border: 1px solid $primary-color;
+      border-radius: 8px;
+    }
   }
 }
