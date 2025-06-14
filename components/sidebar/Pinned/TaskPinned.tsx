@@ -31,7 +31,7 @@ export default function TaskPinned() {
         KANBAN_COLLECTION_ID,
         [Query.equal("userID", user.$id), Query.equal("pinned", true)]
       );
-      console.log(res.documents, "task pinned");
+
       setTasks(res.documents as unknown as Task[]);
     };
 

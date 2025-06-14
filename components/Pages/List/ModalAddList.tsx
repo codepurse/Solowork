@@ -54,6 +54,7 @@ export default function ModalAddList({ show, onHide }: ModalAddListProps) {
         }
       );
       mutate(`list`);
+      mutate(`listStatistics`);
       onHide();
     } catch (error) {
       console.log(error);

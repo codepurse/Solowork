@@ -23,7 +23,7 @@ export default function KanbanPinned() {
         NOTES_COLLECTION_ID,
         [Query.equal("userId", user.$id), Query.equal("pinned", true)]
       );
-      console.log(res.documents, "notes pinned");
+
       setNotes(res.documents);
     };
     fetchKanban();

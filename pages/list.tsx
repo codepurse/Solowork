@@ -142,10 +142,6 @@ export default function List() {
 
   const grouped = groupByDateWithPadding(list);
 
-  useEffect(() => {
-    console.log(grouped);
-  }, [grouped]);
-
   const deleteTask = async (id: string) => {
     try {
       await databases.deleteDocument(DATABASE_ID, LIST_COLLECTION_ID, id);
@@ -203,6 +199,7 @@ export default function List() {
         delete pendingUpdates.current[id];
         // Refresh the list to get updated data
         mutate("list");
+        mutate("listStatistics");
       } catch (error) {
         console.error("Failed to update task:", error);
         // Revert the optimistic update on error
@@ -369,7 +366,7 @@ export default function List() {
   const [activeTab, setActiveTab] = useState("List");
 
   return (
-    <Fragment>
+    <div>
       <ListHeader />
       <Container className="list-container">
         <div style={{ marginTop: "-10px", marginBottom: "10px" }}>
@@ -451,7 +448,6 @@ export default function List() {
                                     <StarButton
                                       isStarred={item?.starred}
                                       onToggle={() => {
-                                        console.log(item);
                                         handleStarToggle(
                                           item?.$id,
                                           item.starred
@@ -478,17 +474,19 @@ export default function List() {
               )}
             </Col>
             <Col className="list-sidepanel">
-              <CalendarList
-                onDateSelect={setDateSelected}
-                selectedDate={dateSelected}
-              />
-              <div>
-                <ListStatistics />
+              <div style={{ position: "sticky", top: "140px" }}>
+                <CalendarList
+                  onDateSelect={setDateSelected}
+                  selectedDate={dateSelected}
+                />
+                <div>
+                  <ListStatistics selectedDate={dateSelected} />
+                </div>
               </div>
             </Col>
           </Row>
         )}
       </Container>
-    </Fragment>
+    </div>
   );
 }

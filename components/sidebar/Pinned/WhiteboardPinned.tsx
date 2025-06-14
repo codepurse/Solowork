@@ -22,7 +22,7 @@ export default function WhiteboardPinned() {
         WHITEBOARD_COLLECTION_ID,
         [Query.equal("userId", user.$id), Query.equal("pinned", true)]
       );
-      console.log(res.documents, "task pinned");
+
       setWhiteboards(res.documents);
     };
     fetchKanban();

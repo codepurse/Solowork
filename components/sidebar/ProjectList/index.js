@@ -22,6 +22,7 @@ export default function ProjectList({ showSidebar }) {
   };
 
   const handleProjectClick = async (projectId) => {
+    console.log(projectId, "projectId");
     setSelectedProject(projectId);
   };
 

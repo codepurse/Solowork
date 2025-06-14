@@ -9,7 +9,15 @@ export default function ListHeader() {
   const [showModal, setShowModal] = useState(false);
 
   return (
-    <Container className="list-container" style={{ paddingTop: "55px" }}>
+    <Container
+      className="list-container"
+      style={{
+        paddingTop: "55px",
+        position: "sticky",
+        top: "0px",
+        zIndex: 1000,
+      }}
+    >
       <Row>
         <Col lg={12}>
           <div className="header-container">
