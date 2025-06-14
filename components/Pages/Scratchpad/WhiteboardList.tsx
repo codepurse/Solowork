@@ -4,7 +4,7 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { Col, Container, Row } from "react-bootstrap";
 import Modal from "react-bootstrap/Modal";
-import useSWR from "swr";
+import useSWR, { mutate } from "swr";
 import {
   DATABASE_ID,
   databases,
@@ -17,8 +17,9 @@ import Space from "../../space";
 import ModalWhiteboard from "./ModalWhiteboard";
 
 export default function WhiteboardList() {
-  const { useStoreUser } = useStore();
+  const { useStoreUser, useStoreProjects } = useStore();
   const { user } = useStoreUser();
+  const { selectedProject } = useStoreProjects();
   const { setSelectedWhiteboard, setIsEditMode } = useWhiteBoardStore();
   const [showModal, setShowModal] = useState(false);
   const router = useRouter();
@@ -27,7 +28,7 @@ export default function WhiteboardList() {
     const whiteboards = await databases.listDocuments(
       DATABASE_ID,
       WHITEBOARD_COLLECTION_ID,
-      [Query.equal("userId", user.$id)]
+      [Query.equal("userId", user.$id), Query.equal("board", selectedProject)]
     );
     return whiteboards.documents;
   };
@@ -41,6 +42,12 @@ export default function WhiteboardList() {
       console.log(data);
     }
   }, [data]);
+
+  useEffect(() => {
+    if (selectedProject) {
+      mutate("whiteboards");
+    }
+  }, [selectedProject]);
 
   const handleWhiteboardClick = (whiteboard: any) => {
     setSelectedWhiteboard(whiteboard);
@@ -62,7 +69,9 @@ export default function WhiteboardList() {
                 className="whiteboard-list-item-card"
                 onClick={() => {
                   handleWhiteboardClick(whiteboard);
-                  router.push(`/whiteboard/${whiteboard.$id}?name=${whiteboard.name}`);
+                  router.push(
+                    `/whiteboard/${whiteboard.$id}?name=${whiteboard.name}`
+                  );
                 }}
               >
                 <div className="whiteboard-header">

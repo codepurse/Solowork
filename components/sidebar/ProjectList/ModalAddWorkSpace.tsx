@@ -1,6 +1,6 @@
 import { ID } from "appwrite";
 import { X } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { mutate } from "swr";
 import {
   DATABASE_ID,
@@ -24,6 +24,7 @@ type Info = {
   name: string;
   description: string;
   $id: string;
+  image: string;
 };
 
 export default function ModalAddWorkSpace({
@@ -38,6 +39,8 @@ export default function ModalAddWorkSpace({
   const [description, setDescription] = useState("");
   const [loading, setLoading] = useState(false);
   const [isDelete, setIsDelete] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [workspaceLogo, setWorkspaceLogo] = useState("");
 
   const handleAddWorkspace = async () => {
     setLoading(true);
@@ -52,6 +55,7 @@ export default function ModalAddWorkSpace({
             name: workspaceName,
             description: description,
             userId: user?.$id,
+            image: workspaceLogo,
           }
         );
         setShowToast(true);
@@ -73,6 +77,7 @@ export default function ModalAddWorkSpace({
           {
             name: workspaceName,
             description: description,
+            image: workspaceLogo,
           }
         );
         setShowToast(true);
@@ -92,8 +97,25 @@ export default function ModalAddWorkSpace({
       console.log(info);
       setWorkspaceName(info.name);
       setDescription(info.description);
+      setWorkspaceLogo(info.image);
     }
   }, [info]);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      // For preview (optional)
+
+      // Convert to base64
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64String = reader.result as string;
+        console.log("Base64 string:", base64String);
+        setWorkspaceLogo(base64String);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   return (
     <div
@@ -101,7 +123,6 @@ export default function ModalAddWorkSpace({
       style={{ overflow: "hidden" }}
       onClick={(e) => {
         e.stopPropagation();
-        e.preventDefault();
       }}
     >
       {isDelete ? (
@@ -129,13 +150,35 @@ export default function ModalAddWorkSpace({
           <div>
             <p className="modal-form-title">Workspace Logo</p>
             <Space gap={15} className="mb-2 mt-2">
-              <div className="workspace-logo-container"></div>
+              <div
+                className="workspace-logo-container"
+                style={{
+                  backgroundImage: `url(${workspaceLogo})`,
+                  backgroundSize: "cover",
+                  backgroundPosition: "center",
+                  backgroundRepeat: "no-repeat",
+                }}
+              ></div>
               <div>
-                <div className="button-upload">Upload Image</div>
+                <div
+                  className="button-upload"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    fileInputRef.current?.click();
+                  }}
+                >
+                  Upload Image
+                </div>
                 <p className="modal-form-description">
                   We support .png and .jpg and files up to 1mb.
                 </p>
               </div>
+              <input
+                type="file"
+                ref={fileInputRef}
+                style={{ display: "none" }}
+                onChange={handleFileChange}
+              />
             </Space>
             <p className="modal-form-title">Workspace Name</p>
             <Text

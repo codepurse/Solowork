@@ -9,6 +9,7 @@ import {
   databases,
   LIST_COLLECTION_ID,
 } from "../../../constant/appwrite";
+import { useStore } from "../../../store/store";
 import Space from "../../space";
 
 type ListStatisticsProps = {
@@ -46,6 +47,8 @@ ChartJS.register(ArcElement, Tooltip, Legend, glowPlugin);
 export default function ListStatistics({
   selectedDate,
 }: Readonly<ListStatisticsProps>) {
+  const { useStoreProjects } = useStore();
+  const { selectedProject } = useStoreProjects();
   const [done, setDone] = useState(0);
   const [inProgress, setInProgress] = useState(0);
   const [overdue, setOverdue] = useState(0);
@@ -125,6 +128,7 @@ export default function ListStatistics({
           Query.lessThanEqual("dateSched", finalEndDate.toISOString()),
           Query.limit(100),
           Query.offset(0),
+          Query.equal("board", selectedProject),
         ]
       );
 
@@ -194,7 +198,7 @@ export default function ListStatistics({
     }
   };
 
-  useSWR("listStatistics", fetchList, {
+  useSWR(selectedProject ? "listStatistics" : null, fetchList, {
     revalidateOnFocus: false,
   });
 

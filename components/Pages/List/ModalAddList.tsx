@@ -9,6 +9,7 @@ import {
   databases,
   LIST_COLLECTION_ID,
 } from "../../../constant/appwrite";
+import { useStore } from "../../../store/store";
 import Button from "../../Elements/Button";
 import DatePicker from "../../Elements/DatePicker";
 import Dropdown from "../../Elements/Dropdown";
@@ -37,6 +38,8 @@ export default function ModalAddList({ show, onHide }: ModalAddListProps) {
     null
   );
   const [loading, setLoading] = useState(false);
+  const { useStoreProjects } = useStore();
+  const { selectedProject } = useStoreProjects();
 
   const handleSaveTask = async () => {
     try {
@@ -51,6 +54,7 @@ export default function ModalAddList({ show, onHide }: ModalAddListProps) {
           dateSched: dayjs(dateSched).toISOString(),
           done: false,
           repeat: repeat?.value,
+          board: selectedProject,
         }
       );
       mutate(`list`);

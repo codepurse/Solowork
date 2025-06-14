@@ -1,5 +1,5 @@
 import { ChevronDown, GripVertical, Pencil, Plus } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Modal from "react-bootstrap/esm/Modal";
 import { useStore } from "../../../store/store";
 import Space from "../../space";
@@ -8,11 +8,12 @@ import ModalAddWorkSpace from "./ModalAddWorkSpace";
 export default function ProjectList({ showSidebar }) {
   const { useStoreProjects } = useStore();
   const { projects, setSelectedProject } = useStoreProjects();
-  const [activeProject] = useState(0);
+  const [activeProject, setActiveProject] = useState(0);
   const [showProjects, setShowProjects] = useState(false);
   const [showModalAddWorkspace, setShowModalAddWorkspace] = useState(false);
   const [edit, setEdit] = useState(false);
   const [info, setInfo] = useState({});
+  const [firstRun, setFirstRun] = useState(true);
   const projectList = projects;
 
   const handleKeyDown = (event) => {
@@ -24,9 +25,21 @@ export default function ProjectList({ showSidebar }) {
   const handleProjectClick = async (projectId) => {
     console.log(projectId, "projectId");
     setSelectedProject(projectId);
+    setActiveProject(projectId);
   };
 
   const style = { padding: showSidebar ? "6px 12px" : "4px" };
+
+  useEffect(() => {
+    console.log("activeProject", projectList[activeProject]);
+  }, [projectList, activeProject]);
+
+  useEffect(() => {
+    if (projectList.length > 0 && firstRun) {
+      setActiveProject(projectList[0].$id);
+      setFirstRun(false);
+    }
+  }, [projectList]);
 
   return (
     <div
@@ -39,11 +52,20 @@ export default function ProjectList({ showSidebar }) {
     >
       <Space gap={10} align="evenly">
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <img src="/image/logo.png" className="img-fluid logo" />
+          <img
+            src={
+              projectList.find((project) => project.$id === activeProject)
+                ?.image
+            }
+            className="img-fluid logo"
+          />
           {showSidebar && (
             <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
               <label className="project-name">
-                {projectList[activeProject]?.name}
+                {
+                  projectList.find((project) => project.$id === activeProject)
+                    ?.name
+                }
               </label>
             </div>
           )}

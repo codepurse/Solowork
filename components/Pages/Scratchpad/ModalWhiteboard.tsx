@@ -20,13 +20,13 @@ interface ModalWhiteboardProps {
 export default function ModalWhiteboard({
   onHide,
 }: Readonly<ModalWhiteboardProps>) {
-  const { useStoreToast, useStoreUser } = useStore();
+  const { useStoreToast, useStoreUser, useStoreProjects } = useStore();
   const { user } = useStoreUser();
   const { setToastType, setToastMessage, setToastTitle } = useStoreToast();
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-
+  const { selectedProject } = useStoreProjects();
   const handleSave = async () => {
     try {
       setIsLoading(true);
@@ -38,6 +38,7 @@ export default function ModalWhiteboard({
           name,
           description,
           userId: user?.$id,
+          board: selectedProject,
         }
       );
       setToastType("success");

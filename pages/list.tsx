@@ -21,6 +21,7 @@ import {
   LIST_COLLECTION_ID,
   databases,
 } from "../constant/appwrite";
+import { useStore } from "../store/store";
 
 dayjs.extend(isBetween);
 dayjs.extend(isSameOrBefore);
@@ -37,6 +38,8 @@ type ListItem = {
 const arrColor = ["#1ABC9C", "#2ECC71", "#3498DB", "#9B59B6"];
 
 export default function List() {
+  const { useStoreProjects } = useStore();
+  const { selectedProject } = useStoreProjects();
   const [list, setList] = useState([]);
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
@@ -63,6 +66,7 @@ export default function List() {
   }, [dateSelected]);
 
   const fetchList = async () => {
+    console.log(selectedProject, "selectedProject");
     try {
       const result = await databases.listDocuments(
         DATABASE_ID,
@@ -73,6 +77,7 @@ export default function List() {
           Query.lessThanEqual("dateSched", dateRange.end.toISOString()),
           Query.limit(100),
           Query.offset(offset),
+          Query.equal("board", selectedProject),
         ]
       );
 
@@ -93,7 +98,14 @@ export default function List() {
   };
 
   const { data, error } = useSWR(
-    [`list`, dateRange.start.toISOString(), dateRange.end.toISOString()],
+    selectedProject
+      ? [
+          `list`,
+          selectedProject,
+          dateRange.start.toISOString(),
+          dateRange.end.toISOString(),
+        ]
+      : null,
     fetchList,
     {
       revalidateOnFocus: false,
