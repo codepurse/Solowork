@@ -3,9 +3,9 @@ import { X } from "lucide-react";
 import { useState } from "react";
 import { mutate } from "swr";
 import {
-    DATABASE_ID,
-    databases,
-    KANBAN_FOLDER_ID,
+  DATABASE_ID,
+  databases,
+  KANBAN_FOLDER_ID,
 } from "../../../../constant/appwrite";
 import { useStore } from "../../../../store/store";
 import Button from "../../../Elements/Button";
@@ -20,8 +20,9 @@ export default function AddKanbanModal({
   onHide,
 }: Readonly<AddKanbanModalProps>) {
   const [name, setName] = useState("");
-  const { useStoreUser } = useStore();
+  const { useStoreUser, useStoreProjects } = useStore();
   const { user } = useStoreUser();
+  const { selectedProject } = useStoreProjects();
   const [loading, setLoading] = useState(false);
 
   const handleCreate = async () => {
@@ -35,6 +36,7 @@ export default function AddKanbanModal({
           userId: user.$id,
           name: name,
           createdAt: new Date().toISOString(),
+          board: selectedProject,
         }
       );
     } catch (error) {

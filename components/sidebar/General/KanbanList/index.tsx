@@ -2,7 +2,7 @@ import { Query } from "appwrite";
 import { Folders } from "lucide-react";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
-import useSWR from "swr";
+import useSWR, { mutate } from "swr";
 import {
   DATABASE_ID,
   databases,
@@ -17,10 +17,13 @@ export default function KanbanList() {
   const { user } = useStoreUser();
   const { setSidebarSelected, sidebarSelected } = useSidebar();
   const { setKanbanList } = useStoreKanban();
+  const { useStoreProjects } = useStore();
+  const { selectedProject } = useStoreProjects();
 
   const fetchKanban = async () => {
     const res = await databases.listDocuments(DATABASE_ID, KANBAN_FOLDER_ID, [
       Query.equal("userId", user.$id),
+      Query.equal("board", selectedProject),
     ]);
     return res.documents;
   };
@@ -33,6 +36,12 @@ export default function KanbanList() {
       setKanbanList(data);
     }
   }, [data]);
+
+  useEffect(() => {
+    if (selectedProject) {
+      mutate("kanban");
+    }
+  }, [selectedProject]);
 
   const handleKanbanClick = (kanbanId: string, kanbanName: string) => {
     router.push(`/kanban/${kanbanId}?name=${kanbanName}`);
