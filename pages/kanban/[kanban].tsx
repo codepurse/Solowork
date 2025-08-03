@@ -19,13 +19,13 @@ import {
 import { useStore } from "../../store/store";
 
 export default function KanbanPage() {
-  const { useStoreKanban, useStoreTasks } = useStore();
+  const { useStoreKanban, useStoreTasks, useStoreProjects } = useStore();
   const { selectedKanban, showDrawerInfo } = useStoreKanban();
   const { tasks, setTasks } = useStoreTasks();
   const router = useRouter();
   const { kanban } = router.query;
   const [kanbanDetails, setKanbanDetails] = useState<any>(null);
-
+  const { selectedProject } = useStoreProjects();
   // Convert to string if it's an array
   const kanbanId = Array.isArray(kanban) ? kanban[0] : kanban;
 
@@ -33,7 +33,7 @@ export default function KanbanPage() {
     const tasks = await databases.listDocuments(
       DATABASE_ID,
       KANBAN_COLLECTION_ID,
-      [Query.equal("kanbanId", kanbanId)]
+      [Query.equal("kanbanId", kanbanId), Query.equal("board", selectedProject)]
     );
     return tasks;
   };

@@ -55,10 +55,10 @@ export default function MyApp({ Component, pageProps }: AppProps) {
 
   return (
     <AuthLayout>
-      {/*   <PixelSpirit initialX={position.x} initialY={position.y} /> */}
-      {/*   <CompanionIceCube /> */}
+      {/*  <PixelSpirit initialX={position.x} initialY={position.y} /> */}
+      {/*  <CompanionIceCube /> */}
       {/*  <CompanionGhost /> */}
-      {/* <CompanionPanda /> */}
+    {/*   <CompanionPanda /> */}
       <Layout>
         <PageLayout>
           <Component {...pageProps} />

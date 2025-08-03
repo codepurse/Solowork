@@ -7,7 +7,7 @@ import ModalAddWorkSpace from "./ModalAddWorkSpace";
 
 export default function ProjectList({ showSidebar }) {
   const { useStoreProjects } = useStore();
-  const { projects, setSelectedProject } = useStoreProjects();
+  const { projects, setSelectedProject, selectedProject } = useStoreProjects();
   const [activeProject, setActiveProject] = useState(0);
   const [showProjects, setShowProjects] = useState(false);
   const [showModalAddWorkspace, setShowModalAddWorkspace] = useState(false);
@@ -26,20 +26,25 @@ export default function ProjectList({ showSidebar }) {
     console.log(projectId, "projectId");
     setSelectedProject(projectId);
     setActiveProject(projectId);
+    window.location.href = "/list";
   };
 
   const style = { padding: showSidebar ? "6px 12px" : "4px" };
 
   useEffect(() => {
-    console.log("activeProject", projectList[activeProject]);
-  }, [projectList, activeProject]);
+    console.log("activeProject", selectedProject);
+  }, [selectedProject]);
 
   useEffect(() => {
-    if (projectList.length > 0 && firstRun) {
+    if (projectList.length > 0 && firstRun && !selectedProject) {
+      console.log(1);
       setActiveProject(projectList[0].$id);
       setFirstRun(false);
+    } else {
+      console.log(2);
+      setActiveProject(selectedProject);
     }
-  }, [projectList]);
+  }, [projectList, selectedProject]);
 
   return (
     <div

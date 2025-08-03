@@ -36,7 +36,8 @@ export default function AuthLayout({
   const isFirstRun = useRef(true);
   const { useStoreUser, useStoreProjects } = useStore();
   const { user, setUser } = useStoreUser();
-  const { setProjects, setSelectedProject } = useStoreProjects();
+  const { setProjects, setSelectedProject, selectedProject } =
+    useStoreProjects();
   const [error, setError] = useState<string | null>(null);
 
   // Add SWR hook for projects
@@ -50,11 +51,13 @@ export default function AuthLayout({
   useEffect(() => {
     if (projects) {
       setProjects(projects);
-      if (projects.length > 0) {
+      if (projects.length > 0 && !selectedProject) {
         setSelectedProject(projects[0].$id);
+      } else {
+        setSelectedProject(selectedProject);
       }
     }
-  }, [projects]);
+  }, [projects, selectedProject]);
 
   useEffect(() => {
     const checkUser = async () => {

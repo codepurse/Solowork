@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { createJSONStorage, persist } from "zustand/middleware";
 
 interface NotesStore {
   selectedNotes: any;
@@ -96,12 +97,24 @@ const useStoreKanban = create<KanbanStore>((set) => ({
   setKanbanList: (kanbanList: any) => set({ kanbanList: kanbanList }),
 }));
 
-const useStoreProjects = create<ProjectsStore>((set) => ({
-  selectedProject: null,
-  setSelectedProject: (project: any) => set({ selectedProject: project }),
-  projects: [],
-  setProjects: (projects: any[]) => set({ projects: projects }),
-}));
+const useStoreProjects = create<ProjectsStore>()(
+  persist(
+    (set) => ({
+      selectedProject: null,
+      setSelectedProject: (project: any) => set({ selectedProject: project }),
+      projects: [],
+      setProjects: (projects: any[]) => set({ projects: projects }),
+    }),
+    {
+      name: "solowork-projects-storage", // unique name for localStorage key
+      storage: createJSONStorage(() => localStorage),
+      // Only persist selectedProject, not the full projects array (since that might be fetched fresh)
+      partialize: (state) => ({ 
+        selectedProject: state.selectedProject 
+      }),
+    }
+  )
+);
 
 const useStoreUser = create<UserStore>((set) => ({
   user: null,
