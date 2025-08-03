@@ -117,7 +117,7 @@ export default function TaskCard({ task, isDragOverlay = false }) {
       }}
     >
       <div className="kanban-task-card-header">
-        <p className="kanban-task-card-id">TASK-101</p>
+        <p className="kanban-task-card-id">{task?.taskId}</p>
         <p
           className="kanban-task-card-priority"
           style={{ color: getPriorityColor(task?.priority) }}

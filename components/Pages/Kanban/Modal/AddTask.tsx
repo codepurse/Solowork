@@ -95,6 +95,29 @@ export default function AddTask({
     }
   };
 
+  const randomLetterWithNumber = () => {
+    const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    const numbers = "0123456789";
+    const allChars = letters + numbers;
+
+    let result = "";
+
+    // Ensure minimum 5 characters
+    const minLength = 5;
+    const length = Math.max(
+      minLength,
+      Math.floor(Math.random() * 3) + minLength
+    ); // 5-7 characters
+
+    // Generate random mix of letters and numbers
+    for (let i = 0; i < length; i++) {
+      const randomChar = allChars[Math.floor(Math.random() * allChars.length)];
+      result += randomChar;
+    }
+
+    return result;
+  };
+
   useEffect(() => {
     if (data) {
       setEditTask(true);
@@ -209,6 +232,7 @@ export default function AddTask({
         checklist: JSON.stringify(checklist),
         fileId: [...existingFileIds, ...uploadedFileIds],
         userID: user.$id,
+        taskId: `Task-${randomLetterWithNumber()}`,
       };
 
       if (editTask && data.$id) {

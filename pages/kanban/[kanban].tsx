@@ -33,7 +33,7 @@ export default function KanbanPage() {
     const tasks = await databases.listDocuments(
       DATABASE_ID,
       KANBAN_COLLECTION_ID,
-      [Query.equal("kanbanId", kanbanId), Query.equal("board", selectedProject)]
+      [Query.equal("kanbanId", kanbanId)]
     );
     return tasks;
   };
